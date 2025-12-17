@@ -6,6 +6,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.util.List;
 
 @Repository
@@ -18,6 +19,13 @@ public class BlogPostRepo {
 
     @Transactional
     public void save(BlogPostModel post){
+        post.setCreatedAt(Instant.now());
+        post.setUpdatedAt(Instant.now());
+
+        if (post.getStatus() == BlogPostModel.Status.published) {
+            post.setPublishedAt(Instant.now());
+        }
+
         em.persist(post);
     }
 
@@ -31,9 +39,9 @@ public class BlogPostRepo {
     }
 
     @Transactional
-    public void updateContent(int id, String content){
-        BlogPostModel post = findById(id);
-        post.setContent(content);
+    public void update(BlogPostModel post){
+        post.setUpdatedAt(Instant.now());
+        em.merge(post);
     }
 
     @Transactional

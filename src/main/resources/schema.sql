@@ -32,3 +32,11 @@ CREATE TABLE IF NOT EXISTS comments (
     FOREIGN KEY (post_id) REFERENCES blog_posts(id),
     FOREIGN KEY (user_id) REFERENCES admins(id)
 );
+
+CREATE TABLE IF NOT EXISTS gallery (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(255) NOT NULL,
+    image_link TEXT NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
