@@ -7,7 +7,6 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -22,9 +21,6 @@ public class FaqService {
 
     @Transactional
     public void save(FaqModel faq) {
-        faq.setCreatedAt(Instant.now());
-        faq.setUpdatedAt(Instant.now());
-
         repo.save(faq);
     }
 
@@ -45,7 +41,6 @@ public class FaqService {
             throw new GenericNotFoundException("FAQ not found with ID:" + faq.getId());
         }
 
-        faq.setUpdatedAt(Instant.now());
         repo.update(faq);
     }
 
