@@ -15,17 +15,12 @@ public class BlogPostRepo {
     private EntityManager em;
 
     @Autowired
-    public BlogPostRepo(EntityManager em) { this.em = em; }
+    public BlogPostRepo(EntityManager em) {
+        this.em = em;
+    }
 
     @Transactional
     public void save(BlogPostModel post){
-        post.setCreatedAt(Instant.now());
-        post.setUpdatedAt(Instant.now());
-
-        if (post.getStatus() == BlogPostModel.Status.published) {
-            post.setPublishedAt(Instant.now());
-        }
-
         em.persist(post);
     }
 
@@ -33,14 +28,12 @@ public class BlogPostRepo {
         return em.find(BlogPostModel.class, id);
     }
 
-
     public List<BlogPostModel> getAll(){
         return em.createQuery("FROM BlogPostModel", BlogPostModel.class).getResultList();
     }
 
     @Transactional
     public void update(BlogPostModel post){
-        post.setUpdatedAt(Instant.now());
         em.merge(post);
     }
 

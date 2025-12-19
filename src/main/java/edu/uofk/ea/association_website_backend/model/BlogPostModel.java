@@ -31,9 +31,6 @@ public class BlogPostModel {
     @Column(name = "updated_at")
     private Instant updatedAt;
 
-    @Column(name = "published_at")
-    private Instant publishedAt;
-
     @Column(name = "status")
     private Status status;
 
@@ -99,14 +96,6 @@ public class BlogPostModel {
         this.updatedAt = updatedAt;
     }
 
-    public Instant getPublishedAt() {
-        return publishedAt;
-    }
-
-    public void setPublishedAt(Instant publishedAt) {
-        this.publishedAt = publishedAt;
-    }
-
     public Status getStatus() {
         return status;
     }
@@ -132,7 +121,6 @@ public class BlogPostModel {
                 ", content='" + content + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
-                ", publishedAt=" + publishedAt +
                 ", status=" + status +
                 '}';
     }

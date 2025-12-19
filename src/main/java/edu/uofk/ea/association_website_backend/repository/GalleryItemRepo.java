@@ -19,7 +19,6 @@ public class GalleryItemRepo {
 
     @Transactional
     public void save(GalleryItemModel item){
-        item.setCreatedAt(Instant.now());
         em.persist(item);
     }
 
