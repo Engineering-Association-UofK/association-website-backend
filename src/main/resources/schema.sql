@@ -1,8 +1,12 @@
 CREATE TABLE IF NOT EXISTS admins (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    username VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255),
     password_hash VARCHAR(255) NOT NULL,
+    verified tinyint NOT NULL,
+    status ENUM('active', 'deactivated') DEFAULT 'active',
+    role ENUM('ROLE_EDITOR', 'ROLE_ADMIN', 'ROLE_VIEWER') DEFAULT 'ROLE_VIEWER',
+
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
