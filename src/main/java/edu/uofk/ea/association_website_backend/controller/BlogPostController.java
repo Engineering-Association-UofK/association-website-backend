@@ -7,6 +7,7 @@ import edu.uofk.ea.association_website_backend.util.BaseErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
@@ -34,17 +35,20 @@ public class BlogPostController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN', 'EDITOR')")
     public void addBlog(@RequestBody BlogPostModel Blog){
         service.save(Blog);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN', 'EDITOR')")
     public void UpdateBlog(@PathVariable int id, @RequestBody BlogPostModel post){
         post.setId(id);
         service.update(post);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN', 'EDITOR')")
     public void deleteBlog(@PathVariable int id){
         service.delete(id);
     }

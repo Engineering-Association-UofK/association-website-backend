@@ -7,6 +7,7 @@ import edu.uofk.ea.association_website_backend.util.BaseErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
@@ -34,17 +35,20 @@ public class FaqController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN', 'EDITOR')")
     public void addFaq(@RequestBody FaqModel faq) {
         service.save(faq);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN', 'EDITOR')")
     public void updateFaq(@PathVariable int id, @RequestBody FaqModel faq) {
         faq.setId(id);
         service.update(faq);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN', 'EDITOR')")
     public void deleteFaq(@PathVariable int id) {
         service.delete(id);
     }

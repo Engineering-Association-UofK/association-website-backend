@@ -7,6 +7,7 @@ import edu.uofk.ea.association_website_backend.util.BaseErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
@@ -29,11 +30,13 @@ public class GalleryItemController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN', 'EDITOR')")
     public void addItem(@RequestBody GalleryItemModel item){
         repo.save(item);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN', 'EDITOR')")
     public void deleteItem(@PathVariable int id){
         repo.delete(id);
     }

@@ -7,6 +7,7 @@ import edu.uofk.ea.association_website_backend.util.BaseErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
@@ -23,6 +24,7 @@ public class CloudinaryController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN', 'EDITOR')")
     public CloudinaryRequestModel signRequest(@RequestBody CloudinaryRequestModel request) {
         return service.validateAndSign(request);
     }
