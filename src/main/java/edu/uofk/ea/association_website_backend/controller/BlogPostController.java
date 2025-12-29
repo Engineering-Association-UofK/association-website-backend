@@ -1,12 +1,8 @@
 package edu.uofk.ea.association_website_backend.controller;
 
-import edu.uofk.ea.association_website_backend.exceptions.GenericNotFoundException;
 import edu.uofk.ea.association_website_backend.model.BlogPostModel;
 import edu.uofk.ea.association_website_backend.service.BlogPostService;
-import edu.uofk.ea.association_website_backend.util.BaseErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,33 +31,21 @@ public class BlogPostController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN', 'EDITOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
     public void addBlog(@RequestBody BlogPostModel Blog){
         service.save(Blog);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN', 'EDITOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
     public void UpdateBlog(@PathVariable int id, @RequestBody BlogPostModel post){
         post.setId(id);
         service.update(post);
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN', 'EDITOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
     public void deleteBlog(@PathVariable int id){
         service.delete(id);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<BaseErrorResponse> handleException(GenericNotFoundException e) {
-
-        BaseErrorResponse error = new BaseErrorResponse(
-                HttpStatus.NOT_FOUND.value(),
-                e.getMessage(),
-                Instant.now().getEpochSecond()
-        );
-
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 }

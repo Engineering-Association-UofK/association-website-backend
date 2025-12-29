@@ -1,36 +1,67 @@
 package edu.uofk.ea.association_website_backend.configs;
 
+import edu.uofk.ea.association_website_backend.service.AdminDetailsService;
+import edu.uofk.ea.association_website_backend.service.JwtAuthenticationFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
-import org.springframework.security.provisioning.UserDetailsManager;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-
-import javax.sql.DataSource;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
+@EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
-    @Bean
-    public UserDetailsManager userDetailsManager(DataSource dataSource) {
-        JdbcUserDetailsManager manager = new JdbcUserDetailsManager(dataSource);
+    private final AdminDetailsService ADS;
+    private final JwtAuthenticationFilter filter;
 
-        manager.setUsersByUsernameQuery("select name, password_hash, (verified = true AND status = 'active') from admins where name=?");
-        manager.setAuthoritiesByUsernameQuery("select name, role from admins where name=?");
+    @Autowired
+    public SecurityConfig(AdminDetailsService ADS, JwtAuthenticationFilter filter) {
+        this.ADS = ADS;
+        this.filter = filter;
+    }
+
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(ADS);
+        provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
+
+        return provider;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        AuthenticationManager manager = config.getAuthenticationManager();
+
 
         return manager;
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(auth ->
-            auth
-                .requestMatchers(HttpMethod.GET, "/api/faqs/**", "/api/blogs/**", "/api/gallery/**").permitAll()
-                .anyRequest().authenticated()
-        );
-
-        return http.build();
+        return http
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.GET, "/api/faqs/**", "/api/blogs/**", "/api/gallery/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/admin/login").permitAll()
+                        .anyRequest().authenticated())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider())
+                .httpBasic(Customizer.withDefaults())
+                .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
+                .build();
     }
 }

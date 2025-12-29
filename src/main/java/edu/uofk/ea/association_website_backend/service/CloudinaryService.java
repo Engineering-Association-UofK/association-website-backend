@@ -1,7 +1,7 @@
 package edu.uofk.ea.association_website_backend.service;
 
 import com.cloudinary.Cloudinary;
-import edu.uofk.ea.association_website_backend.exceptions.UnauthorizedException;
+import edu.uofk.ea.association_website_backend.exceptionHandlers.exceptions.UnauthorizedException;
 import edu.uofk.ea.association_website_backend.model.CloudinaryRequestModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,8 +39,6 @@ public class CloudinaryService {
         params.put("upload_preset", request.getUploadPreset());
 
         String signature = cloudinary.apiSignRequest(params, System.getenv("API_SECRET"), 1);
-        System.out.println(signature);
-        System.out.println(params);
 
         request.setUploadSignature(signature);
 

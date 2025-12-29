@@ -1,0 +1,148 @@
+package edu.uofk.ea.association_website_backend.model;
+
+import jakarta.persistence.*;
+
+import java.time.Instant;
+
+@Entity
+@Table(name = "admins")
+public class AdminModel {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private int id;
+
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "password_hash")
+    private String password;
+
+    @Column(name = "verified")
+    private boolean isVerified;
+
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private AdminStatus status;
+
+    @Column(name = "role")
+    @Enumerated(EnumType.STRING)
+    private AdminRole role;
+
+    @Column(name = "created_at")
+    private Instant createdAt;
+
+    @Column(name = "updated_at")
+    private Instant updatedAt;
+
+    public AdminModel() {}
+
+    public AdminModel(int id, String name, String email, String password, AdminRole role) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+
+        this.isVerified = false;
+        this.status = AdminStatus.active;
+        this.createdAt = Instant.now();
+        this.updatedAt = Instant.now();
+    }
+
+    public AdminModel(String name, String password) {
+        this.name = name;
+        this.password = password;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public boolean isVerified() {
+        return isVerified;
+    }
+
+    public void setVerified(boolean verified) {
+        isVerified = verified;
+    }
+
+    public AdminStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(AdminStatus status) {
+        this.status = status;
+    }
+
+    public AdminRole getRole() {
+        return role;
+    }
+
+    public void setRole(AdminRole role) {
+        this.role = role;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    @Override
+    public String toString() {
+        return "AdminModel{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", isVerified=" + isVerified +
+                ", status=" + status +
+                ", role=" + role +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
+    }
+}
