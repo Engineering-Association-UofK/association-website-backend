@@ -4,6 +4,7 @@ import com.cloudinary.Cloudinary;
 import edu.uofk.ea.association_website_backend.exceptionHandlers.exceptions.UnauthorizedException;
 import edu.uofk.ea.association_website_backend.model.CloudinaryRequestModel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -15,6 +16,12 @@ import java.util.Objects;
 public class CloudinaryService {
 
     private Cloudinary cloudinary;
+
+    @Value("${cloudinary.api-key}")
+    private String apiKey;
+
+    @Value("${cloudinary.api-secret}")
+    private String apiSecret;
 
     @Autowired
     public CloudinaryService(Cloudinary cloudinary) {
@@ -38,7 +45,7 @@ public class CloudinaryService {
         params.put("timestamp", request.getTimestamp());
         params.put("upload_preset", request.getUploadPreset());
 
-        String signature = cloudinary.apiSignRequest(params, System.getenv("API_SECRET"), 1);
+        String signature = cloudinary.apiSignRequest(params, apiSecret, 1);
 
         request.setUploadSignature(signature);
 
@@ -46,7 +53,7 @@ public class CloudinaryService {
     }
 
     private boolean isValidApiKey(String apiKey) {
-        return Objects.equals(apiKey, System.getenv("API_KEY"));
+        return Objects.equals(apiKey, apiKey);
     }
 
 }
