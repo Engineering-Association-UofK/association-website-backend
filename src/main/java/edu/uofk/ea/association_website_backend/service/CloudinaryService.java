@@ -15,7 +15,7 @@ import java.util.Objects;
 @Service
 public class CloudinaryService {
 
-    private Cloudinary cloudinary;
+    private final Cloudinary cloudinary;
 
     @Value("${cloudinary.api-key}")
     private String apiKey;
@@ -53,7 +53,7 @@ public class CloudinaryService {
     }
 
     private boolean isValidApiKey(String apiKey) {
-        return Objects.equals(apiKey, apiKey);
+        return Objects.equals(apiKey, this.apiKey);
     }
 
 }
