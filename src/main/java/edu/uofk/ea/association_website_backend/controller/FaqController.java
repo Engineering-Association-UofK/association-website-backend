@@ -1,12 +1,9 @@
 package edu.uofk.ea.association_website_backend.controller;
 
-import edu.uofk.ea.association_website_backend.exceptions.GenericNotFoundException;
 import edu.uofk.ea.association_website_backend.model.FaqModel;
 import edu.uofk.ea.association_website_backend.service.FaqService;
-import edu.uofk.ea.association_website_backend.util.BaseErrorResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
@@ -34,30 +31,21 @@ public class FaqController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
     public void addFaq(@RequestBody FaqModel faq) {
         service.save(faq);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
     public void updateFaq(@PathVariable int id, @RequestBody FaqModel faq) {
         faq.setId(id);
         service.update(faq);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
     public void deleteFaq(@PathVariable int id) {
         service.delete(id);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<BaseErrorResponse> handleException(GenericNotFoundException e) {
-
-        BaseErrorResponse error = new BaseErrorResponse(
-                HttpStatus.NOT_FOUND.value(),
-                e.getMessage(),
-                Instant.now().getEpochSecond()
-        );
-
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 }

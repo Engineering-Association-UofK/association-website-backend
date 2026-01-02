@@ -1,6 +1,6 @@
 package edu.uofk.ea.association_website_backend.service;
 
-import edu.uofk.ea.association_website_backend.exceptions.GenericNotFoundException;
+import edu.uofk.ea.association_website_backend.exceptionHandlers.exceptions.GenericNotFoundException;
 import edu.uofk.ea.association_website_backend.model.GalleryItemModel;
 import edu.uofk.ea.association_website_backend.repository.GalleryItemRepo;
 import jakarta.transaction.Transactional;

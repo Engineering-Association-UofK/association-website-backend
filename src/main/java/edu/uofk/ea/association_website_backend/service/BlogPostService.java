@@ -1,6 +1,6 @@
 package edu.uofk.ea.association_website_backend.service;
 
-import edu.uofk.ea.association_website_backend.exceptions.GenericNotFoundException;
+import edu.uofk.ea.association_website_backend.exceptionHandlers.exceptions.GenericNotFoundException;
 import edu.uofk.ea.association_website_backend.model.BlogPostModel;
 import edu.uofk.ea.association_website_backend.repository.BlogPostRepo;
 import jakarta.transaction.Transactional;
@@ -24,6 +24,8 @@ public class BlogPostService {
     public void save(BlogPostModel post){
         post.setCreatedAt(Instant.now());
         post.setUpdatedAt(Instant.now());
+
+        if (post.getStatus() == null) post.setStatus(BlogPostModel.Status.draft);
 
         repo.save(post);
     }

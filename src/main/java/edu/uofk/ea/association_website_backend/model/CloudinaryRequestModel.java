@@ -1,7 +1,5 @@
 package edu.uofk.ea.association_website_backend.model;
 
-import jakarta.persistence.Entity;
-
 public class CloudinaryRequestModel {
 
     private String apiKey;

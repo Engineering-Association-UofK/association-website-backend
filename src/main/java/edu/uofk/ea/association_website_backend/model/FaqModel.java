@@ -2,8 +2,6 @@ package edu.uofk.ea.association_website_backend.model;
 
 import jakarta.persistence.*;
 
-import java.time.Instant;
-
 @Entity
 @Table(name="faqs")
 public class FaqModel {
