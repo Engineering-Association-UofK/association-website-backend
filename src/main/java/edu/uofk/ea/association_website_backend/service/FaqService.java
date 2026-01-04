@@ -2,6 +2,8 @@ package edu.uofk.ea.association_website_backend.service;
 
 import edu.uofk.ea.association_website_backend.exceptionHandlers.exceptions.GenericNotFoundException;
 import edu.uofk.ea.association_website_backend.model.FaqModel;
+import edu.uofk.ea.association_website_backend.model.FaqTranslationModel;
+import edu.uofk.ea.association_website_backend.model.Language;
 import edu.uofk.ea.association_website_backend.repository.FaqRepo;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,28 +22,31 @@ public class FaqService {
     }
 
     @Transactional
-    public void save(FaqModel faq) {
-        repo.save(faq);
+    public void save(FaqTranslationModel faqT) {
+        if (faqT.getFaqId() == 0) {
+            repo.save(new FaqModel());
+            faqT.setFaqId(repo.getAll().getLast().getId());
+        }
+        repo.saveTranslation(faqT);
     }
 
-    public FaqModel findById(int id) {
+    public FaqTranslationModel findById(int id, Language lang) {
         if (repo.findById(id) == null) {
             throw new GenericNotFoundException("FAQ not found with ID:" + id);
         }
-        return repo.findById(id);
+        return repo.findTranslationById(id, lang);
     }
 
-    public List<FaqModel> getAll() {
-        return repo.getAll();
+    public List<FaqTranslationModel> getAll(Language lang) {
+        return repo.getAllTranslations(lang);
     }
 
     @Transactional
-    public void update(FaqModel faq) {
-        if (repo.findById(faq.getId()) == null) {
-            throw new GenericNotFoundException("FAQ not found with ID:" + faq.getId());
+    public void update(FaqTranslationModel faqT) {
+        if (repo.findById(faqT.getFaqId()) == null) {
+            throw new GenericNotFoundException("FAQ not found with ID:" + faqT.getId());
         }
-
-        repo.update(faq);
+        repo.updateTranslation(faqT);
     }
 
     @Transactional
@@ -49,6 +54,7 @@ public class FaqService {
         if (repo.findById(id) == null) {
             throw new GenericNotFoundException("FAQ not found with ID:" + id);
         }
+        repo.deleteTranslations(id);
         repo.delete(id);
     }
 }

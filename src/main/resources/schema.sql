@@ -12,9 +12,17 @@ CREATE TABLE IF NOT EXISTS admins (
 );
 
 CREATE TABLE IF NOT EXISTS faqs (
+    id INT PRIMARY KEY AUTO_INCREMENT
+);
+
+CREATE TABLE IF NOT EXISTS faqs_translations (
     id INT PRIMARY KEY AUTO_INCREMENT,
+    faq_id INT NOT NULL,
     title VARCHAR(255) NOT NULL,
-    body TEXT NOT NULL
+    body TEXT NOT NULL,
+    lang ENUM('en', 'ar') DEFAULT 'en',
+
+    Foreign Key (faq_id) REFERENCES faqs(id)
 );
 
 CREATE TABLE IF NOT EXISTS blog_posts (

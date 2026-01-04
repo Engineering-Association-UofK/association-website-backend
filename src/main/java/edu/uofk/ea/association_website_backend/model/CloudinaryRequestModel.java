@@ -1,7 +1,6 @@
 package edu.uofk.ea.association_website_backend.model;
 
 public class CloudinaryRequestModel {
-
     private String apiKey;
     private String cloudName;
     private String uploadPreset;

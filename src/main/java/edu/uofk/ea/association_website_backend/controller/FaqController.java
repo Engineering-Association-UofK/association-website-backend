@@ -1,12 +1,12 @@
 package edu.uofk.ea.association_website_backend.controller;
 
-import edu.uofk.ea.association_website_backend.model.FaqModel;
+import edu.uofk.ea.association_website_backend.model.FaqTranslationModel;
+import edu.uofk.ea.association_website_backend.model.Language;
 import edu.uofk.ea.association_website_backend.service.FaqService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Instant;
 import java.util.List;
 
 @RestController
@@ -21,25 +21,25 @@ public class FaqController {
     }
 
     @GetMapping
-    public List<FaqModel> getFaqs() {
-        return service.getAll();
+    public List<FaqTranslationModel> getFaqs(@RequestParam Language lang) {
+        return service.getAll(lang);
     }
 
     @GetMapping("/{id}")
-    public FaqModel getFaq(@PathVariable int id) {
-        return service.findById(id);
+    public FaqTranslationModel getFaq(@PathVariable int id, @RequestParam Language lang) {
+        return service.findById(id, lang);
     }
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
-    public void addFaq(@RequestBody FaqModel faq) {
+    public void addFaq(@RequestBody FaqTranslationModel faq) {
         service.save(faq);
     }
 
-    @PutMapping("/{id}")
+
+    @PutMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
-    public void updateFaq(@PathVariable int id, @RequestBody FaqModel faq) {
-        faq.setId(id);
+    public void updateFaq(@RequestBody FaqTranslationModel faq) {
         service.update(faq);
     }
 
