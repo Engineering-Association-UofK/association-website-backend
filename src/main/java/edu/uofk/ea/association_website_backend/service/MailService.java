@@ -1,6 +1,6 @@
 package edu.uofk.ea.association_website_backend.service;
 
-import edu.uofk.ea.association_website_backend.model.VisitorForm;
+import edu.uofk.ea.association_website_backend.model.VisitorFormModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
@@ -23,7 +23,7 @@ public class MailService {
         this.sender = sender;
     }
 
-    public void visitorFormMessageSend(VisitorForm form) {
+    public void visitorFormMessageSend(VisitorFormModel form) {
         String subject = "New Visitor Form";
         String text = "Name: " + form.getName() + "\nEmail: " + form.getEmail() + "\nMessage: " + form.getMessage();
         sendEmail(defaultReceiver, subject, text);

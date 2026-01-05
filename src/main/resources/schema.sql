@@ -38,6 +38,14 @@ CREATE TABLE IF NOT EXISTS blog_posts (
     FOREIGN KEY (author_id) REFERENCES admins(id)
 );
 
+CREATE TABLE IF NOT EXISTS team (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    position VARCHAR(255) NOT NULL,
+    description TEXT,
+    image_link TEXT
+);
+
 CREATE TABLE IF NOT EXISTS comments (
     id INT PRIMARY KEY AUTO_INCREMENT,
     post_id INT NOT NULL,

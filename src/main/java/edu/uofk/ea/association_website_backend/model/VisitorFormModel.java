@@ -1,12 +1,12 @@
 package edu.uofk.ea.association_website_backend.model;
 
-public class VisitorForm {
+public class VisitorFormModel {
 
     private String name;
     private String email;
     private String message;
 
-    public VisitorForm(String name, String email, String message) {
+    public VisitorFormModel(String name, String email, String message) {
         this.name = name;
         this.email = email;
         this.message = message;
