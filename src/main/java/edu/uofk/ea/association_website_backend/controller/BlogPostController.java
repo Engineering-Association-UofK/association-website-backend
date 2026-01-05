@@ -4,6 +4,7 @@ import edu.uofk.ea.association_website_backend.model.BlogPostModel;
 import edu.uofk.ea.association_website_backend.service.BlogPostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
@@ -32,15 +33,16 @@ public class BlogPostController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
-    public void addBlog(@RequestBody BlogPostModel Blog){
-        service.save(Blog);
+    public void addBlog(@RequestBody BlogPostModel Blog, Authentication authentication){
+        String username = authentication.getName();
+        service.save(Blog, username);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
-    public void UpdateBlog(@PathVariable int id, @RequestBody BlogPostModel post){
-        post.setId(id);
-        service.update(post);
+    public void UpdateBlog(@RequestBody BlogPostModel post, Authentication authentication){
+        String username = authentication.getName();
+        service.update(post, username);
     }
 
     @DeleteMapping("/{id}")

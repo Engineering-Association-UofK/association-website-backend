@@ -59,6 +59,13 @@ public class AdminModel {
         this.password = password;
     }
 
+    public AdminModel(String name, String email, String password, AdminRole role) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
+
     public int getId() {
         return id;
     }
@@ -91,11 +98,11 @@ public class AdminModel {
         this.password = password;
     }
 
-    public boolean isVerified() {
+    public boolean getIsVerified() {
         return isVerified;
     }
 
-    public void setVerified(boolean verified) {
+    public void setIsVerified(boolean verified) {
         isVerified = verified;
     }
 
