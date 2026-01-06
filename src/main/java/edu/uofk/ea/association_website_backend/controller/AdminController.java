@@ -1,5 +1,6 @@
 package edu.uofk.ea.association_website_backend.controller;
 
+import edu.uofk.ea.association_website_backend.annotations.RateLimited;
 import edu.uofk.ea.association_website_backend.model.AdminModel;
 import edu.uofk.ea.association_website_backend.model.VerificationRequest;
 import edu.uofk.ea.association_website_backend.service.AdminDetailsService;
@@ -20,6 +21,7 @@ public class AdminController {
     }
 
     @PostMapping("/login")
+    @RateLimited(key = "login", capacity = 5, refillTokens = 5, refillDuration = 120)
     public String Login(@RequestBody AdminModel admin) {
         return service.login(admin);
     }
@@ -34,11 +36,13 @@ public class AdminController {
     }
 
     @PostMapping("/send-code")
+    @RateLimited(key = "otp", capacity = 1, refillTokens = 1, refillDuration = 60, exponentialBackoff = true)
     public void sendCode(@RequestBody VerificationRequest request) {
         service.sendCode(request.getName());
     }
 
     @PostMapping("/verify")
+    @RateLimited(key = "verify", capacity = 5, refillTokens = 5, refillDuration = 60)
     public void verify(@RequestBody VerificationRequest request) {
         service.Verify(request.getName(), request.getCode());
     }

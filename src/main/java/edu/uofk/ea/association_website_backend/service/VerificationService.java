@@ -75,7 +75,7 @@ public class VerificationService {
         mail.sendVerificationCode(admin.getEmail(), code);
     }
     
-    @Scheduled(fixedRate = 3600000) // Run every hour (in milliseconds)
+    @Scheduled(fixedRate = 3600000) // Run every hour
     @Transactional
     public void deleteExpiredCodes() {
         repo.deleteExpiredCodes(Instant.now().minusSeconds(900));

@@ -94,15 +94,12 @@ public class AdminDetailsService implements UserDetailsService {
         verificationService.verify(admin, code);
     }
 
-    // Use this for profile updates instead of repo.update()
     public void updateProfile(AdminModel request, String username) {
         AdminModel existing = repo.findByUsername(username);
         if (existing == null) throw new UsernameNotFoundException("User not found");
 
-        // Only copy allowed fields
         existing.setName(request.getName());
         existing.setEmail(request.getEmail());
-        // Do NOT copy isVerified, role, or password here
         
         repo.update(existing);
     }
