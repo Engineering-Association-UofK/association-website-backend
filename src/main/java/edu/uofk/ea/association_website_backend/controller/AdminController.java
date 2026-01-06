@@ -1,6 +1,7 @@
 package edu.uofk.ea.association_website_backend.controller;
 
 import edu.uofk.ea.association_website_backend.model.AdminModel;
+import edu.uofk.ea.association_website_backend.model.VerificationRequest;
 import edu.uofk.ea.association_website_backend.service.AdminDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,12 +34,12 @@ public class AdminController {
     }
 
     @PostMapping("/send-code")
-    public void sendCode(@RequestParam String username) {
-        service.sendCode(username);
+    public void sendCode(@RequestBody VerificationRequest request) {
+        service.sendCode(request.getName());
     }
 
     @PostMapping("/verify")
-    public void verify(@RequestParam String username, @RequestParam String code) {
-        service.Verify(username, code);
+    public void verify(@RequestBody VerificationRequest request) {
+        service.Verify(request.getName(), request.getCode());
     }
 }
