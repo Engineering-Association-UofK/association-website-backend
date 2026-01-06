@@ -13,7 +13,7 @@ public class MailService {
     @Value("${mail.receiver}")
     private String defaultReceiver;
 
-    @Value("${spring.mail.username")
+    @Value("${spring.mail.username}")
     private String username;
 
     private final JavaMailSender sender;
@@ -27,6 +27,14 @@ public class MailService {
         String subject = "New Visitor Form";
         String text = "Name: " + form.getName() + "\nEmail: " + form.getEmail() + "\nMessage: " + form.getMessage();
         sendEmail(defaultReceiver, subject, text);
+    }
+
+    public void sendVerificationCode(String email, String code) {
+        String subject = "Verification code for SEA account";
+        String text = "Your account was used to create a new SEA account. If this was not you, please ignore this email." +
+                "\n\nYour verification code is: " + code
+                + "\nThis code will expire in 10 minutes. \n\nThank you!";
+        sendEmail(email, subject, text);
     }
 
     public void sendEmail(String receiver, String subject, String text) {
