@@ -1,5 +1,6 @@
 package edu.uofk.ea.association_website_backend.controller;
 
+import edu.uofk.ea.association_website_backend.annotations.RateLimited;
 import edu.uofk.ea.association_website_backend.model.GalleryItemModel;
 import edu.uofk.ea.association_website_backend.service.GalleryItemService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ public class GalleryItemController {
     }
 
     @GetMapping
+    @RateLimited(key = "resource", capacity = 5, refillTokens = 5, refillDuration = 120)
     public List<GalleryItemModel> getItems(){
         return repo.getAll();
     }

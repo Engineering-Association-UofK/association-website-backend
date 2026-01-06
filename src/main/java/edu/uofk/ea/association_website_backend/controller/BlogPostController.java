@@ -1,5 +1,6 @@
 package edu.uofk.ea.association_website_backend.controller;
 
+import edu.uofk.ea.association_website_backend.annotations.RateLimited;
 import edu.uofk.ea.association_website_backend.model.BlogPostModel;
 import edu.uofk.ea.association_website_backend.service.BlogPostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ public class BlogPostController {
     }
 
     @GetMapping
+    @RateLimited(key = "resource", capacity = 5, refillTokens = 5, refillDuration = 120)
     public List<BlogPostModel> getBlogs(){
         return service.getAll();
     }

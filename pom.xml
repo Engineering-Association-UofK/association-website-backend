@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>edu.uofk.ea</groupId>
 	<artifactId>association-website-backend</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.1.0-SNAPSHOT</version>
 	<name>association-website-backend</name>
 	<description>Backend logic for the association website</description>
 	<url/>
@@ -120,6 +120,8 @@
 	</dependencies>
 
 	<build>
+        <finalName>backend</finalName>
+        
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>

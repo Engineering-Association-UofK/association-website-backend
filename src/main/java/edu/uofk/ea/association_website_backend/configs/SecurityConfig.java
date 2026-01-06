@@ -70,7 +70,7 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, "/api/faqs/**", "/api/blogs/**", "/api/gallery/**", "/api/team/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/admin/login", "/admin/send-code", "/admin/verify").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/admin/login", "/admin/send-code", "/admin/verify", "/api/mail/visitor-form").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())

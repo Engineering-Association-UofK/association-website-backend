@@ -1,5 +1,6 @@
 package edu.uofk.ea.association_website_backend.controller;
 
+import edu.uofk.ea.association_website_backend.annotations.RateLimited;
 import edu.uofk.ea.association_website_backend.model.FaqTranslationModel;
 import edu.uofk.ea.association_website_backend.model.Language;
 import edu.uofk.ea.association_website_backend.service.FaqService;
@@ -21,6 +22,7 @@ public class FaqController {
     }
 
     @GetMapping
+    @RateLimited(key = "resource", capacity = 5, refillTokens = 5, refillDuration = 120)
     public List<FaqTranslationModel> getFaqs(@RequestParam Language lang) {
         return service.getAll(lang);
     }
