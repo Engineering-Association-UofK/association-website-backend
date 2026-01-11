@@ -36,7 +36,7 @@ public class AdminController {
     }
 
     @PostMapping("/send-code")
-    @RateLimited(key = "otp", capacity = 1, refillTokens = 1, refillDuration = 60, exponentialBackoff = true)
+    @RateLimited(key = "otp", capacity = 3, refillTokens = 1, refillDuration = 60, exponentialBackoff = true)
     public void sendCode(@RequestBody VerificationRequest request) {
         service.sendCode(request.getName());
     }

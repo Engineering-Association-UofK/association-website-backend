@@ -26,7 +26,6 @@ public class TeamController {
     }
 
     @GetMapping("/{id}")
-    @RateLimited(key = "resource", capacity = 5, refillTokens = 5, refillDuration = 120)
     public TeamMemberModel getById(@PathVariable int id) {
         return service.findById(id);
     }

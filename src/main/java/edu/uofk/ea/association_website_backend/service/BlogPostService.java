@@ -1,7 +1,6 @@
 package edu.uofk.ea.association_website_backend.service;
 
 import edu.uofk.ea.association_website_backend.exceptionHandlers.exceptions.GenericNotFoundException;
-import edu.uofk.ea.association_website_backend.model.AdminModel;
 import edu.uofk.ea.association_website_backend.model.BlogPostModel;
 import edu.uofk.ea.association_website_backend.repository.AdminRepo;
 import edu.uofk.ea.association_website_backend.repository.BlogPostRepo;

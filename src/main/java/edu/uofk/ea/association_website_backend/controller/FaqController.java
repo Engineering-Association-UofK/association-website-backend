@@ -22,7 +22,6 @@ public class FaqController {
     }
 
     @GetMapping
-    @RateLimited(key = "resource", capacity = 5, refillTokens = 5, refillDuration = 120)
     public List<FaqTranslationModel> getFaqs(@RequestParam Language lang) {
         return service.getAll(lang);
     }

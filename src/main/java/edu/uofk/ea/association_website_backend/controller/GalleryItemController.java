@@ -22,7 +22,6 @@ public class GalleryItemController {
     }
 
     @GetMapping
-    @RateLimited(key = "resource", capacity = 5, refillTokens = 5, refillDuration = 120)
     public List<GalleryItemModel> getItems(){
         return repo.getAll();
     }

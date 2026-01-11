@@ -23,7 +23,6 @@ public class BlogPostController {
     }
 
     @GetMapping
-    @RateLimited(key = "resource", capacity = 5, refillTokens = 5, refillDuration = 120)
     public List<BlogPostModel> getBlogs(){
         return service.getAll();
     }
