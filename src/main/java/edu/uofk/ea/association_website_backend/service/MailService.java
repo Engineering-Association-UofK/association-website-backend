@@ -1,13 +1,18 @@
 package edu.uofk.ea.association_website_backend.service;
 
-import edu.uofk.ea.association_website_backend.model.VisitorFormModel;
+import edu.uofk.ea.association_website_backend.model.VisitorMessageModel;
+import edu.uofk.ea.association_website_backend.repository.VisitorMessageRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+
 @Service
+@Async
 public class MailService {
 
     @Value("${mail.receiver}")
@@ -17,13 +22,18 @@ public class MailService {
     private String username;
 
     private final JavaMailSender sender;
+    private final VisitorMessageRepo repo;
 
     @Autowired
-    public MailService(JavaMailSender sender) {
+    public MailService(JavaMailSender sender, VisitorMessageRepo repo) {
         this.sender = sender;
+        this.repo = repo;
     }
 
-    public void visitorFormMessageSend(VisitorFormModel form) {
+    public void visitorFormMessageSend(VisitorMessageModel form) {
+        form.setCreatedAt(Instant.now());
+        repo.save(form);
+
         String subject = "New Visitor Form";
         String text = "Name: " + form.getName() + "\nEmail: " + form.getEmail() + "\nMessage: " + form.getMessage();
         sendEmail(defaultReceiver, subject, text);

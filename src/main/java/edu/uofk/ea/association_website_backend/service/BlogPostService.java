@@ -18,8 +18,9 @@ public class BlogPostService {
     private AdminRepo adminRepo;
     
     @Autowired
-    public BlogPostService(BlogPostRepo repo) {
+    public BlogPostService(BlogPostRepo repo, AdminRepo adminRepo) {
         this.repo = repo;
+        this.adminRepo = adminRepo;
     }
 
     @Transactional
