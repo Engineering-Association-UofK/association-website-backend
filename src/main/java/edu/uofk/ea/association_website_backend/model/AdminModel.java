@@ -36,9 +36,6 @@ public class AdminModel {
     @Column(name = "created_at")
     private Instant createdAt;
 
-    @Column(name = "updated_at")
-    private Instant updatedAt;
-
     public AdminModel() {}
 
     public AdminModel(int id, String name, String email, String password, AdminRole role) {
@@ -51,7 +48,6 @@ public class AdminModel {
         this.isVerified = false;
         this.status = AdminStatus.active;
         this.createdAt = Instant.now();
-        this.updatedAt = Instant.now();
     }
 
     public AdminModel(String name, String password) {
@@ -130,14 +126,6 @@ public class AdminModel {
         this.createdAt = createdAt;
     }
 
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
     @Override
     public String toString() {
         return "AdminModel{" +
@@ -149,7 +137,6 @@ public class AdminModel {
                 ", status=" + status +
                 ", role=" + role +
                 ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
                 '}';
     }
 }
