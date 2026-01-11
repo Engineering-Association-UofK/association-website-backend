@@ -1,7 +1,7 @@
 package edu.uofk.ea.association_website_backend.controller;
 
 import edu.uofk.ea.association_website_backend.annotations.RateLimited;
-import edu.uofk.ea.association_website_backend.model.VisitorFormModel;
+import edu.uofk.ea.association_website_backend.model.VisitorMessageModel;
 import edu.uofk.ea.association_website_backend.service.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,7 +23,7 @@ public class MailController {
 
     @PostMapping("/visitor-form")
     @RateLimited(key = "resource", capacity = 2, refillTokens = 2, refillDuration = 120)
-    public void visitorFormMessageSend(@RequestBody VisitorFormModel request) {
+    public void visitorFormMessageSend(@RequestBody VisitorMessageModel request) {
         mailService.visitorFormMessageSend(request);
     }
 

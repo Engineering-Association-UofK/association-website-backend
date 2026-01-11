@@ -54,6 +54,14 @@ CREATE TABLE IF NOT EXISTS team (
     image_link TEXT
 );
 
+CREATE TABLE IF NOT EXISTS visitors_messages (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    message TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS comments (
     id INT PRIMARY KEY AUTO_INCREMENT,
     post_id INT NOT NULL,
