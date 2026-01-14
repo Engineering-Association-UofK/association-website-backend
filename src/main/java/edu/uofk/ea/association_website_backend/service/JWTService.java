@@ -1,6 +1,6 @@
 package edu.uofk.ea.association_website_backend.service;
 
-import edu.uofk.ea.association_website_backend.model.AdminModel;
+import edu.uofk.ea.association_website_backend.model.admin.AdminModel;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;

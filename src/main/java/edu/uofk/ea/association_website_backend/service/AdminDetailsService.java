@@ -2,8 +2,8 @@ package edu.uofk.ea.association_website_backend.service;
 
 import edu.uofk.ea.association_website_backend.exceptionHandlers.exceptions.UnauthorizedException;
 import edu.uofk.ea.association_website_backend.exceptionHandlers.exceptions.UserAlreadyExistsException;
-import edu.uofk.ea.association_website_backend.model.AdminModel;
-import edu.uofk.ea.association_website_backend.model.AdminStatus;
+import edu.uofk.ea.association_website_backend.model.admin.AdminModel;
+import edu.uofk.ea.association_website_backend.model.admin.AdminStatus;
 import edu.uofk.ea.association_website_backend.repository.AdminRepo;
 import jakarta.transaction.Transactional;
 import org.jspecify.annotations.NullMarked;

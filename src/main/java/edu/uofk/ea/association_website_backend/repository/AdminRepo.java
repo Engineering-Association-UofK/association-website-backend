@@ -1,7 +1,7 @@
 package edu.uofk.ea.association_website_backend.repository;
 
-import edu.uofk.ea.association_website_backend.model.AdminModel;
-import edu.uofk.ea.association_website_backend.model.AdminStatus;
+import edu.uofk.ea.association_website_backend.model.admin.AdminModel;
+import edu.uofk.ea.association_website_backend.model.admin.AdminStatus;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
