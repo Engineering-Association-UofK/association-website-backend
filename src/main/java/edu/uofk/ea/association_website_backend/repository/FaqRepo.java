@@ -1,7 +1,7 @@
 package edu.uofk.ea.association_website_backend.repository;
 
-import edu.uofk.ea.association_website_backend.model.FaqModel;
-import edu.uofk.ea.association_website_backend.model.FaqTranslationModel;
+import edu.uofk.ea.association_website_backend.model.faq.FaqModel;
+import edu.uofk.ea.association_website_backend.model.faq.FaqTranslationModel;
 import edu.uofk.ea.association_website_backend.model.Language;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -57,6 +57,10 @@ public class FaqRepo {
         query.executeUpdate();
     }
 
+    public List<FaqTranslationModel> getAllTranslationsWithout() {
+        return em.createQuery("FROM FaqTranslationModel f", FaqTranslationModel.class).getResultList();
+    }
+
     @Transactional
     public void save(FaqModel faq){
         em.persist(faq);
@@ -82,4 +86,5 @@ public class FaqRepo {
             em.remove(faq);
         }
     }
+
 }

@@ -1,8 +1,8 @@
 package edu.uofk.ea.association_website_backend.service;
 
 import edu.uofk.ea.association_website_backend.exceptionHandlers.exceptions.VerificationCodeException;
-import edu.uofk.ea.association_website_backend.model.AdminModel;
-import edu.uofk.ea.association_website_backend.model.VerificationCodeModel;
+import edu.uofk.ea.association_website_backend.model.admin.AdminModel;
+import edu.uofk.ea.association_website_backend.model.authentication.VerificationCodeModel;
 import edu.uofk.ea.association_website_backend.repository.AdminRepo;
 import edu.uofk.ea.association_website_backend.repository.VerificationCodeRepo;
 import jakarta.transaction.Transactional;

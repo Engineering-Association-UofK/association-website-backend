@@ -1,14 +1,18 @@
 package edu.uofk.ea.association_website_backend.controller;
 
-import edu.uofk.ea.association_website_backend.annotations.RateLimited;
-import edu.uofk.ea.association_website_backend.model.FaqTranslationModel;
+import edu.uofk.ea.association_website_backend.model.faq.FaqDashboardResponse;
+import edu.uofk.ea.association_website_backend.model.faq.FaqGetModel;
+import edu.uofk.ea.association_website_backend.model.faq.FaqTranslationModel;
 import edu.uofk.ea.association_website_backend.model.Language;
 import edu.uofk.ea.association_website_backend.service.FaqService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/faqs")
@@ -23,7 +27,12 @@ public class FaqController {
 
     @GetMapping
     public List<FaqTranslationModel> getFaqs(@RequestParam Language lang) {
-        return service.getAll(lang);
+        return service.getAllWithLang(lang);
+    }
+
+    @GetMapping("/dashboard")
+    public List<FaqDashboardResponse> getDashboardFaqs(@RequestParam Language lang) {
+        return service.dashboard(lang);
     }
 
     @GetMapping("/{id}")
