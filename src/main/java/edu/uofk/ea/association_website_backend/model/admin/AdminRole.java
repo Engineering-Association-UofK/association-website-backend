@@ -1,4 +1,4 @@
-package edu.uofk.ea.association_website_backend.model;
+package edu.uofk.ea.association_website_backend.model.admin;
 
 public enum AdminRole{
     ROLE_EDITOR,

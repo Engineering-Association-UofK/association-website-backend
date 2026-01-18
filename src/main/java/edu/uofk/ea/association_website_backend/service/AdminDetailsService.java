@@ -2,9 +2,13 @@ package edu.uofk.ea.association_website_backend.service;
 
 import edu.uofk.ea.association_website_backend.exceptionHandlers.exceptions.UnauthorizedException;
 import edu.uofk.ea.association_website_backend.exceptionHandlers.exceptions.UserAlreadyExistsException;
-import edu.uofk.ea.association_website_backend.model.AdminModel;
-import edu.uofk.ea.association_website_backend.model.AdminStatus;
+import edu.uofk.ea.association_website_backend.model.admin.AdminModel;
+import edu.uofk.ea.association_website_backend.model.admin.AdminRole;
+import edu.uofk.ea.association_website_backend.model.admin.AdminStatus;
 import edu.uofk.ea.association_website_backend.repository.AdminRepo;
+import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.transaction.Transactional;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
 
 @Service
 public class AdminDetailsService implements UserDetailsService {
@@ -70,16 +75,6 @@ public class AdminDetailsService implements UserDetailsService {
         return null;
     }
 
-    @Transactional
-    public void register(AdminModel admin) {
-        if (repo.findByUsername(admin.getName()) != null) throw new UserAlreadyExistsException("Admin with this username already exists");
-
-        if (admin.getIsVerified()) admin.setIsVerified(false);
-        admin.setPassword(passwordEncoder.encode(admin.getPassword()));
-        admin.setCreatedAt(Instant.now());
-        repo.save(admin);
-    }
-
     public void sendCode(String name){
         AdminModel admin = repo.findByUsername(name);
         if (admin == null) throw new UsernameNotFoundException("Admin with this username not found");
@@ -102,5 +97,50 @@ public class AdminDetailsService implements UserDetailsService {
         existing.setEmail(request.getEmail());
         
         repo.update(existing);
+    }
+
+    public void add(AdminModel admin) {
+        if (admin.getName() == null) throw new IllegalArgumentException("Name cannot be null");
+        if (repo.findByUsername(admin.getName()) != null) throw new UserAlreadyExistsException("Admin with this username already exists");
+        if (admin.getEmail() == null) throw new IllegalArgumentException("Email cannot be null");
+        if (admin.getStatus() == null) admin.setStatus(AdminStatus.active);
+        if (admin.getRole() == null) admin.setRole(AdminRole.ROLE_VIEWER);
+        if (admin.getPassword() == null) throw new IllegalArgumentException("Password cannot be null");
+
+        admin.setPassword(passwordEncoder.encode(admin.getPassword()));
+        admin.setStatus(AdminStatus.pending);
+        admin.setIsVerified(false);
+        admin.setPassword(null);
+
+        repo.save(admin);
+    }
+
+    public void delete(int id) {
+        if (repo.findById(id) == null) throw new UsernameNotFoundException("Admin with this id not found");
+        repo.delete(id);
+    }
+
+    public AdminModel get(int id) {
+        if (repo.findById(id) == null) throw new UsernameNotFoundException("Admin with this id not found");
+        AdminModel admin = repo.findById(id);
+        admin.setPassword(null);
+
+        return admin;
+    }
+
+    public List<AdminModel> getAll() {
+        List<AdminModel> admins = repo.getAllActive();
+        admins.addAll(repo.getAllPending());
+        for (AdminModel admin : admins) {
+            admin.setPassword(null);
+        }
+        return admins;
+    }
+
+    public String getName(int id) {
+        if (repo.findById(id) == null) throw new UsernameNotFoundException("Admin with this id not found");
+        AdminModel admin = repo.findById(id);
+
+        return admin.getName();
     }
 }
