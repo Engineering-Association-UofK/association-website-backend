@@ -1,6 +1,6 @@
 package edu.uofk.ea.association_website_backend.repository;
 
-import edu.uofk.ea.association_website_backend.model.VerificationCodeModel;
+import edu.uofk.ea.association_website_backend.model.authentication.VerificationCodeModel;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;

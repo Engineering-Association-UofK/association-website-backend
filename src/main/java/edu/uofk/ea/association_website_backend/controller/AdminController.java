@@ -2,7 +2,7 @@ package edu.uofk.ea.association_website_backend.controller;
 
 import edu.uofk.ea.association_website_backend.annotations.RateLimited;
 import edu.uofk.ea.association_website_backend.model.admin.AdminModel;
-import edu.uofk.ea.association_website_backend.model.VerificationRequest;
+import edu.uofk.ea.association_website_backend.model.authentication.VerificationRequest;
 import edu.uofk.ea.association_website_backend.service.AdminDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;

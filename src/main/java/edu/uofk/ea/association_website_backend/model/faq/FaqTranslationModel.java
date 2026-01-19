@@ -1,5 +1,6 @@
-package edu.uofk.ea.association_website_backend.model;
+package edu.uofk.ea.association_website_backend.model.faq;
 
+import edu.uofk.ea.association_website_backend.model.Language;
 import jakarta.persistence.*;
 
 @Entity
