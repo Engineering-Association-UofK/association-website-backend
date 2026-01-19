@@ -21,7 +21,7 @@ public class AdminController {
 
     @PostMapping("/login")
     @RateLimited(key = "login", capacity = 5, refillTokens = 5, refillDuration = 120)
-    public String Login(@RequestBody AdminModel admin) {
+    public String login(@RequestBody AdminModel admin) {
         return service.login(admin);
     }
 
@@ -43,6 +43,6 @@ public class AdminController {
     @PostMapping("/verify")
     @RateLimited(key = "verify", capacity = 5, refillTokens = 5, refillDuration = 60)
     public void verify(@RequestBody VerificationRequest request) {
-        service.Verify(request.getName(), request.getCode());
+        service.verify(request.getName(), request.getCode());
     }
 }

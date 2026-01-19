@@ -87,7 +87,7 @@ public class AdminDetailsService implements UserDetailsService {
         verificationService.sendCode(admin);
     }
 
-    public void Verify(String name, String code) {
+    public void verify(String name, String code) {
         AdminModel admin = repo.findByUsername(name);
         if (admin == null) throw new UsernameNotFoundException("Admin with this username not found");
 
