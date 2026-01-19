@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS admins (
     email VARCHAR(255),
     password_hash VARCHAR(255) NOT NULL,
     verified tinyint NOT NULL,
-    status ENUM('active', 'deactivated') DEFAULT 'active',
+    status ENUM('active', 'deactivated', 'pending') DEFAULT 'active',
     role ENUM('ROLE_EDITOR', 'ROLE_ADMIN', 'ROLE_VIEWER') DEFAULT 'ROLE_VIEWER',
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -60,18 +60,6 @@ CREATE TABLE IF NOT EXISTS visitors_messages (
     email VARCHAR(255) NOT NULL,
     message TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS comments (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    post_id INT NOT NULL,
-    user_id INT NOT NULL,
-    comment_text TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-
-    FOREIGN KEY (post_id) REFERENCES blog_posts(id),
-    FOREIGN KEY (user_id) REFERENCES admins(id)
 );
 
 CREATE TABLE IF NOT EXISTS gallery (

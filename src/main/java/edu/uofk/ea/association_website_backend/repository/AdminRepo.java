@@ -9,6 +9,8 @@ import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 
 @Repository
 public class AdminRepo {
@@ -45,5 +47,21 @@ public class AdminRepo {
 
     public AdminModel findById(int id){
         return em.find(AdminModel.class, id);
+    }
+
+    public List<AdminModel> getAllActive() {
+        TypedQuery<AdminModel> query = em.createQuery("SELECT a FROM AdminModel a WHERE a.status = :status", AdminModel.class);
+        query.setParameter("status", AdminStatus.active);
+        return query.getResultList();
+    }
+
+    public List<AdminModel> getAllPending() {
+        TypedQuery<AdminModel> query = em.createQuery("SELECT a FROM AdminModel a WHERE a.status = :status", AdminModel.class);
+        query.setParameter("status", AdminStatus.pending);
+        return query.getResultList();
+    }
+
+    public List<AdminModel> getAll() {
+        return em.createQuery("SELECT a FROM AdminModel a", AdminModel.class).getResultList();
     }
 }
