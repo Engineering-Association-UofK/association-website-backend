@@ -4,22 +4,29 @@ import edu.uofk.ea.association_website_backend.model.Language;
 import java.util.List;
 
 public class FaqDashboardResponse {
-    private int id;
+    private int faqId;
     private String title;
-    private List<Language> availableLanguages;
+    private String body;
+    private List<FaqTranslationModel> translations;
 
-    public FaqDashboardResponse(int id, String title, List<Language> availableLanguages) {
-        this.id = id;
+    public FaqDashboardResponse(int faqId,String title, String body, List<FaqTranslationModel> translations) {
+        this.faqId = faqId;
         this.title = title;
-        this.availableLanguages = availableLanguages;
+        this.body = body;
+        this.translations = translations;
     }
 
-    public int getId() {
-        return id;
+    public FaqDashboardResponse(String title, String body) {
+        this.title = title;
+        this.body = body;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public int getFaqId() {
+        return faqId;
+    }
+
+    public void setFaqId(int faqId) {
+        this.faqId = faqId;
     }
 
     public String getTitle() {
@@ -30,11 +37,19 @@ public class FaqDashboardResponse {
         this.title = title;
     }
 
-    public List<Language> getAvailableLanguages() {
-        return availableLanguages;
+    public String getBody() {
+        return body;
     }
 
-    public void setAvailableLanguages(List<Language> availableLanguages) {
-        this.availableLanguages = availableLanguages;
+    public void setBody(String body) {
+        this.body = body;
+    }
+
+    public List<FaqTranslationModel> getTranslations() {
+        return translations;
+    }
+
+    public void setTranslations(List<FaqTranslationModel> translations) {
+        this.translations = translations;
     }
 }

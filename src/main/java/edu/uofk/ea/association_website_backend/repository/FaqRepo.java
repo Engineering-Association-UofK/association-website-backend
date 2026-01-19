@@ -1,6 +1,7 @@
 package edu.uofk.ea.association_website_backend.repository;
 
 import edu.uofk.ea.association_website_backend.model.faq.FaqModel;
+import edu.uofk.ea.association_website_backend.model.faq.FaqSeeResponse;
 import edu.uofk.ea.association_website_backend.model.faq.FaqTranslationModel;
 import edu.uofk.ea.association_website_backend.model.Language;
 import jakarta.persistence.EntityManager;
@@ -27,14 +28,15 @@ public class FaqRepo {
         em.persist(faq);
     }
 
-    public FaqTranslationModel findTranslationById(int id, Language lang){
+    public FaqTranslationModel findTById(int id, Language lang){
         TypedQuery<FaqTranslationModel> query = em.createQuery("FROM FaqTranslationModel f Where f.lang = :lang AND f.faqId = :id", FaqTranslationModel.class);
         query.setParameter("lang", lang);
         query.setParameter("id", id);
         return query.getSingleResult();
     }
 
-    public List<FaqTranslationModel> getAllTranslations(Language lang){
+    // Get all FAQs in the selected language to show on the FAQ component
+    public List<FaqTranslationModel> getAllTWithLang(Language lang){
         TypedQuery<FaqTranslationModel> query = em.createQuery("FROM FaqTranslationModel f Where f.lang = :lang", FaqTranslationModel.class);
         query.setParameter("lang", lang);
 
@@ -43,12 +45,7 @@ public class FaqRepo {
 
     @Transactional
     public void updateTranslation(FaqTranslationModel faq){
-        Query query = em.createQuery("UPDATE FaqTranslationModel ft SET ft.title = :title, ft.body = :body WHERE ft.faqId = :id AND ft.lang = :lang");
-        query.setParameter("title", faq.getTitle());
-        query.setParameter("body", faq.getBody());
-        query.setParameter("id", faq.getFaqId());
-        query.setParameter("lang", faq.getLang());
-        query.executeUpdate();
+        em.merge(faq);
     }
 
     public void deleteTranslations(int id) {
@@ -57,13 +54,26 @@ public class FaqRepo {
         query.executeUpdate();
     }
 
-    public List<FaqTranslationModel> getAllTranslationsWithout() {
+    public List<FaqTranslationModel> getAllT() {
         return em.createQuery("FROM FaqTranslationModel f", FaqTranslationModel.class).getResultList();
+    }
+    public List<FaqTranslationModel> getAllTWithId(int id) {
+        TypedQuery<FaqTranslationModel> query = em.createQuery("""
+                FROM FaqTranslationModel f
+                WHERE f.faqId = :id
+                AND f.lang != :lang
+                """, FaqTranslationModel.class);
+        query.setParameter("id", id);
+        query.setParameter("lang", Language.en);
+        return query.getResultList();
     }
 
     @Transactional
-    public void save(FaqModel faq){
+    public int save(FaqModel faq){
         em.persist(faq);
+        em.flush();
+        em.refresh(faq);
+        return faq.getId();
     }
 
     public FaqModel findById(int id){
@@ -83,8 +93,31 @@ public class FaqRepo {
     public void delete(int id){
         FaqModel faq = findById(id);
         if (faq != null) {
+            deleteTranslations(id);
             em.remove(faq);
         }
     }
 
+    // Get only needed data from table in english to show on the Admin Dashboard
+    public List<FaqSeeResponse> seeAll() {
+        TypedQuery<FaqSeeResponse> query = em.createQuery("""
+                        SELECT new FaqSeeResponse(ft.faqId, ft.title, ft.body)
+                        FROM FaqTranslationModel ft
+                        WHERE ft.lang = :lang
+                        """, FaqSeeResponse.class);
+        query.setParameter("lang", Language.en);
+        return query.getResultList();
+    }
+
+    public FaqSeeResponse seeOne(int id){
+        TypedQuery<FaqSeeResponse> query = em.createQuery("""
+                SELECT new FaqSeeResponse(ft.faqId, ft.title, ft.body)
+                FROM FaqTranslationModel ft
+                WHERE ft.lang = :lang
+                AND ft.faqId = :id
+                """, FaqSeeResponse.class);
+        query.setParameter("lang", Language.en);
+        query.setParameter("id", id);
+        return query.getResultList().stream().findFirst().orElse(null);
+    }
 }
