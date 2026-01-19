@@ -3,6 +3,7 @@ package edu.uofk.ea.association_website_backend.service;
 import edu.uofk.ea.association_website_backend.exceptionHandlers.exceptions.VerificationCodeException;
 import edu.uofk.ea.association_website_backend.model.admin.AdminModel;
 import edu.uofk.ea.association_website_backend.model.VerificationCodeModel;
+import edu.uofk.ea.association_website_backend.model.admin.AdminStatus;
 import edu.uofk.ea.association_website_backend.repository.AdminRepo;
 import edu.uofk.ea.association_website_backend.repository.VerificationCodeRepo;
 import jakarta.transaction.Transactional;
@@ -50,6 +51,7 @@ public class VerificationService {
         }
 
         admin.setIsVerified(true);
+        admin.setStatus(AdminStatus.active);
         adminRepo.update(admin);
         repo.delete(vCode.getId());
     }
@@ -58,7 +60,6 @@ public class VerificationService {
     public void sendCode(AdminModel admin){
         String code = generateCode();
 
-        
         try {
             VerificationCodeModel existing = repo.findByAdminId(admin.getId());
             repo.delete(existing.getId());
@@ -71,7 +72,6 @@ public class VerificationService {
         vCode.setCode(passwordEncoder.encode(code));
         vCode.setCreatedAt(Instant.now());
         repo.save(vCode);
-
         mail.sendVerificationCode(admin.getEmail(), code);
     }
     

@@ -24,13 +24,13 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JWTService jwtService;
-    private final UserDetailsService userDetailsService;
+    private final AdminDetailsService adminDetailsService;
     private final HandlerExceptionResolver resolver;
 
     @Autowired
-    public JwtAuthenticationFilter(JWTService jwtService, UserDetailsService userDetailsService, @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver){
+    public JwtAuthenticationFilter(JWTService jwtService, AdminDetailsService adminDetailsService, @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver){
         this.jwtService = jwtService;
-        this.userDetailsService = userDetailsService;
+        this.adminDetailsService = adminDetailsService;
         this.resolver = resolver;
     }
 
@@ -44,11 +44,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader("Authorization");
         String token = null;
         String username = null;
+        String type = null;
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
             try {
                 username = jwtService.extractUserName(token);
+                type = jwtService.extractClaim(token, claims -> claims.get("type", String.class));
             } catch (Exception e) {
                 resolver.resolveException(request, response, null, new JwtSignatureException(e.getMessage()));
                 return;
@@ -56,7 +58,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+            UserDetails userDetails = null;
+
+            /// Changes the authentication type depending on Token Type
+            /// For security, website admins are separate from normal user (students)
+            if ("admin".equals(type)) {
+                userDetails = adminDetailsService.loadUserByUsername(username);
+            } else if ("user".equals(type)) {
+                // TODO: Make user authentication
+            }
+
+            if (!userDetails.isEnabled() || !userDetails.isAccountNonLocked()) {
+                return;
+            }
 
             if (jwtService.isTokenValid(token, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(

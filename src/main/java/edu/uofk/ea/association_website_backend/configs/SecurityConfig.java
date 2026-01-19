@@ -33,7 +33,9 @@ import java.util.List;
 @EnableMethodSecurity
 public class SecurityConfig {
 
+    /// Used for admin authentication, other user type should be separate
     private final AdminDetailsService ADS;
+    
     private final JwtAuthenticationFilter filter;
 
     @Autowired
@@ -42,6 +44,8 @@ public class SecurityConfig {
         this.filter = filter;
     }
 
+    /// A Bean for admin authentication provider
+    /// A user should have another
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider(ADS);
@@ -58,8 +62,6 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         AuthenticationManager manager = config.getAuthenticationManager();
-
-
         return manager;
     }
 

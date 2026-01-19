@@ -37,6 +37,16 @@ public class AdminController {
         service.delete(id);
     }
 
+    /// This endpoint is used to update admin profile
+    /// The updatable fields are: name, email, password
+    ///
+    /// Each admin can update their own profile even if they do not have the ROLE_ADMIN
+    @PutMapping("/update")
+    @PreAuthorize("hasAnyRole('ADMIN') or #admin.name == authentication.name")
+    public void updateAdmin(@RequestBody AdminModel admin) {
+        service.updateProfile(admin);
+    }
+
     @GetMapping("/get")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public List<AdminModel> getAdmins() {
@@ -49,6 +59,8 @@ public class AdminController {
         return service.get(id);
     }
 
+    ///  This is left without a PreAuthorize on purpose
+    /// It is used to get names of authors
     @GetMapping("/get-name/{id}")
     public String getAdminName(@PathVariable int id) {
         return service.getName(id);
@@ -56,7 +68,7 @@ public class AdminController {
 
     @PostMapping("/login")
     @RateLimited(key = "login", capacity = 5, refillTokens = 5, refillDuration = 120)
-    public String Login(@RequestBody AdminModel admin) {
+    public String login(@RequestBody AdminModel admin) {
         return service.login(admin);
     }
 
@@ -69,6 +81,6 @@ public class AdminController {
     @PostMapping("/verify")
     @RateLimited(key = "verify", capacity = 5, refillTokens = 5, refillDuration = 60)
     public void verify(@RequestBody VerificationRequest request) {
-        service.Verify(request.getName(), request.getCode());
+        service.verify(request.getName(), request.getCode());
     }
 }
