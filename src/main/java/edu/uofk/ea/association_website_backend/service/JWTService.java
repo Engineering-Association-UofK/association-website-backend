@@ -27,9 +27,28 @@ public class JWTService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateToken(AdminModel admin) {
+    /// This is the method that generates JWT tokens for admins.
+    public String generateAdminToken(AdminModel admin) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", admin.getRole().name());
+        claims.put("type", "admin");
+
+        return Jwts.builder()
+                .claims()
+                .add(claims)
+                .subject(admin.getName())
+                .issuedAt(Date.from(Instant.now()))
+                .expiration(Date.from(Instant.now().plusMillis(1000 * 60 * 60 * 24 * 2))) // 2 Days.
+                .and()
+                .signWith(getKey())
+                .compact();
+    }
+
+    /// This is the method that generates JWT tokens for users.
+    public String generateUserToken(AdminModel admin) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", admin.getRole().name());
+        claims.put("type", "user");
 
         return Jwts.builder()
                 .claims()
@@ -51,7 +70,7 @@ public class JWTService {
         return extractClaim(token, Claims::getSubject);
     }
 
-    private <T> T extractClaim(String token, Function<Claims, T> claimResolver) {
+    public  <T> T extractClaim(String token, Function<Claims, T> claimResolver) {
         final Claims claims = extractAllClaims(token);
         return claimResolver.apply(claims);
     }

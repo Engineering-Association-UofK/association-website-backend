@@ -36,32 +36,6 @@ public class AdminModel {
     @Column(name = "created_at")
     private Instant createdAt;
 
-    public AdminModel() {}
-
-    public AdminModel(int id, String name, String email, String password, AdminRole role) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-
-        this.isVerified = false;
-        this.status = AdminStatus.active;
-        this.createdAt = Instant.now();
-    }
-
-    public AdminModel(String name, String password) {
-        this.name = name;
-        this.password = password;
-    }
-
-    public AdminModel(String name, String email, String password, AdminRole role) {
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-    }
-
     public int getId() {
         return id;
     }
