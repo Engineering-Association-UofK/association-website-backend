@@ -15,13 +15,13 @@ public class CertificateManagerService {
     @Value("${app.website.link}")
     private String websiteLink;
 
-    private final HtmlToPdfService htmlToPdfService;
+    private final PdfService pdfService;
     private final ThymeleafService thymeleafService;
     private final ZXingService zXingService;
 
     @Autowired
-    public CertificateManagerService(HtmlToPdfService htmlToPdfService, ThymeleafService thymeleafService, ZXingService zXingService) {
-        this.htmlToPdfService = htmlToPdfService;
+    public CertificateManagerService(PdfService pdfService, ThymeleafService thymeleafService, ZXingService zXingService) {
+        this.pdfService = pdfService;
         this.thymeleafService = thymeleafService;
         this.zXingService = zXingService;
     }
@@ -41,6 +41,9 @@ public class CertificateManagerService {
 
         /// Step 3: Generate the certificate
         String certHTML = thymeleafService.generateHtml(StudentName, EventName, qrCode);
-        htmlToPdfService.convertHtmlToPdf(certHTML, "certificate.pdf");
+        byte[] pdf = pdfService.convertHtmlToPdf(certHTML, "certificate.pdf");
+
+        /// Step 4: Sign the certificate PDF
+        byte[] signedPdf = pdfService.signPdf(pdf);
     }
 }
