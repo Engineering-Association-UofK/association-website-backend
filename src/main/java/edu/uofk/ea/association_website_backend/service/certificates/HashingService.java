@@ -1,15 +1,11 @@
 package edu.uofk.ea.association_website_backend.service.certificates;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.crypto.bcrypt.BCrypt;
-import org.springframework.stereotype.Service;
-
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-@Service
 public class HashingService {
+
     public static String SHA256(String originalString) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");

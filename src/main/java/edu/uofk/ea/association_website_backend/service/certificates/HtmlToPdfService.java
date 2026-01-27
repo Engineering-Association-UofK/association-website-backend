@@ -1,13 +1,15 @@
 package edu.uofk.ea.association_website_backend.service.certificates;
 
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
+import org.springframework.stereotype.Service;
 
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
+@Service
 public class HtmlToPdfService {
 
-    public static void convertHtmlToPdf(String html, String outputFilePath) {
+    public void convertHtmlToPdf(String html, String outputFilePath) {
         try (OutputStream os = new FileOutputStream(outputFilePath)) {
             PdfRendererBuilder builder = new PdfRendererBuilder();
 
