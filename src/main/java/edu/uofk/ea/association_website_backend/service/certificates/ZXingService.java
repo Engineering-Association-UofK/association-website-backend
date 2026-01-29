@@ -23,7 +23,7 @@ import java.util.Map;
 @Service
 public class ZXingService { // QR Code generator
 
-    public String generateQRCodeBase64(String data, int height, int width) {
+    public byte[] generateQRCodeBase64(String data, int height, int width) {
         try {
             Map<EncodeHintType, Object> hints = new HashMap<>();
             hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H); // 30% recovery for logo placement
@@ -87,8 +87,7 @@ public class ZXingService { // QR Code generator
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             ImageIO.write(qrImage, "PNG", outputStream);
 
-            byte[] imageBytes = outputStream.toByteArray();
-            return Base64.getEncoder().encodeToString(imageBytes);
+            return outputStream.toByteArray();
 
         } catch (WriterException | IOException e) {
             throw new RuntimeException("Failed to generate QR Code", e);

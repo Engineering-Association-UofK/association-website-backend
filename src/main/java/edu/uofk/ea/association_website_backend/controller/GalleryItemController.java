@@ -1,13 +1,11 @@
 package edu.uofk.ea.association_website_backend.controller;
 
-import edu.uofk.ea.association_website_backend.annotations.RateLimited;
 import edu.uofk.ea.association_website_backend.model.GalleryItemModel;
 import edu.uofk.ea.association_website_backend.service.GalleryItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Instant;
 import java.util.List;
 
 @RestController

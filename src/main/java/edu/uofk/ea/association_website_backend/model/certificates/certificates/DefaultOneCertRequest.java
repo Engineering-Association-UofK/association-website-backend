@@ -1,7 +1,7 @@
-package edu.uofk.ea.association_website_backend.model.certificates;
+package edu.uofk.ea.association_website_backend.model.certificates.certificates;
 
 
-public class ApplyCertRequest {
+public class DefaultOneCertRequest {
     private Integer studentId;
     private Integer eventId;
 

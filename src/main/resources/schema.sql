@@ -69,3 +69,41 @@ CREATE TABLE IF NOT EXISTS gallery (
     description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Student & Events Placeholders
+CREATE TABLE IF NOT EXISTS students (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS events (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL
+);
+
+-- Certificate and decision tables
+CREATE TABLE IF NOT EXISTS certificates (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    cert_hash VARCHAR(255) NOT NULL,
+    student_id INT NOT NULL,
+    event_id INT NOT NULL,
+    issue_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    file_path VARCHAR(255) NOT NULL,
+
+    FOREIGN KEY (student_id) REFERENCES students(id),
+    FOREIGN KEY (event_id) REFERENCES events(id)
+);
+
+CREATE TABLE IF NOT EXISTS documents (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    document_hash VARCHAR(255) NOT NULL,
+    certifying_authority VARCHAR(255) NOT NULL,
+    document_type VARCHAR(255) NOT NULL,
+    document_reason VARCHAR(255) NOT NULL,
+    document_author VARCHAR(255) NOT NULL,
+    admin_id INT NOT NULL,
+    issue_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    file_path VARCHAR(255) NOT NULL,
+
+    FOREIGN KEY (admin_id) REFERENCES admins(id)
+);

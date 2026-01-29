@@ -3,7 +3,6 @@ package edu.uofk.ea.association_website_backend.repository;
 import edu.uofk.ea.association_website_backend.model.VisitorMessageModel;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Table;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 

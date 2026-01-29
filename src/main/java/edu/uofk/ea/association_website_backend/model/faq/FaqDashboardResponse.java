@@ -1,6 +1,5 @@
 package edu.uofk.ea.association_website_backend.model.faq;
 
-import edu.uofk.ea.association_website_backend.model.Language;
 import java.util.List;
 
 public class FaqDashboardResponse {

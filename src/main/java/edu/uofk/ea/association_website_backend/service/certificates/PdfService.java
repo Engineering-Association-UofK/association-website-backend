@@ -6,15 +6,12 @@ import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureOptions;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible.PDVisibleSigProperties;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible.PDVisibleSignDesigner;
-import org.bouncycastle.util.Store;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.security.KeyStore;
-import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
-import java.security.Security;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
@@ -39,7 +36,7 @@ public class PdfService {
     @Value("${app.keystore.path}")
     private String keystorePath;
 
-    public byte[] convertHtmlToPdf(String html, String outputFilePath) {
+    public byte[] convertHtmlToPdf(String html) {
         try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
             PdfRendererBuilder builder = new PdfRendererBuilder();
 
@@ -51,6 +48,11 @@ public class PdfService {
         } catch (Exception e) {
             throw new RuntimeException("Failed to render PDF", e);
         }
+    }
+
+    public enum Orientation {
+        Landscape,
+        Portrait
     }
 
     /// Signing a PDF works on three stages in this setup, first it
@@ -70,7 +72,7 @@ public class PdfService {
     ///
     /// No other operations should be done on the PDF content whatsoever as it will
     /// invalidate the signature and all this would be for nothing.
-    public byte[] signPdf(byte[] pdfBytes) {
+    public byte[] signPdf(byte[] pdfBytes, InputStream imageStream, Orientation orientation) {
         try (PDDocument document = PDDocument.load(pdfBytes);
              ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
              InputStream is = new FileInputStream(keystorePath)) {
@@ -79,17 +81,15 @@ public class PdfService {
             KeyStore keystore = KeyStore.getInstance("PKCS12");
             keystore.load(is, pin.toCharArray());
 
-            InputStream logoStream = getClass().getResourceAsStream("/stamp.png");
-            if (logoStream == null) throw new RuntimeException("Logo not found in resources!");
-
             // Create and Configure the Designer
             // Note that these are points, not pixels. A4 is roughly 595x842.
-            PDVisibleSignDesigner designer = new PDVisibleSignDesigner(document, logoStream, 1);
-            designer.xAxis(200)
-                    .yAxis(400)
-                    .width(100)
-                    .height(100)
-                    .zoom(0);
+            PDVisibleSignDesigner designer = new PDVisibleSignDesigner(document, imageStream, 1);
+            designer.width(100).height(100);
+            if (orientation == Orientation.Landscape) {
+                designer.xAxis(632).yAxis(395).zoom(20);
+            } else {
+                designer.xAxis(445).yAxis(592).zoom(0);
+            }
 
             // Configure Appearance Properties
             PDVisibleSigProperties options = new PDVisibleSigProperties();
