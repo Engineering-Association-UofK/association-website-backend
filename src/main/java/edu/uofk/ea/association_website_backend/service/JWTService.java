@@ -30,7 +30,7 @@ public class JWTService {
     /// This is the method that generates JWT tokens for admins.
     public String generateAdminToken(AdminModel admin) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("role", admin.getRole().name());
+        claims.put("roles", admin.getRoles());
         claims.put("type", "admin");
 
         return Jwts.builder()
@@ -47,7 +47,7 @@ public class JWTService {
     /// This is the method that generates JWT tokens for users.
     public String generateUserToken(AdminModel admin) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("role", admin.getRole().name());
+        claims.put("roles", admin.getRoles());
         claims.put("type", "user");
 
         return Jwts.builder()

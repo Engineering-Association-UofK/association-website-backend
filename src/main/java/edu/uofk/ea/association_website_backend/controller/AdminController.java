@@ -1,11 +1,13 @@
 package edu.uofk.ea.association_website_backend.controller;
 
 import edu.uofk.ea.association_website_backend.annotations.RateLimited;
-import edu.uofk.ea.association_website_backend.model.admin.AdminModel;
+import edu.uofk.ea.association_website_backend.model.admin.*;
 import edu.uofk.ea.association_website_backend.model.authentication.VerificationRequest;
 import edu.uofk.ea.association_website_backend.service.AdminDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,16 +25,15 @@ public class AdminController {
 
     /// This endpoint is used to add new admin
     /// To make new admins the request body should have at least these fields:
-    /// name - email - password
-    /// without specifying a role it will default to viewer
+    /// name - email - password - roles
     @PostMapping("/add")
-    @PreAuthorize("hasAnyRole('ADMIN')")
-    public void addAdmin(@RequestBody AdminModel admin) {
+    @PreAuthorize("hasAnyRole('ADMIN_MANAGER', 'SUPER_ADMIN')")
+    public void addAdmin(@Valid @RequestBody AdminRequest admin) {
         service.add(admin);
     }
 
     @DeleteMapping("/delete/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN_MANAGER', 'SUPER_ADMIN')")
     public void deleteAdmin(@PathVariable int id) {
         service.delete(id);
     }
@@ -42,19 +43,31 @@ public class AdminController {
     ///
     /// Each admin can update their own profile even if they do not have the ROLE_ADMIN
     @PutMapping("/update")
-    @PreAuthorize("hasAnyRole('ADMIN') or #admin.name == authentication.name")
-    public void updateAdmin(@RequestBody AdminModel admin) {
+    @PreAuthorize("hasAnyRole('ADMIN_MANAGER', 'SUPER_ADMIN')")
+    public void updateAdmin(@Valid @RequestBody AdminRequest admin) {
         service.updateProfile(admin);
     }
 
+    @PutMapping("/update-password")
+    public void updatePassword(@Valid @RequestBody UpdatePasswordRequest request, Authentication authentication) {
+        String username = authentication.getName();
+        service.updatePassword(request, username);
+    }
+
+    @PutMapping("/update-email")
+    public void updateEmail(@Valid @RequestBody UpdateEmailRequest request, Authentication authentication) {
+        String username = authentication.getName();
+        service.updateEmail(request, username);
+    }
+
     @GetMapping("/get")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN_MANAGER', 'SUPER_ADMIN')")
     public List<AdminModel> getAdmins() {
         return service.getAll();
     }
 
     @GetMapping("/get/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN_MANAGER', 'SUPER_ADMIN')")
     public AdminModel getAdmin(@PathVariable int id) {
         return service.get(id);
     }
@@ -68,19 +81,19 @@ public class AdminController {
 
     @PostMapping("/login")
     @RateLimited(key = "login", capacity = 5, refillTokens = 5, refillDuration = 120)
-    public String login(@RequestBody AdminModel admin) {
+    public String login(@Valid @RequestBody LoginRequest admin) {
         return service.login(admin);
     }
 
     @PostMapping("/send-code")
     @RateLimited(key = "otp", capacity = 3, refillTokens = 1, refillDuration = 60, exponentialBackoff = true)
-    public void sendCode(@RequestBody VerificationRequest request) {
+    public void sendCode(@Valid @RequestBody VerificationRequest request) {
         service.sendCode(request.getName());
     }
 
     @PostMapping("/verify")
     @RateLimited(key = "verify", capacity = 5, refillTokens = 5, refillDuration = 60)
-    public void verify(@RequestBody VerificationRequest request) {
+    public void verify(@Valid @RequestBody VerificationRequest request) {
         service.verify(request.getName(), request.getCode());
     }
 }

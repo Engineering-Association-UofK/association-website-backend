@@ -33,21 +33,20 @@ public class BlogPostController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
+    @PreAuthorize("hasAnyRole('BLOG_MANAGER', 'SUPER_ADMIN')")
     public void addBlog(@RequestBody BlogPostModel Blog, Authentication authentication){
         String username = authentication.getName();
         service.save(Blog, username);
     }
 
     @PutMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
-    public void UpdateBlog(@RequestBody BlogPostModel post, Authentication authentication){
-        String username = authentication.getName();
-        service.update(post, username);
+    @PreAuthorize("hasAnyRole('BLOG_MANAGER', 'SUPER_ADMIN')")
+    public void UpdateBlog(@RequestBody BlogPostModel post){
+        service.update(post);
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
+    @PreAuthorize("hasAnyRole('BLOG_MANAGER', 'SUPER_ADMIN')")
     public void deleteBlog(@PathVariable int id){
         service.delete(id);
     }

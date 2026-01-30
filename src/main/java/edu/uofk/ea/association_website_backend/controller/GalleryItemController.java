@@ -27,13 +27,13 @@ public class GalleryItemController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
+    @PreAuthorize("hasAnyRole('CONTENT_EDITOR', 'SUPER_ADMIN')")
     public void addItem(@RequestBody GalleryItemModel item){
         repo.save(item);
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
+    @PreAuthorize("hasAnyRole('CONTENT_EDITOR', 'SUPER_ADMIN')")
     public void deleteItem(@PathVariable int id){
         repo.delete(id);
     }
