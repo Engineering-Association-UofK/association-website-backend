@@ -69,3 +69,38 @@ CREATE TABLE IF NOT EXISTS gallery (
     description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+CREATE TABLE IF NOT EXISTS students (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    university_id VARCHAR(10) NOT NULL UNIQUE,
+    index_id VARCHAR(10) NOT NULL UNIQUE,
+    full_name_ar VARCHAR(255) NOT NULL,
+    full_name_en VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    phone VARCHAR(10),
+    password_hash VARCHAR(255) NOT NULL,
+    account_status ENUM('ACTIVE', 'PENDING', 'BANNED'),
+);
+
+CREATE TABLE IF NOT EXISTS events(
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    start_date DATE,
+    end_date DATE,
+    capacity INT,
+    --activity image
+);
+CREATE TABLE IF NOT EXISTS registrations(
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    student_id INT NOT NULL,
+    event_id INT NOT NULL,
+    CONSTRAINT fk_registration_student
+    FOREIGN KEY (student_id) REFERENCES students(id)
+    ON DELETE CASCADE,
+
+    CONSTRAINT fk_registration_event
+    FOREIGN KEY (event_id) REFERENCES events(id)
+    ON DELETE CASCADE,
+
+    UNIQUE (student_id, event_id)
+);
