@@ -32,32 +32,32 @@ public class FaqController {
 
     /// "See" for the admin dashboard where they are shown with the needed details
     @GetMapping("/dashboard")
-    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
+    @PreAuthorize("hasAnyRole('CONTENT_EDITOR', 'SUPER_ADMIN')")
     public List<FaqSeeResponse> seeFaqs() {
         return service.seeAll();
     }
 
     @GetMapping("/dashboard/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
+    @PreAuthorize("hasAnyRole('CONTENT_EDITOR', 'SUPER_ADMIN')")
     public FaqDashboardResponse seeFaq(@PathVariable int id) {
         return service.seeOne(id);
     }
 
     /// Transactional operations
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
+    @PreAuthorize("hasAnyRole('CONTENT_EDITOR', 'SUPER_ADMIN')")
     public void addFaq(@RequestBody FaqRequest faq) {
         service.save(faq);
     }
 
     @PutMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
+    @PreAuthorize("hasAnyRole('CONTENT_EDITOR', 'SUPER_ADMIN')")
     public void updateFaq(@RequestBody FaqRequest faq) {
         service.update(faq);
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
+    @PreAuthorize("hasAnyRole('CONTENT_EDITOR', 'SUPER_ADMIN')")
     public void deleteFaq(@PathVariable int id) {
         service.delete(id);
     }
