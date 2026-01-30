@@ -1,6 +1,5 @@
 package edu.uofk.ea.association_website_backend.controller;
 
-import edu.uofk.ea.association_website_backend.annotations.RateLimited;
 import edu.uofk.ea.association_website_backend.model.TeamMemberModel;
 import edu.uofk.ea.association_website_backend.service.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;

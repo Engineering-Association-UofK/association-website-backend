@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Certificate of Completion</title>
+    <style>
+        @page {
+            size: A4 landscape;
+            margin: 0;
+        }
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        .cert-container {
+            width: 260mm;
+            height: 177mm;
+            background-color: white;
+            border: 5px double #1a237e;
+            margin: 5mm auto; /* Centering for PDF */
+            padding: 10mm;
+            text-align: center;
+            position: relative;
+            /* box-shadow removed - renderer doesn't support it */
+        }
+        .header {
+            font-size: 36px;
+            font-weight: bold;
+            color: #1a237e;
+            margin-top: 20mm;
+            text-transform: uppercase;
+        }
+        /* Use standard margins instead of flex centering */
+        .student-name {
+            font-size: 48px;
+            font-weight: bold;
+            color: #000;
+            border-bottom: 2px solid #ccc;
+            margin: 20mm auto;
+            width: 80%;
+        }
+        .footer {
+            position: absolute;
+            bottom: 20mm;
+            left: 20mm;
+            right: 20mm;
+            /* Replaced flex with a simple clear-fix/width layout */
+        }
+        .signature {
+            float: left; /* Old school layout */
+            width: 200px;
+            text-align: center;
+        }
+        .signature-line {
+            border-top: 1px solid #000;
+            margin-top: 5px;
+            padding-top: 5px;
+            font-weight: bold;
+        }
+        .qr-code {
+            float: right; /* Old school layout */
+            width: 35mm;
+            height: 35mm;
+        }
+    </style>
+</head>
+<body>
+
+<div class="cert-container">
+    <div class="header">Certificate of Completion</div>
+    <div class="sub-header">Engineering Association Technical Office</div>
+
+    <p class="body-text">This is to certify that</p>
+
+    <div class="student-name" th:text="${studentName}">
+        [Student Name Placeholder]
+    </div>
+
+    <p class="body-text">
+        Has successfully completed the workshop on<br />
+        <strong style="font-size: 24px;" th:text="${eventName}">[Event Name]</strong>
+    </p>
+
+    <p class="body-text">
+        Issued on: <span th:text="${issueDate}">January 1, 2026</span>
+    </p>
+
+    <div class="footer">
+        <div class="signature">
+            <div class="signature-line">Association President</div>
+        </div>
+
+<!--        <img class="qr-code"-->
+<!--             th:src="${'data:image/png;base64,' + qrCode}"-->
+<!--             alt="Verification QR" />-->
+    </div>
+</div>
+
+</body>
+</html>

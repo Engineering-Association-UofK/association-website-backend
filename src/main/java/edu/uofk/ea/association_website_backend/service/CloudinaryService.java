@@ -1,12 +1,14 @@
 package edu.uofk.ea.association_website_backend.service;
 
 import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import edu.uofk.ea.association_website_backend.exceptionHandlers.exceptions.UnauthorizedException;
 import edu.uofk.ea.association_website_backend.model.CloudinaryRequestModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +28,30 @@ public class CloudinaryService {
     @Autowired
     public CloudinaryService(Cloudinary cloudinary) {
         this.cloudinary = cloudinary;
+    }
+
+    /**
+     * Uploads a file to Cloudinary from the backend.
+     *
+     * @param fileBytes The raw bytes of the file to upload.
+     * @param publicId  The desired public ID (filename) for the asset in Cloudinary. This should be unique.
+     * @return The secure URL of the uploaded file.
+     */
+    public String uploadDoc(byte[] fileBytes, String publicId) {
+        try {
+            Map<String, Object> options = ObjectUtils.asMap(
+                    "resource_type", "raw",
+                    "type", "upload",
+                    "public_id", "Document:" + publicId + ".pdf",
+                    "overwrite", true
+            );
+
+            Map<?, ?> uploadResult = cloudinary.uploader().upload(fileBytes, options);
+
+            return (String) uploadResult.get("secure_url");
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to upload file to Cloudinary", e);
+        }
     }
 
     public CloudinaryRequestModel validateAndSign(CloudinaryRequestModel request) {
@@ -55,5 +81,4 @@ public class CloudinaryService {
     private boolean isValidApiKey(String apiKey) {
         return Objects.equals(apiKey, this.apiKey);
     }
-
 }
