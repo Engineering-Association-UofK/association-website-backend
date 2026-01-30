@@ -40,6 +40,20 @@ public class AdminModel {
     @Column(name = "created_at")
     private Instant createdAt;
 
+    public AdminModel() {
+    }
+
+    public AdminModel(String name, String email, String password, Set<AdminRole> roles) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.roles = roles;
+
+        this.createdAt = Instant.now();
+        this.isVerified = false;
+        this.status = AdminStatus.pending;
+    }
+
     public int getId() {
         return id;
     }

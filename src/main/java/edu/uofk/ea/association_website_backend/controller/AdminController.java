@@ -2,6 +2,8 @@ package edu.uofk.ea.association_website_backend.controller;
 
 import edu.uofk.ea.association_website_backend.annotations.RateLimited;
 import edu.uofk.ea.association_website_backend.model.admin.AdminModel;
+import edu.uofk.ea.association_website_backend.model.admin.AdminRequest;
+import edu.uofk.ea.association_website_backend.model.admin.LoginRequest;
 import edu.uofk.ea.association_website_backend.model.authentication.VerificationRequest;
 import edu.uofk.ea.association_website_backend.service.AdminDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +25,10 @@ public class AdminController {
 
     /// This endpoint is used to add new admin
     /// To make new admins the request body should have at least these fields:
-    /// name - email - password
-    /// without specifying a role it will default to viewer
+    /// name - email - password - roles
     @PostMapping("/add")
     @PreAuthorize("hasAnyRole('ADMIN_MANAGER', 'SUPER_ADMIN')")
-    public void addAdmin(@RequestBody AdminModel admin) {
+    public void addAdmin(@RequestBody AdminRequest admin) {
         service.add(admin);
     }
 
@@ -43,7 +44,7 @@ public class AdminController {
     /// Each admin can update their own profile even if they do not have the ROLE_ADMIN
     @PutMapping("/update")
     @PreAuthorize("hasAnyRole('ADMIN_MANAGER', 'SUPER_ADMIN') or #admin.name == authentication.name")
-    public void updateAdmin(@RequestBody AdminModel admin) {
+    public void updateAdmin(@RequestBody AdminRequest admin) {
         service.updateProfile(admin);
     }
 
@@ -68,7 +69,7 @@ public class AdminController {
 
     @PostMapping("/login")
     @RateLimited(key = "login", capacity = 5, refillTokens = 5, refillDuration = 120)
-    public String login(@RequestBody AdminModel admin) {
+    public String login(@RequestBody LoginRequest admin) {
         return service.login(admin);
     }
 

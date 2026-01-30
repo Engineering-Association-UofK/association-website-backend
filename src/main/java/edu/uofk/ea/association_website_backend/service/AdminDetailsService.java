@@ -2,9 +2,7 @@ package edu.uofk.ea.association_website_backend.service;
 
 import edu.uofk.ea.association_website_backend.exceptionHandlers.exceptions.UnauthorizedException;
 import edu.uofk.ea.association_website_backend.exceptionHandlers.exceptions.UserAlreadyExistsException;
-import edu.uofk.ea.association_website_backend.model.admin.AdminModel;
-import edu.uofk.ea.association_website_backend.model.admin.AdminRole;
-import edu.uofk.ea.association_website_backend.model.admin.AdminStatus;
+import edu.uofk.ea.association_website_backend.model.admin.*;
 import edu.uofk.ea.association_website_backend.repository.AdminRepo;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +62,7 @@ public class AdminDetailsService implements UserDetailsService {
                 .build();
     }
 
-    public String login(AdminModel admin) {
+    public String login(LoginRequest admin) {
         Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(admin.getName(), admin.getPassword()));
 
         AdminModel dbAdmin = repo.findByUsername(admin.getName());
@@ -92,40 +90,66 @@ public class AdminDetailsService implements UserDetailsService {
         verificationService.verify(admin, code);
     }
 
-    public void updateProfile(AdminModel request) {
+    public void updateProfile(AdminRequest request) {
         AdminModel existing = repo.findByUsername(request.getName());
         if (existing == null) throw new UsernameNotFoundException("User not found");
 
-        if (request.getName() != null) existing.setName(request.getName());
-        if (request.getEmail() != null) {
-            existing.setEmail(request.getEmail());
+        // Validate Roles
+        if (request.getRoles() != null && request.getRoles().contains(AdminRole.ROLE_SUPER_ADMIN)) {
+            throw new IllegalArgumentException("Cannot add super admin role manually");
+        }
+
+        // Validate & Update Password
+        if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+            if (request.getPassword().length() < 8) throw new IllegalArgumentException("Password must be at least 8 characters long");
+            // We don't compare with existing.getPassword() because one is raw and one is hashed.
+            existing.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
+
+        // Validate & Update Email
+        String newEmail = request.getEmail();
+        if (newEmail != null && !newEmail.isEmpty() && !newEmail.equals(existing.getEmail())) {
+            if (repo.findByEmail(newEmail) != null) throw new UserAlreadyExistsException("User with this email already exists");
+            existing.setEmail(newEmail);
             existing.setIsVerified(false);
         }
-        if (request.getPassword() != null) existing.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        // Update Roles
+        if (request.getRoles() != null && !request.getRoles().isEmpty() && !existing.getRoles().equals(request.getRoles())) {
+            existing.setRoles(request.getRoles());
+        }
         
         repo.update(existing);
     }
 
-    public void add(AdminModel admin) {
-        if (admin.getName() == null) throw new IllegalArgumentException("Name cannot be null");
-        if (repo.findByUsername(admin.getName()) != null) throw new UserAlreadyExistsException("Admin with this username already exists");
-        if (admin.getEmail() == null) throw new IllegalArgumentException("Email cannot be null");
-        if (admin.getPassword() == null) throw new IllegalArgumentException("Password cannot be null");
+    public void add(AdminRequest admin) {
+        if (admin.getName() == null || admin.getName().isEmpty())           throw new IllegalArgumentException("Need name to add admin");
+        if (repo.findByUsername(admin.getName()) != null)                   throw new UserAlreadyExistsException("Admin with this username already exists");
+        
+        if (admin.getEmail() == null || admin.getEmail().isEmpty())         throw new IllegalArgumentException("Need email to add admin");
+        if (repo.findByEmail(admin.getEmail()) != null)                     throw new UserAlreadyExistsException("Admin with this email already exists");
 
-        if (admin.getRoles() == null || admin.getRoles().isEmpty()) {
-            admin.setRoles(new HashSet<>());
-            admin.getRoles().add(AdminRole.ROLE_PAPER_VIEWER);
-        }
-        admin.setPassword(passwordEncoder.encode(admin.getPassword()));
-        admin.setStatus(AdminStatus.pending);
-        admin.setIsVerified(false);
-        admin.setCreatedAt(java.time.Instant.now());
-        repo.save(admin);
+        if (admin.getPassword() == null || admin.getPassword().isEmpty())   throw new IllegalArgumentException("Password does not exist in request, make a default one.");
+        if (admin.getPassword().length() < 8)                               throw new IllegalArgumentException("Password must be at least 8 characters long");
+        
+        if (admin.getRoles() == null || admin.getRoles().isEmpty())         throw new IllegalArgumentException("Roles cannot be null or empty");
+        if (admin.getRoles().contains(AdminRole.ROLE_SUPER_ADMIN))          throw new IllegalArgumentException("Cannot add super admin role manually");
+
+        AdminModel newAdmin = new AdminModel(
+                admin.getName(),
+                admin.getEmail(),
+                passwordEncoder.encode(admin.getPassword()),
+                admin.getRoles()
+        );
+
+        repo.save(newAdmin);
     }
 
     public void delete(int id) {
         if (repo.findById(id) == null) throw new UsernameNotFoundException("Admin with this id not found");
-        repo.delete(id);
+        AdminModel admin = repo.findById(id);
+        admin.setStatus(AdminStatus.deactivated);
+        repo.update(admin);
     }
 
     public AdminModel get(int id) {
@@ -137,8 +161,7 @@ public class AdminDetailsService implements UserDetailsService {
     }
 
     public List<AdminModel> getAll() {
-        List<AdminModel> admins = repo.getAllActive();
-        admins.addAll(repo.getAllPending());
+        List<AdminModel> admins = repo.getAll();
         for (AdminModel admin : admins) {
             admin.setPassword(null);
         }
