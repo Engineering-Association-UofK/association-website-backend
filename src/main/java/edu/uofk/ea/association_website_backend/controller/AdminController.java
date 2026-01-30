@@ -1,13 +1,13 @@
 package edu.uofk.ea.association_website_backend.controller;
 
 import edu.uofk.ea.association_website_backend.annotations.RateLimited;
-import edu.uofk.ea.association_website_backend.model.admin.AdminModel;
-import edu.uofk.ea.association_website_backend.model.admin.AdminRequest;
-import edu.uofk.ea.association_website_backend.model.admin.LoginRequest;
+import edu.uofk.ea.association_website_backend.model.admin.*;
 import edu.uofk.ea.association_website_backend.model.authentication.VerificationRequest;
 import edu.uofk.ea.association_website_backend.service.AdminDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,7 +28,7 @@ public class AdminController {
     /// name - email - password - roles
     @PostMapping("/add")
     @PreAuthorize("hasAnyRole('ADMIN_MANAGER', 'SUPER_ADMIN')")
-    public void addAdmin(@RequestBody AdminRequest admin) {
+    public void addAdmin(@Valid @RequestBody AdminRequest admin) {
         service.add(admin);
     }
 
@@ -43,9 +43,21 @@ public class AdminController {
     ///
     /// Each admin can update their own profile even if they do not have the ROLE_ADMIN
     @PutMapping("/update")
-    @PreAuthorize("hasAnyRole('ADMIN_MANAGER', 'SUPER_ADMIN') or #admin.name == authentication.name")
-    public void updateAdmin(@RequestBody AdminRequest admin) {
+    @PreAuthorize("hasAnyRole('ADMIN_MANAGER', 'SUPER_ADMIN')")
+    public void updateAdmin(@Valid @RequestBody AdminRequest admin) {
         service.updateProfile(admin);
+    }
+
+    @PutMapping("/update-password")
+    public void updatePassword(@Valid @RequestBody UpdatePasswordRequest request, Authentication authentication) {
+        String username = authentication.getName();
+        service.updatePassword(request, username);
+    }
+
+    @PutMapping("/update-email")
+    public void updateEmail(@Valid @RequestBody UpdateEmailRequest request, Authentication authentication) {
+        String username = authentication.getName();
+        service.updateEmail(request, username);
     }
 
     @GetMapping("/get")
@@ -69,19 +81,19 @@ public class AdminController {
 
     @PostMapping("/login")
     @RateLimited(key = "login", capacity = 5, refillTokens = 5, refillDuration = 120)
-    public String login(@RequestBody LoginRequest admin) {
+    public String login(@Valid @RequestBody LoginRequest admin) {
         return service.login(admin);
     }
 
     @PostMapping("/send-code")
     @RateLimited(key = "otp", capacity = 3, refillTokens = 1, refillDuration = 60, exponentialBackoff = true)
-    public void sendCode(@RequestBody VerificationRequest request) {
+    public void sendCode(@Valid @RequestBody VerificationRequest request) {
         service.sendCode(request.getName());
     }
 
     @PostMapping("/verify")
     @RateLimited(key = "verify", capacity = 5, refillTokens = 5, refillDuration = 60)
-    public void verify(@RequestBody VerificationRequest request) {
+    public void verify(@Valid @RequestBody VerificationRequest request) {
         service.verify(request.getName(), request.getCode());
     }
 }

@@ -68,11 +68,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // TODO: Make user authentication
             }
 
-            if (!userDetails.isEnabled() || !userDetails.isAccountNonLocked()) {
-                return;
-            }
-
-            if (jwtService.isTokenValid(token, userDetails)) {
+            if (userDetails.isEnabled() && userDetails.isAccountNonLocked() && jwtService.isTokenValid(token, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,

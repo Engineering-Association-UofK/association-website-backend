@@ -57,7 +57,7 @@ public class AdminDetailsService implements UserDetailsService {
                 .username(admin.getName())
                 .password(admin.getPassword())
                 .authorities(authorities)
-                .disabled(admin.getStatus() == AdminStatus.deactivated)
+                .disabled(admin.getStatus() == AdminStatus.deactivated || !admin.getIsVerified())
                 .accountLocked(admin.getStatus() == AdminStatus.locked)
                 .build();
     }
@@ -78,6 +78,7 @@ public class AdminDetailsService implements UserDetailsService {
     public void sendCode(String name){
         AdminModel admin = repo.findByUsername(name);
         if (admin == null) throw new UsernameNotFoundException("Admin with this username not found");
+        System.out.println(admin);
         if (admin.getIsVerified()) throw new UnauthorizedException("Email already verified");
 
         verificationService.sendCode(admin);
@@ -101,8 +102,6 @@ public class AdminDetailsService implements UserDetailsService {
 
         // Validate & Update Password
         if (request.getPassword() != null && !request.getPassword().isEmpty()) {
-            if (request.getPassword().length() < 8) throw new IllegalArgumentException("Password must be at least 8 characters long");
-            // We don't compare with existing.getPassword() because one is raw and one is hashed.
             existing.setPassword(passwordEncoder.encode(request.getPassword()));
         }
 
@@ -123,14 +122,12 @@ public class AdminDetailsService implements UserDetailsService {
     }
 
     public void add(AdminRequest admin) {
-        if (admin.getName() == null || admin.getName().isEmpty())           throw new IllegalArgumentException("Need name to add admin");
         if (repo.findByUsername(admin.getName()) != null)                   throw new UserAlreadyExistsException("Admin with this username already exists");
         
         if (admin.getEmail() == null || admin.getEmail().isEmpty())         throw new IllegalArgumentException("Need email to add admin");
         if (repo.findByEmail(admin.getEmail()) != null)                     throw new UserAlreadyExistsException("Admin with this email already exists");
 
         if (admin.getPassword() == null || admin.getPassword().isEmpty())   throw new IllegalArgumentException("Password does not exist in request, make a default one.");
-        if (admin.getPassword().length() < 8)                               throw new IllegalArgumentException("Password must be at least 8 characters long");
         
         if (admin.getRoles() == null || admin.getRoles().isEmpty())         throw new IllegalArgumentException("Roles cannot be null or empty");
         if (admin.getRoles().contains(AdminRole.ROLE_SUPER_ADMIN))          throw new IllegalArgumentException("Cannot add super admin role manually");
@@ -173,5 +170,29 @@ public class AdminDetailsService implements UserDetailsService {
         AdminModel admin = repo.findById(id);
 
         return admin.getName();
+    }
+
+    public void updatePassword(UpdatePasswordRequest request, String username) {
+        AdminModel admin = repo.findByUsername(username);
+        if (admin == null) throw new UsernameNotFoundException("Admin with this username not found");
+
+        if (!passwordEncoder.matches(request.getOldPassword(), admin.getPassword())) throw new BadCredentialsException("Old password is incorrect");
+        if (!request.getNewPassword().equals(request.getConfirmPassword())) throw new IllegalArgumentException("New password and confirm password do not match");
+        if (request.getNewPassword().equals(request.getOldPassword())) throw new IllegalArgumentException("New password cannot be the same as the old password");
+
+        admin.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        repo.update(admin);
+    }
+
+    public void updateEmail(UpdateEmailRequest request, String username) {
+        AdminModel admin = repo.findByUsername(username);
+        if (admin == null) throw new UsernameNotFoundException("Admin with this username not found");
+
+        if (repo.findByEmail(request.getNewEmail()) != null) throw new UserAlreadyExistsException("Admin with this email already exists");
+        if (admin.getEmail().equals(request.getNewEmail())) throw new IllegalArgumentException("New email cannot be the same as the old email");
+
+        admin.setEmail(request.getNewEmail());
+        admin.setIsVerified(false);
+        repo.update(admin);
     }
 }

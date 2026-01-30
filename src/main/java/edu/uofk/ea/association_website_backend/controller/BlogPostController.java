@@ -41,9 +41,8 @@ public class BlogPostController {
 
     @PutMapping
     @PreAuthorize("hasAnyRole('BLOG_MANAGER', 'SUPER_ADMIN')")
-    public void UpdateBlog(@RequestBody BlogPostModel post, Authentication authentication){
-        String username = authentication.getName();
-        service.update(post, username);
+    public void UpdateBlog(@RequestBody BlogPostModel post){
+        service.update(post);
     }
 
     @DeleteMapping("/{id}")

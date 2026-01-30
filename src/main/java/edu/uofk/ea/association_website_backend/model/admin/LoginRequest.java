@@ -1,10 +1,13 @@
 package edu.uofk.ea.association_website_backend.model.admin;
 
-import io.jsonwebtoken.security.Password;
+import jakarta.validation.constraints.NotBlank;
 
 public class LoginRequest {
+    @NotBlank(message = "Username is required")
     private String name;
-    private String Password;
+
+    @NotBlank(message = "Password is required")
+    private String password;
 
     public String getName() {
         return name;
@@ -15,10 +18,10 @@ public class LoginRequest {
     }
 
     public String getPassword() {
-        return Password;
+        return password;
     }
 
     public void setPassword(String password) {
-        Password = password;
+        this.password = password;
     }
 }
