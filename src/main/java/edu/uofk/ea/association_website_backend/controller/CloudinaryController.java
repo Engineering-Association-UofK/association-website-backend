@@ -18,7 +18,7 @@ public class CloudinaryController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
+    @PreAuthorize("hasAnyRole('CONTENT_EDITOR', 'BLOG_MANAGER', 'SUPER_ADMIN')")
     public CloudinaryRequestModel signRequest(@RequestBody CloudinaryRequestModel request) {
         return service.validateAndSign(request);
     }

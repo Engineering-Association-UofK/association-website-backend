@@ -28,6 +28,16 @@ public class AdminRepo {
         }
     }
 
+    public AdminModel findByEmail(String email){
+        try {
+            TypedQuery<AdminModel> query = em.createQuery("SELECT a FROM AdminModel a WHERE a.email = :email", AdminModel.class);
+            query.setParameter("email", email);
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
     @Transactional
     public void save(AdminModel admin){
         em.persist(admin);
@@ -35,13 +45,6 @@ public class AdminRepo {
 
     @Transactional
     public void update(AdminModel admin){
-        em.merge(admin);
-    }
-
-    @Transactional
-    public void delete(int id){
-        AdminModel admin = findById(id);
-        admin.setStatus(AdminStatus.deactivated);
         em.merge(admin);
     }
 
@@ -58,6 +61,12 @@ public class AdminRepo {
     public List<AdminModel> getAllPending() {
         TypedQuery<AdminModel> query = em.createQuery("SELECT a FROM AdminModel a WHERE a.status = :status", AdminModel.class);
         query.setParameter("status", AdminStatus.pending);
+        return query.getResultList();
+    }
+
+    public List<AdminModel> getAllDeactivated() {
+        TypedQuery<AdminModel> query = em.createQuery("SELECT a FROM AdminModel a WHERE a.status = :status", AdminModel.class);
+        query.setParameter("status", AdminStatus.deactivated);
         return query.getResultList();
     }
 

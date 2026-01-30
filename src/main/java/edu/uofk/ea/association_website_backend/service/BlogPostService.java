@@ -50,12 +50,9 @@ public class BlogPostService {
     }
 
     @Transactional
-    public void update(BlogPostModel post, String username){
+    public void update(BlogPostModel post){
         if (repo.findById(post.getId()) == null) {
             throw new GenericNotFoundException("Blog post not found with ID:" + post.getId());
-        }
-        if (adminRepo.findByUsername(username) == null) {
-            throw new GenericNotFoundException("Admin not found with username:" + username);
         }
 
         post.setUpdatedAt(Instant.now());

@@ -5,9 +5,14 @@ CREATE TABLE IF NOT EXISTS admins (
     password_hash VARCHAR(255) NOT NULL,
     verified tinyint NOT NULL,
     status ENUM('active', 'deactivated', 'pending') DEFAULT 'active',
-    role ENUM('ROLE_EDITOR', 'ROLE_ADMIN', 'ROLE_VIEWER') DEFAULT 'ROLE_VIEWER',
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS admin_roles (
+    admin_id INT NOT NULL,
+    role VARCHAR(50) NOT NULL,
+    FOREIGN KEY (admin_id) REFERENCES admins(id)
 );
 
 CREATE TABLE IF NOT EXISTS verification_codes (
