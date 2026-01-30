@@ -21,6 +21,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 public class AdminDetailsService implements UserDetailsService {
@@ -49,10 +51,14 @@ public class AdminDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("No Admin with this username found.");
         }
 
+        String[] authorities = admin.getRoles().stream()
+                .map(Enum::name)
+                .toArray(String[]::new);
+
         return User.builder()
                 .username(admin.getName())
                 .password(admin.getPassword())
-                .authorities(admin.getRole().name())
+                .authorities(authorities)
                 .disabled(admin.getStatus() == AdminStatus.deactivated)
                 .accountLocked(admin.getStatus() == AdminStatus.locked)
                 .build();
@@ -106,7 +112,10 @@ public class AdminDetailsService implements UserDetailsService {
         if (admin.getEmail() == null) throw new IllegalArgumentException("Email cannot be null");
         if (admin.getPassword() == null) throw new IllegalArgumentException("Password cannot be null");
 
-        if (admin.getRole() == null) admin.setRole(AdminRole.ROLE_VIEWER);
+        if (admin.getRoles() == null || admin.getRoles().isEmpty()) {
+            admin.setRoles(new HashSet<>());
+            admin.getRoles().add(AdminRole.ROLE_PAPER_VIEWER);
+        }
         admin.setPassword(passwordEncoder.encode(admin.getPassword()));
         admin.setStatus(AdminStatus.pending);
         admin.setIsVerified(false);

@@ -26,13 +26,13 @@ public class AdminController {
     /// name - email - password
     /// without specifying a role it will default to viewer
     @PostMapping("/add")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN_MANAGER', 'SUPER_ADMIN')")
     public void addAdmin(@RequestBody AdminModel admin) {
         service.add(admin);
     }
 
     @DeleteMapping("/delete/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN_MANAGER', 'SUPER_ADMIN')")
     public void deleteAdmin(@PathVariable int id) {
         service.delete(id);
     }
@@ -42,19 +42,19 @@ public class AdminController {
     ///
     /// Each admin can update their own profile even if they do not have the ROLE_ADMIN
     @PutMapping("/update")
-    @PreAuthorize("hasAnyRole('ADMIN') or #admin.name == authentication.name")
+    @PreAuthorize("hasAnyRole('ADMIN_MANAGER', 'SUPER_ADMIN') or #admin.name == authentication.name")
     public void updateAdmin(@RequestBody AdminModel admin) {
         service.updateProfile(admin);
     }
 
     @GetMapping("/get")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN_MANAGER', 'SUPER_ADMIN')")
     public List<AdminModel> getAdmins() {
         return service.getAll();
     }
 
     @GetMapping("/get/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN_MANAGER', 'SUPER_ADMIN')")
     public AdminModel getAdmin(@PathVariable int id) {
         return service.get(id);
     }

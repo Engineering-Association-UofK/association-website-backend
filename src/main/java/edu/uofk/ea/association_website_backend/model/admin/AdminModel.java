@@ -3,6 +3,8 @@ package edu.uofk.ea.association_website_backend.model.admin;
 import jakarta.persistence.*;
 
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "admins")
@@ -29,9 +31,11 @@ public class AdminModel {
     @Enumerated(EnumType.STRING)
     private AdminStatus status;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "admin_roles", joinColumns = @JoinColumn(name = "admin_id"))
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
-    private AdminRole role;
+    private Set<AdminRole> roles = new HashSet<>();
 
     @Column(name = "created_at")
     private Instant createdAt;
@@ -84,12 +88,12 @@ public class AdminModel {
         this.status = status;
     }
 
-    public AdminRole getRole() {
-        return role;
+    public Set<AdminRole> getRoles() {
+        return roles;
     }
 
-    public void setRole(AdminRole role) {
-        this.role = role;
+    public void setRoles(Set<AdminRole> roles) {
+        this.roles = roles;
     }
 
     public Instant getCreatedAt() {
@@ -109,7 +113,7 @@ public class AdminModel {
                 ", password='" + password + '\'' +
                 ", isVerified=" + isVerified +
                 ", status=" + status +
-                ", role=" + role +
+                ", roles=" + roles +
                 ", createdAt=" + createdAt +
                 '}';
     }
