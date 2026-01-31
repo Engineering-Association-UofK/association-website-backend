@@ -19,6 +19,11 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      - name: Prepare P12 Key
+        run: |
+          mkdir -p ./keys
+          echo "${{ secrets.P12_FILE_BASE64 }}" | base64 --decode > ./keys/demo_key.p12
+
       - name: Build and Test with Maven
         env:
           CLOUDINARY_URL: ${{ secrets.CLOUDINARY_URL }}
@@ -31,6 +36,8 @@ jobs:
           MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
           MAIL_RECEIVER: ${{ secrets.MAIL_RECEIVER }}
           MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          APP_KEYSTORE_PATH: ${{ github.workspace }}/keys/demo_key.p12
+          APP_KEYSTORE_PASSWORD: ${{ secrets.P12_PASSWORD }}
         run: mvn -B package --file pom.xml
 
       - name: Upload Artifact

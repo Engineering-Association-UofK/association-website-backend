@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS admins (
     email VARCHAR(255),
     password_hash VARCHAR(255) NOT NULL,
     verified tinyint NOT NULL,
-    status ENUM('active', 'deactivated', 'pending') DEFAULT 'active',
+    status VARCHAR(20) NOT NULL DEFAULT 'active',
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS faqs_translations (
     faq_id INT NOT NULL,
     title VARCHAR(255) NOT NULL,
     body TEXT NOT NULL,
-    lang ENUM('en', 'ar') DEFAULT 'en',
+    lang VARCHAR(2) NOT NULL DEFAULT 'en',
 
     Foreign Key (faq_id) REFERENCES faqs(id)
 );
@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS blog_posts (
     author_id INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    status ENUM('draft', 'published', 'archived') DEFAULT 'draft',
+    status VARCHAR(20) NOT NULL,
 
     FOREIGN KEY (author_id) REFERENCES admins(id)
 );
@@ -73,4 +73,44 @@ CREATE TABLE IF NOT EXISTS gallery (
     image_link TEXT NOT NULL,
     description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Student & Events Placeholders
+CREATE TABLE IF NOT EXISTS students (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS events (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL
+);
+
+-- Certificate and decision tables
+CREATE TABLE IF NOT EXISTS certificates (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    cert_hash VARCHAR(255) NOT NULL,
+    student_id INT NOT NULL,
+    event_id INT NOT NULL,
+    issue_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    file_path VARCHAR(255) NOT NULL,
+    status VARCHAR(20) NOT NULL,
+
+    FOREIGN KEY (student_id) REFERENCES students(id),
+    FOREIGN KEY (event_id) REFERENCES events(id)
+);
+
+CREATE TABLE IF NOT EXISTS documents (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    document_hash VARCHAR(255) NOT NULL,
+    certifying_authority VARCHAR(255) NOT NULL,
+    document_type VARCHAR(255) NOT NULL,
+    document_reason VARCHAR(255) NOT NULL,
+    document_author VARCHAR(255) NOT NULL,
+    admin_id INT NOT NULL,
+    issue_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    file_path VARCHAR(255) NOT NULL,
+    status VARCHAR(20) NOT NULL,
+
+    FOREIGN KEY (admin_id) REFERENCES admins(id)
 );

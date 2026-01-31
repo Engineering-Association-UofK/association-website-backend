@@ -3,8 +3,8 @@ package edu.uofk.ea.association_website_backend.service;
 import edu.uofk.ea.association_website_backend.exceptionHandlers.exceptions.GenericAlreadyExistsException;
 import edu.uofk.ea.association_website_backend.exceptionHandlers.exceptions.GenericNotFoundException;
 import edu.uofk.ea.association_website_backend.exceptionHandlers.exceptions.UnexpectedErrorException;
-import edu.uofk.ea.association_website_backend.model.faq.*;
 import edu.uofk.ea.association_website_backend.model.Language;
+import edu.uofk.ea.association_website_backend.model.faq.*;
 import edu.uofk.ea.association_website_backend.repository.FaqRepo;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Service
 public class FaqService {
 
-    private FaqRepo repo;
+    private final FaqRepo repo;
 
     @Autowired
     public FaqService(FaqRepo repo) {
@@ -107,7 +107,5 @@ public class FaqService {
             response.add(new FaqSeeResponse(faqId, title, body));
         }
         return response;
-
-//        return repo.seeAll();
     }
 }
