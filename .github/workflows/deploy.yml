@@ -38,6 +38,8 @@ jobs:
           MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
           APP_KEYSTORE_PATH: ${{ github.workspace }}/keys/demo_key.p12
           APP_KEYSTORE_PASSWORD: ${{ secrets.P12_PASSWORD }}
+          SECRET_SALT: ${{ secrets.SECRET_SALT }}
+          WEBSITE_LINK: ${{ secrets.WEBSITE_LINK }}
         run: mvn -B package --file pom.xml
 
       - name: Upload Artifact
