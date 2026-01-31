@@ -1,5 +1,7 @@
 package edu.uofk.ea.association_website_backend.model.certificates.certificates;
 
+import edu.uofk.ea.association_website_backend.model.certificates.DocStatus;
+
 import java.time.Instant;
 
 public class CertVerifyResponse {
@@ -8,14 +10,16 @@ public class CertVerifyResponse {
     private String link;
     private String name;
     private String event;
+    private DocStatus status;
     private Instant issueDate;
 
-    public CertVerifyResponse(boolean valid, Integer id, String link, String name, String event, Instant issueDate) {
+    public CertVerifyResponse(boolean valid, Integer id, String link, String name, String event, DocStatus status, Instant issueDate) {
         this.valid = valid;
         this.id = id;
         this.link = link;
         this.name = name;
         this.event = event;
+        this.status = status;
         this.issueDate = issueDate;
     }
 
@@ -57,6 +61,14 @@ public class CertVerifyResponse {
 
     public void setEvent(String event) {
         this.event = event;
+    }
+
+    public DocStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(DocStatus status) {
+        this.status = status;
     }
 
     public Instant getIssueDate() {

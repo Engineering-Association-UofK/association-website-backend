@@ -1,6 +1,7 @@
 package edu.uofk.ea.association_website_backend.service.certificates;
 
 import edu.uofk.ea.association_website_backend.exceptionHandlers.exceptions.GenericNotFoundException;
+import edu.uofk.ea.association_website_backend.model.certificates.DocStatus;
 import edu.uofk.ea.association_website_backend.model.certificates.certificates.CertVerifyResponse;
 import edu.uofk.ea.association_website_backend.model.certificates.certificates.CertificateModel;
 import edu.uofk.ea.association_website_backend.model.certificates.certificates.DefaultManyCertsRequest;
@@ -85,14 +86,15 @@ public class CertificateManagerService {
                 hashedString,
                 StudentId,
                 EventId,
-                link
+                link,
+                DocStatus.ACTIVE
         );
         certificateService.Save(model);
 
         /// Step 7: Send an email with the link to the student.
         mailService.CertificateEmail(
                 "unvacc80@gmail.com", // StudentRepo.get(request.getStudentId()).getEmail(),
-                link,
+                url,
                 StudentName,
                 EventName
         );
@@ -128,7 +130,8 @@ public class CertificateManagerService {
                 r.getDocumentReason(),
                 r.getDocumentAuthor(),
                 adminService.getId(adminName),
-                link
+                link,
+                DocStatus.ACTIVE
                 );
         documentsService.Save(model);
 
@@ -138,7 +141,7 @@ public class CertificateManagerService {
     public CertVerifyResponse VerifyCertificate(String hash) {
         CertificateModel cert = certificateService.GetByHash(hash);
 
-        if (cert == null) return new CertVerifyResponse(false, null, null, null, null, null);
+        if (cert == null) return new CertVerifyResponse(false, null,null, null, null, null, null);
 
         return new CertVerifyResponse(
                 true,
@@ -146,6 +149,7 @@ public class CertificateManagerService {
                 cert.getFilePath(), // TODO: Replace with actual student and Event names when they are ready
                 "John Doe", // StudentRepo.get(cert.getStudentId()).getName(),
                 "HTML Basics", // EventRepo.get(cert.getEventId()).getName()",
+                cert.getStatus(),
                 cert.getIssueDate()
         );
     }
@@ -153,7 +157,7 @@ public class CertificateManagerService {
     public DocVerifyResponse VerifyDocument(String hash) {
         DocumentModel decision = documentsService.GetByHash(hash);
 
-        if (decision == null) return new DocVerifyResponse(false, null, null, null, null, null, null);
+        if (decision == null) return new DocVerifyResponse(false, null, null, null, null, null, null, null);
         
         return new DocVerifyResponse(
                 true,
@@ -162,7 +166,8 @@ public class CertificateManagerService {
                 decision.getDocumentType(),
                 decision.getDocumentReason(),
                 decision.getDecisionAuthor(),
-                decision.getIssueDate()
+                decision.getIssueDate(),
+                decision.getStatus()
         );
     }
 

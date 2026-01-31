@@ -8,6 +8,7 @@ import org.jspecify.annotations.NullMarked;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
@@ -77,7 +78,6 @@ public class AdminDetailsService implements UserDetailsService {
     public void sendCode(String name){
         AdminModel admin = repo.findByUsername(name);
         if (admin == null) throw new UsernameNotFoundException("Admin with this username not found");
-        System.out.println(admin);
         if (admin.getIsVerified()) throw new UnauthorizedException("Email already verified");
 
         verificationService.sendCode(admin);

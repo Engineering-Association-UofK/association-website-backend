@@ -1,6 +1,7 @@
 package edu.uofk.ea.association_website_backend.model.certificates.certificates;
 
 
+import edu.uofk.ea.association_website_backend.model.certificates.DocStatus;
 import jakarta.persistence.*;
 
 import java.time.Instant;
@@ -29,14 +30,19 @@ public class CertificateModel {
     @Column(name = "file_path")
     private String filePath;
 
+    @Column(name = "status")
+    private DocStatus status;
+
+
     public CertificateModel() {}
 
-    public CertificateModel(String certHash, Integer studentId, Integer eventId, String filePath) {
+    public CertificateModel(String certHash, Integer studentId, Integer eventId, String filePath, DocStatus status) {
         this.certHash = certHash;
         this.studentId = studentId;
         this.eventId = eventId;
         this.filePath = filePath;
         this.issueDate = Instant.now();
+        this.status = status;
     }
 
     public Integer getId() {
@@ -85,5 +91,13 @@ public class CertificateModel {
 
     public void setFilePath(String filePath) {
         this.filePath = filePath;
+    }
+
+    public DocStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(DocStatus status) {
+        this.status = status;
     }
 }

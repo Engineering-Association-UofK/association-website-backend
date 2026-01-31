@@ -1,5 +1,7 @@
 package edu.uofk.ea.association_website_backend.model.certificates.documents;
 
+import edu.uofk.ea.association_website_backend.model.certificates.DocStatus;
+
 import java.time.Instant;
 
 public class DocVerifyResponse {
@@ -10,8 +12,9 @@ public class DocVerifyResponse {
     private String documentReason;
     private String documentAuthor;
     private Instant issueDate;
+    private DocStatus status;
 
-    public DocVerifyResponse(boolean valid, Integer id, String certifyingAuthority, DocumentTypes documentType, String documentReason, String documentAuthor, Instant issueDate) {
+    public DocVerifyResponse(boolean valid, Integer id, String certifyingAuthority, DocumentTypes documentType, String documentReason, String documentAuthor, Instant issueDate, DocStatus status) {
         this.valid = valid;
         this.id = id;
         this.certifyingAuthority = certifyingAuthority;
@@ -19,6 +22,7 @@ public class DocVerifyResponse {
         this.documentReason = documentReason;
         this.documentAuthor = documentAuthor;
         this.issueDate = issueDate;
+        this.status = status;
     }
 
     public boolean isValid() {
@@ -75,5 +79,13 @@ public class DocVerifyResponse {
 
     public void setIssueDate(Instant issueDate) {
         this.issueDate = issueDate;
+    }
+
+    public DocStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(DocStatus status) {
+        this.status = status;
     }
 }

@@ -1,6 +1,7 @@
 package edu.uofk.ea.association_website_backend.model.certificates.documents;
 
 
+import edu.uofk.ea.association_website_backend.model.certificates.DocStatus;
 import jakarta.persistence.*;
 
 import java.time.Instant;
@@ -39,11 +40,15 @@ public class DocumentModel {
     @Column(name = "file_path")
     private String filePath;
 
+    @Column(name = "status")
+    private DocStatus status;
+
+
     public DocumentModel() {
     }
 
 
-    public DocumentModel(String documentHash, String certifyingAuthority, DocumentTypes documentType, String documentReason, String documentAuthor, Integer adminId, String filePath) {
+    public DocumentModel(String documentHash, String certifyingAuthority, DocumentTypes documentType, String documentReason, String documentAuthor, Integer adminId, String filePath, DocStatus status) {
         this.documentHash = documentHash;
         this.certifyingAuthority = certifyingAuthority;
         this.documentType = documentType;
@@ -52,6 +57,7 @@ public class DocumentModel {
         this.adminId = adminId;
         this.issueDate = Instant.now();
         this.filePath = filePath;
+        this.status = status;
     }
 
     public Integer getId() {
@@ -124,5 +130,13 @@ public class DocumentModel {
 
     public void setFilePath(String filePath) {
         this.filePath = filePath;
+    }
+
+    public DocStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(DocStatus status) {
+        this.status = status;
     }
 }

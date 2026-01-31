@@ -32,13 +32,13 @@ public class CertificatesController {
     }
 
     @PostMapping("/cert")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('CERTIFICATE_ISSUER', 'SUPER_ADMIN')")
     public void newDefaultCert(@RequestBody DefaultOneCertRequest request) {
         manager.HandleDefaultOneCert(request.getStudentId(), request.getEventId());
     }
 
     @PostMapping("/cert/mass")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('CERTIFICATE_ISSUER', 'SUPER_ADMIN')")
     public void newDefaultCerts(@RequestBody DefaultManyCertsRequest request) {
         manager.HandleDefaultManyCerts(request);
     }
@@ -49,7 +49,7 @@ public class CertificatesController {
     /// then it returns the signed PDF file.
     ///
     @PostMapping(path = "/document", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('PAPER_CERTIFIER', 'SUPER_ADMIN')")
     public ResponseEntity<byte[]> newDocumentCert(
             @RequestPart("data") String requestString,
             @RequestPart("file") MultipartFile file,
@@ -75,7 +75,7 @@ public class CertificatesController {
     }
 
     @GetMapping("/document/download/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('PAPER_VIEWER', 'SUPER_ADMIN')")
     public ResponseEntity<byte[]> DownloadDocument(@PathVariable int id) {
         byte[] pdf = manager.DownloadDocument(id);
 
@@ -86,7 +86,7 @@ public class CertificatesController {
     }
 
     @GetMapping("/certificate/download/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('PAPER_VIEWER', 'SUPER_ADMIN')")
     public ResponseEntity<byte[]> DownloadCertificate(@PathVariable int id) {
         byte[] pdf = manager.DownloadCertificate(id);
 

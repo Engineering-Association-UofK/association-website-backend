@@ -25,6 +25,7 @@ public class TeamController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('CONTENT_EDITOR', 'SUPER_ADMIN')")
     public TeamMemberModel getById(@PathVariable int id) {
         return service.findById(id);
     }

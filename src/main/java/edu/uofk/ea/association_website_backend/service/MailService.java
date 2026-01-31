@@ -59,9 +59,9 @@ public class MailService {
     public void CertificateEmail(String email, String link, String name, String event){
         String subject = "Your Certificate for " + event;
         String text ="Dear " + name + ",\n\n" +
-                "Congratulations on successfully completing the event + " + event + ".\n\n" +
+                "Congratulations on successfully completing " + event + ".\n\n" +
                 "You can view and download your certificate using the following link: \n" +
-                link + "\n\n" + "Engineering Association";
+                link + "\n\n" + "Steering Engineering Association";
         sendEmail(email, subject, text);
     }
 }
