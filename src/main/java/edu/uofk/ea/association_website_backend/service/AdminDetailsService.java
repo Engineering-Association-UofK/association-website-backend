@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.HashSet;
 import java.util.Set;
@@ -93,6 +94,7 @@ public class AdminDetailsService implements UserDetailsService {
     public void updateProfile(AdminRequest request) {
         AdminModel existing = repo.findByUsername(request.getName());
         if (existing == null) throw new UsernameNotFoundException("User not found");
+        if (existing.getRoles().contains(AdminRole.ROLE_SUPER_ADMIN)) throw new IllegalArgumentException("Cannot update super admin profile");
 
         // Validate Roles
         if (request.getRoles() != null && request.getRoles().contains(AdminRole.ROLE_SUPER_ADMIN)) {
@@ -144,29 +146,43 @@ public class AdminDetailsService implements UserDetailsService {
     public void delete(int id) {
         if (repo.findById(id) == null) throw new UsernameNotFoundException("Admin with this id not found");
         AdminModel admin = repo.findById(id);
+        if (admin.getRoles().contains(AdminRole.ROLE_SUPER_ADMIN)) throw new IllegalArgumentException("Cannot delete super admin");
+        if (admin.getStatus() == AdminStatus.deactivated) throw new IllegalArgumentException("Admin already deactivated");
+
         admin.setStatus(AdminStatus.deactivated);
+        admin.setName("Deleted: " + admin.getName() + " - " + System.currentTimeMillis());
         repo.update(admin);
     }
 
     public AdminModel get(int id) {
-        if (repo.findById(id) == null) throw new UsernameNotFoundException("Admin with this id not found");
         AdminModel admin = repo.findById(id);
+
+        if (admin == null) throw new UsernameNotFoundException("Admin with this id not found");
+        if (admin.getRoles().contains(AdminRole.ROLE_SUPER_ADMIN)) throw new IllegalArgumentException("Cannot get super admin");
+
         admin.setPassword(null);
 
         return admin;
     }
 
     public List<AdminModel> getAll() {
-        List<AdminModel> admins = repo.getAll();
+        List<AdminModel> admins = repo.getAllActive();
+        List<AdminModel> a = new ArrayList<>();
         for (AdminModel admin : admins) {
-            admin.setPassword(null);
+            if (admin.getRoles().contains(AdminRole.ROLE_SUPER_ADMIN)) a.add(admin);
+            else admin.setPassword(null);
         }
+        if (!a.isEmpty()) admins.removeAll(a);
+
+        if (admins.isEmpty()) return new ArrayList<>();
         return admins;
     }
 
     public String getName(int id) {
         if (repo.findById(id) == null) throw new UsernameNotFoundException("Admin with this id not found");
         AdminModel admin = repo.findById(id);
+
+        if (admin.getRoles().contains(AdminRole.ROLE_SUPER_ADMIN)) return "Super Admin";
 
         return admin.getName();
     }
