@@ -92,6 +92,13 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- SpringDoc OpenAPI for Swagger UI -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>3.0.1</version>
+        </dependency>
+
         <!-- Bucket4j -->
         <dependency>
             <groupId>com.bucket4j</groupId>
