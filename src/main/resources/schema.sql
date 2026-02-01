@@ -114,3 +114,42 @@ CREATE TABLE IF NOT EXISTS documents (
 
     FOREIGN KEY (admin_id) REFERENCES admins(id)
 );
+
+CREATE TABLE IF NOT EXISTS bot_commands (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    keyword VARCHAR(50) NOT NULL,
+    description VARCHAR(255)
+);
+
+CREATE TABLE IF NOT EXISTS bot_command_translations (
+    command_id INT NOT NULL,
+    text TEXT NOT NULL,
+    language VARCHAR(10) NOT NULL,
+    FOREIGN KEY (command_id) REFERENCES bot_commands(id)
+);
+
+CREATE TABLE IF NOT EXISTS bot_command_triggers (
+    command_id INT NOT NULL,
+    trigger_text VARCHAR(50) NOT NULL,
+    language VARCHAR(10) NOT NULL,
+    FOREIGN KEY (command_id) REFERENCES bot_commands(id)
+);
+
+CREATE TABLE IF NOT EXISTS bot_command_options (
+    command_id INT NOT NULL,
+    next_keyword VARCHAR(50) NOT NULL,
+    FOREIGN KEY (command_id) REFERENCES bot_commands(id)
+);
+
+CREATE TABLE IF NOT EXISTS technical_feedback (
+     id INT PRIMARY KEY AUTO_INCREMENT,
+     message TEXT NOT NULL,
+     sender_contact VARCHAR(255),
+     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+ );
+
+ CREATE TABLE IF NOT EXISTS contact_list (
+     id INT PRIMARY KEY AUTO_INCREMENT,
+     name VARCHAR(255) NOT NULL,
+     email VARCHAR(255) NOT NULL
+ );
