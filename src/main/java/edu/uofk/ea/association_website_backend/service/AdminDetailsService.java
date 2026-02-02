@@ -4,6 +4,7 @@ import edu.uofk.ea.association_website_backend.exceptionHandlers.exceptions.Unau
 import edu.uofk.ea.association_website_backend.exceptionHandlers.exceptions.UserAlreadyExistsException;
 import edu.uofk.ea.association_website_backend.model.admin.*;
 import edu.uofk.ea.association_website_backend.repository.AdminRepo;
+import edu.uofk.ea.association_website_backend.repository.OldAdminRepo;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -17,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,14 +33,23 @@ public class AdminDetailsService implements UserDetailsService {
     private final JWTService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final VerificationService verificationService;
+    private final OldAdminRepo oldAdminRepo;
 
     @Autowired
-    public AdminDetailsService(AdminRepo repo, @Lazy AuthenticationManager authManager, @Lazy JWTService jwtService, @Lazy PasswordEncoder passwordEncoder, @Lazy VerificationService verificationService) {
+    public AdminDetailsService(
+            AdminRepo repo,
+            @Lazy AuthenticationManager authManager,
+            @Lazy JWTService jwtService,
+            @Lazy PasswordEncoder passwordEncoder,
+            @Lazy VerificationService verificationService,
+            OldAdminRepo oldAdminRepo
+    ) {
         this.repo = repo;
         this.authManager = authManager;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
         this.verificationService = verificationService;
+        this.oldAdminRepo = oldAdminRepo;
     }
 
     @Override
@@ -143,15 +154,20 @@ public class AdminDetailsService implements UserDetailsService {
         repo.save(newAdmin);
     }
 
+    @Transactional
     public void delete(int id) {
         if (repo.findById(id) == null) throw new UsernameNotFoundException("Admin with this id not found");
         AdminModel admin = repo.findById(id);
         if (admin.getRoles().contains(AdminRole.ROLE_SUPER_ADMIN)) throw new IllegalArgumentException("Cannot delete super admin");
         if (admin.getStatus() == AdminStatus.deactivated) throw new IllegalArgumentException("Admin already deactivated");
 
-        admin.setStatus(AdminStatus.deactivated);
-        admin.setName("Deleted: " + admin.getName() + " - " + System.currentTimeMillis());
-        repo.update(admin);
+        OldAdminModel oa = new OldAdminModel(
+                admin.getName(),
+                admin.getEmail()
+        );
+        oldAdminRepo.save(oa);
+
+        repo.delete(admin);
     }
 
     public AdminModel get(int id) {
