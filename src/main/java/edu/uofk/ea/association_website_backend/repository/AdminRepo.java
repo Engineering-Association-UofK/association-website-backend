@@ -48,6 +48,10 @@ public class AdminRepo {
         em.merge(admin);
     }
 
+    public void delete(AdminModel admin){
+        em.remove(admin);
+    }
+
     public AdminModel findById(int id){
         return em.find(AdminModel.class, id);
     }
