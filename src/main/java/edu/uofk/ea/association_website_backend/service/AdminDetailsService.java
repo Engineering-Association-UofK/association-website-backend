@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
@@ -75,15 +76,20 @@ public class AdminDetailsService implements UserDetailsService {
     }
 
     public String login(LoginRequest admin) {
-        Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(admin.getName(), admin.getPassword()));
-
-        AdminModel dbAdmin = repo.findByUsername(admin.getName());
-        if (!dbAdmin.getIsVerified()) {
-            throw new UnauthorizedException("Account not verified");
+        try {
+            Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(admin.getName(), admin.getPassword()));
+            if (authentication.isAuthenticated()) {
+                AdminModel dbAdmin = repo.findByUsername(admin.getName());
+                return jwtService.generateAdminToken(dbAdmin);
+            }
+        } catch (DisabledException e) {
+            AdminModel dbAdmin = repo.findByUsername(admin.getName());
+            if (dbAdmin != null && !dbAdmin.getIsVerified()) {
+                throw new UnauthorizedException("Account not verified");
+            } else {
+                throw e;
+            }
         }
-
-        if (authentication.isAuthenticated()) return jwtService.generateAdminToken(dbAdmin);
-
         return null;
     }
 
