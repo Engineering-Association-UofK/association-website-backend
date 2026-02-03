@@ -41,6 +41,7 @@ public class DocumentModel {
     private String filePath;
 
     @Column(name = "status")
+    @Enumerated(EnumType.STRING)
     private DocStatus status;
 
 
