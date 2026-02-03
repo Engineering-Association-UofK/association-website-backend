@@ -6,6 +6,8 @@ import edu.uofk.ea.association_website_backend.model.certificates.certificates.D
 import edu.uofk.ea.association_website_backend.model.certificates.documents.DocVerifyResponse;
 import edu.uofk.ea.association_website_backend.model.certificates.documents.DocumentCertRequest;
 import edu.uofk.ea.association_website_backend.service.certificates.CertificateManagerService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -16,10 +18,15 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import tools.jackson.databind.ObjectMapper;
 
+
 import java.io.IOException;
 
 @RestController
 @RequestMapping("api/documents")
+@Tag(
+        name = "Certificates & Documents",
+        description = "Endpoints for issuing, verifying, and downloading certificates and certified documents"
+)
 public class CertificatesController {
 
     private final CertificateManagerService manager;
@@ -33,12 +40,20 @@ public class CertificatesController {
 
     @PostMapping("/cert")
     @PreAuthorize("hasAnyRole('CERTIFICATE_ISSUER', 'SUPER_ADMIN')")
+    @Operation(
+            summary = "Apply for a new certificate",
+            description = "This endpoint is used to apply for a new certificate. It requires the student ID and the event ID to generate the certificate."
+    )
     public void newDefaultCert(@RequestBody DefaultOneCertRequest request) {
         manager.HandleDefaultOneCert(request.getStudentId(), request.getEventId());
     }
 
     @PostMapping("/cert/mass")
     @PreAuthorize("hasAnyRole('CERTIFICATE_ISSUER', 'SUPER_ADMIN')")
+    @Operation(
+            summary = "Apply for multiple certificates",
+            description = "This endpoint is used to apply for multiple certificates. It requires the student IDs as array and the event ID to generate the certificates."
+    )
     public void newDefaultCerts(@RequestBody DefaultManyCertsRequest request) {
         manager.HandleDefaultManyCerts(request);
     }
@@ -50,6 +65,10 @@ public class CertificatesController {
     ///
     @PostMapping(path = "/document", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAnyRole('PAPER_CERTIFIER', 'SUPER_ADMIN')")
+    @Operation(
+            summary = "Sign a new document",
+            description = "This endpoint is used to sign a new document."
+    )
     public ResponseEntity<byte[]> newDocumentCert(
             @RequestPart("data") String requestString,
             @RequestPart("file") MultipartFile file,
@@ -66,17 +85,30 @@ public class CertificatesController {
     }
 
     @GetMapping("/certificate/verify/{hash}")
+    @Operation(
+            summary = "Verify a certificate",
+            description = "This endpoint is used to verify a certificate."
+    )
     public CertVerifyResponse verifyCertificate(@PathVariable String hash){
         return manager.VerifyCertificate(hash);
     }
+
     @GetMapping("/document/verify/{hash}")
+    @Operation(
+            summary = "Verify a document",
+            description = "This endpoint is used to verify a document."
+    )
     public DocVerifyResponse verifyDocument(@PathVariable String hash){
         return manager.VerifyDocument(hash);
     }
 
     @GetMapping("/document/download/{id}")
     @PreAuthorize("hasAnyRole('PAPER_VIEWER', 'SUPER_ADMIN')")
-    public ResponseEntity<byte[]> DownloadDocument(@PathVariable int id) {
+    @Operation(
+            summary = "Download a document",
+            description = "This endpoint is used to download a document."
+    )
+    public ResponseEntity<byte[]> downloadDocument(@PathVariable int id) {
         byte[] pdf = manager.DownloadDocument(id);
 
         return ResponseEntity.ok()
@@ -87,7 +119,11 @@ public class CertificatesController {
 
     @GetMapping("/certificate/download/{id}")
     @PreAuthorize("hasAnyRole('PAPER_VIEWER', 'SUPER_ADMIN')")
-    public ResponseEntity<byte[]> DownloadCertificate(@PathVariable int id) {
+    @Operation(
+            summary = "Download a certificate",
+            description = "This endpoint is used to download a certificate."
+    )
+    public ResponseEntity<byte[]> downloadCertificate(@PathVariable int id) {
         byte[] pdf = manager.DownloadCertificate(id);
 
         return ResponseEntity.ok()

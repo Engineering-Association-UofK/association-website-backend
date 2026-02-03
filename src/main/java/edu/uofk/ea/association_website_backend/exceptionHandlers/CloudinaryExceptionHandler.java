@@ -3,6 +3,7 @@ package edu.uofk.ea.association_website_backend.exceptionHandlers;
 import edu.uofk.ea.association_website_backend.exceptionHandlers.exceptions.UnauthorizedException;
 import edu.uofk.ea.association_website_backend.util.BaseErrorResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -27,6 +28,9 @@ public class CloudinaryExceptionHandler {
         else
             error.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 
-        return new ResponseEntity<>(error, HttpStatus.valueOf(error.getStatus()));
+        return ResponseEntity
+                .status(HttpStatus.valueOf(error.getStatus()))
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(error);
     }
 }

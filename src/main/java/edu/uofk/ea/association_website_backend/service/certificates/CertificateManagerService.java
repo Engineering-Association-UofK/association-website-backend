@@ -183,6 +183,7 @@ public class CertificateManagerService {
         CertificateModel document = certificateService.GetById(id);
 
         if (document == null) throw new GenericNotFoundException("Document not found");
+        if (document.getFilePath() == null) throw new GenericNotFoundException("Document not found");
 
         return StreamFile(document.getFilePath());
     }
