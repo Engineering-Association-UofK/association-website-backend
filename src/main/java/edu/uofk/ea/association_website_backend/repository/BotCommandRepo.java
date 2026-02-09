@@ -28,6 +28,11 @@ public class BotCommandRepo {
         }
     }
 
+    public List<CommandModel> findAll() {
+        TypedQuery<CommandModel> query = em.createQuery("SELECT c FROM CommandModel c", CommandModel.class);
+        return query.getResultList();
+    }
+
     public List<CommandModel> findAllByKeywordIn(Set<String> keywords) {
         if (keywords == null || keywords.isEmpty()) return Collections.emptyList();
         TypedQuery<CommandModel> query = em.createQuery("SELECT c FROM CommandModel c WHERE c.keyword IN :keywords", CommandModel.class);
