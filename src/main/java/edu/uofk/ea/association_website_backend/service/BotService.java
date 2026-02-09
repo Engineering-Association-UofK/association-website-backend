@@ -52,6 +52,29 @@ public class BotService {
         }
     }
 
+    public List<BotCommandDTO> getAll() {
+        return repo.findAll().stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    public BotCommandDTO getById(int id) {
+        CommandModel model = repo.findById(id);
+        if (model == null) throw new GenericNotFoundException("Command not found");
+        return toDTO(model);
+    }
+
+    private BotCommandDTO toDTO(CommandModel model) {
+        BotCommandDTO dto = new BotCommandDTO();
+        dto.setId(model.getId());
+        dto.setKeyword(model.getKeyword());
+        dto.setTriggers(model.getTriggers());
+        dto.setDescription(model.getDescription());
+        dto.setTexts(model.getTexts());
+        dto.setNextKeywords(model.getNextKeywords());
+        return dto;
+    }
+
     public void save(BotCommandDTO dto) {
         CommandModel model = new CommandModel();
         model.setKeyword(dto.getKeyword());
