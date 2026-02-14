@@ -8,5 +8,6 @@ public enum AdminRole{
     ROLE_ADMIN_MANAGER, // See and manage admins.
     ROLE_CERTIFICATE_ISSUER, // Allows issuing certificates.
     ROLE_BLOG_MANAGER, // Allows creating and managing blog posts.
+    ROLE_TECHNICAL_SUPPORT, // Allows managing technical feedback and system logs.
     ROLE_SUPER_ADMIN // The one who can break everything with a single click.
 }

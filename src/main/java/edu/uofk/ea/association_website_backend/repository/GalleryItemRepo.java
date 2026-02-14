@@ -1,6 +1,6 @@
 package edu.uofk.ea.association_website_backend.repository;
 
-import edu.uofk.ea.association_website_backend.model.GalleryItemModel;
+import edu.uofk.ea.association_website_backend.model.gallery.GalleryItemModel;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;

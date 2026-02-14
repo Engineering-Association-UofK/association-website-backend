@@ -1,6 +1,6 @@
 package edu.uofk.ea.association_website_backend.controller;
 
-import edu.uofk.ea.association_website_backend.model.GalleryItemModel;
+import edu.uofk.ea.association_website_backend.model.gallery.GalleryItemModel;
 import edu.uofk.ea.association_website_backend.service.GalleryItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
