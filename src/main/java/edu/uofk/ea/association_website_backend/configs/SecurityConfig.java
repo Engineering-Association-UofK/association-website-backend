@@ -70,7 +70,21 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll())
+
+                        .requestMatchers(HttpMethod.POST, "/api/generics/get", "/api/generics/get-batch").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/admin/get-name/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/blogs/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/bot/command").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/documents/certificate/verify/**", "/api/documents/document/verify/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/gallery").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/team").permitAll()
+
+                        .requestMatchers(HttpMethod.POST, "/api/bot/command").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/admin/login", "/admin/send-code", "/admin/verify").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/mail").permitAll()
+
+                        .anyRequest().authenticated())
+
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
