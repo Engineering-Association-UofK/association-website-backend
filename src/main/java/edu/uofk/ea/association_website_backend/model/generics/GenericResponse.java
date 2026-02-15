@@ -1,22 +1,26 @@
-package edu.uofk.ea.association_website_backend.model.faq;
+package edu.uofk.ea.association_website_backend.model.generics;
 
-public class FaqSeeResponse {
-    private int FaqId;
+
+public class GenericResponse {
+
+    private String keyword;
     private String title;
     private String body;
 
-    public FaqSeeResponse(int faqId, String title, String body) {
-        this.FaqId = faqId;
+    public GenericResponse() {}
+
+    public GenericResponse(String keyword,String title, String body) {
+        this.keyword = keyword;
         this.title = title;
         this.body = body;
     }
 
-    public int getFaqId() {
-        return FaqId;
+    public String getKeyword() {
+        return keyword;
     }
 
-    public void setFaqId(int faqId) {
-        FaqId = faqId;
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
     }
 
     public String getTitle() {

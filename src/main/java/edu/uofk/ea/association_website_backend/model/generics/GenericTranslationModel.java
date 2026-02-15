@@ -1,19 +1,19 @@
-package edu.uofk.ea.association_website_backend.model.faq;
+package edu.uofk.ea.association_website_backend.model.generics;
 
 import edu.uofk.ea.association_website_backend.model.Language;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name="faqs_translations")
-public class FaqTranslationModel {
+@Table(name="generic_translations")
+public class GenericTranslationModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
 
-    @Column(name = "faq_id")
-    private int faqId;
+    @Column(name = "gen_id")
+    private int genId;
 
     @Column(name = "title")
     private String title;
@@ -25,16 +25,16 @@ public class FaqTranslationModel {
     @Enumerated(EnumType.STRING)
     private Language lang;
 
-    public FaqTranslationModel() {}
+    public GenericTranslationModel() {}
 
-    public FaqTranslationModel(int faqId, String title, String body, Language translation) {
-        this.faqId = faqId;
+    public GenericTranslationModel(int genId, String title, String body, Language translation) {
+        this.genId = genId;
         this.title = title;
         this.body = body;
         this.lang = translation;
     }
 
-    public FaqTranslationModel(String title, String body, Language translation){
+    public GenericTranslationModel(String title, String body, Language translation){
         this.title = title;
         this.body = body;
         this.lang = translation;
@@ -64,12 +64,12 @@ public class FaqTranslationModel {
         this.body = body;
     }
 
-    public int getFaqId() {
-        return faqId;
+    public int getGenId() {
+        return genId;
     }
 
-    public void setFaqId(int faqId) {
-        this.faqId = faqId;
+    public void setGenId(int genId) {
+        this.genId = genId;
     }
 
     public Language getLang() {
@@ -82,7 +82,7 @@ public class FaqTranslationModel {
 
     @Override
     public String toString() {
-        return "Faq{" +
+        return "Gen{" +
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", body='" + body + '\'' +
