@@ -26,7 +26,7 @@ public class AuthenticationExceptionHandler {
                 Instant.now().getEpochSecond()
         );
 
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(NoResourceFoundException.class)

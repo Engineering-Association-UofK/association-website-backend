@@ -1,6 +1,7 @@
 package edu.uofk.ea.association_website_backend.repository;
 
 import edu.uofk.ea.association_website_backend.model.gallery.GalleryItemModel;
+import edu.uofk.ea.association_website_backend.model.gallery.GalleryItemType;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,20 @@ public class GalleryItemRepo {
 
     public List<GalleryItemModel> getAll(){
         return em.createQuery("FROM GalleryItemModel", GalleryItemModel.class).getResultList();
+    }
+
+    public List<GalleryItemModel> findByType(GalleryItemType type){
+        return em.createQuery("FROM GalleryItemModel WHERE type = :type", GalleryItemModel.class)
+                .setParameter("type", type).getResultList();
+    }
+
+    public GalleryItemModel findByKeyword(String keyword){
+        return em.createQuery("FROM GalleryItemModel WHERE keyword = :keyword", GalleryItemModel.class)
+                .setParameter("keyword", keyword).getResultList().stream().findFirst().orElse(null);
+    }
+
+    public void Update(GalleryItemModel item){
+        em.merge(item);
     }
 
     @Transactional

@@ -31,18 +31,19 @@ CREATE TABLE IF NOT EXISTS verification_codes (
     FOREIGN KEY (admin_id) REFERENCES admins(id)
 );
 
-CREATE TABLE IF NOT EXISTS faqs (
-    id INT PRIMARY KEY AUTO_INCREMENT
+CREATE TABLE IF NOT EXISTS generics (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    keyword VARCHAR(255) UNIQUE NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS faqs_translations (
+CREATE TABLE IF NOT EXISTS generic_translations (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    faq_id INT NOT NULL,
+    gen_id INT NOT NULL,
     title VARCHAR(255) NOT NULL,
     body TEXT NOT NULL,
     lang VARCHAR(2) NOT NULL DEFAULT 'en',
 
-    Foreign Key (faq_id) REFERENCES faqs(id)
+    Foreign Key (gen_id) REFERENCES generics(id)
 );
 
 CREATE TABLE IF NOT EXISTS blog_posts (
@@ -78,7 +79,14 @@ CREATE TABLE IF NOT EXISTS gallery (
     id INT PRIMARY KEY AUTO_INCREMENT,
     title VARCHAR(255) NOT NULL,
     image_link TEXT NOT NULL,
-    description TEXT,
+    type VARCHAR(20) NOT NULL,
+    keyword VARCHAR(255) UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS deleted_gallery (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    image_link TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -155,8 +163,8 @@ CREATE TABLE IF NOT EXISTS technical_feedback (
      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
  );
 
- CREATE TABLE IF NOT EXISTS contact_list (
-     id INT PRIMARY KEY AUTO_INCREMENT,
-     name VARCHAR(255) NOT NULL,
-     email VARCHAR(255) NOT NULL
- );
+CREATE TABLE IF NOT EXISTS contact_list (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL
+);

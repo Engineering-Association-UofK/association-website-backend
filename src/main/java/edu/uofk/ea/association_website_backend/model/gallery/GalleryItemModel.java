@@ -1,4 +1,4 @@
-package edu.uofk.ea.association_website_backend.model;
+package edu.uofk.ea.association_website_backend.model.gallery;
 
 import jakarta.persistence.*;
 
@@ -16,8 +16,12 @@ public class GalleryItemModel {
     @Column(name = "title")
     private String title;
 
-    @Column(name = "description")
-    private String description;
+    @Column(name = "type")
+    @Enumerated(EnumType.STRING)
+    private GalleryItemType type;
+
+    @Column(name = "keyword")
+    private String keyword;
 
     @Column(name = "image_link")
     private String imageLink;
@@ -27,9 +31,15 @@ public class GalleryItemModel {
 
     public GalleryItemModel(){}
 
-    public GalleryItemModel(String title, String description){
+    public GalleryItemModel(String title, GalleryItemType type){
         this.title = title;
-        this.description = description;
+        this.type = type;
+    }
+
+    public GalleryItemModel(String title, GalleryItemType type, String keyword){
+        this.title = title;
+        this.type = type;
+        this.keyword = keyword;
     }
 
     public int getId() {
@@ -48,12 +58,20 @@ public class GalleryItemModel {
         this.title = title;
     }
 
-    public String getDescription() {
-        return description;
+    public GalleryItemType getType() {
+        return type;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setType(GalleryItemType type) {
+        this.type = type;
+    }
+
+    public String getKeyword() {
+        return keyword;
+    }
+
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
     }
 
     public Instant getCreatedAt() {
@@ -77,7 +95,7 @@ public class GalleryItemModel {
         return "BlogPost{" +
                 "id=" + id +
                 ", title='" + title + '\'' +
-                ", content='" + description + '\'' +
+                ", content='" + type + '\'' +
                 ", createdAt=" + createdAt +
                 '}';
     }
