@@ -78,6 +78,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/documents/certificate/verify/**", "/api/documents/document/verify/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/gallery/open/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/team").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/certificates/certificate/download/**", "/api/certificates/document/download/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/swagger-ui/**", "/v3/api-docs/**").permitAll()
 
                         .requestMatchers(HttpMethod.POST, "/api/bot/command").permitAll()
                         .requestMatchers(HttpMethod.POST, "/admin/login", "/admin/send-code", "/admin/verify").permitAll()
