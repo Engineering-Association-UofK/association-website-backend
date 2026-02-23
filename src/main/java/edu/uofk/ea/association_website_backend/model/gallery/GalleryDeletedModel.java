@@ -16,13 +16,22 @@ public class GalleryDeletedModel {
     @Column(name = "image_link")
     private String imageLink;
 
+    @Column(name = "type")
+    @Enumerated(EnumType.STRING)
+    private GalleryItemType type;
+
+    @Column(name = "keyword")
+    private String keyword;
+
     @Column(name = "created_at")
     private Instant createdAt;
 
     public GalleryDeletedModel() {}
 
-    public GalleryDeletedModel(String imageLink) {
+    public GalleryDeletedModel(String imageLink, GalleryItemType type, String keyword) {
         this.imageLink = imageLink;
+        this.type = type;
+        this.keyword = keyword;
         this.createdAt = Instant.now();
     }
 
@@ -40,6 +49,22 @@ public class GalleryDeletedModel {
 
     public void setImageLink(String imageLink) {
         this.imageLink = imageLink;
+    }
+
+    public GalleryItemType getType() {
+        return type;
+    }
+
+    public void setType(GalleryItemType type) {
+        this.type = type;
+    }
+
+    public String getKeyword() {
+        return keyword;
+    }
+
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
     }
 
     public Instant getCreatedAt() {

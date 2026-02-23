@@ -74,7 +74,7 @@ public class GalleryService {
                 if (model != null){
                     item.setId(model.getId());
                     if (!Objects.equals(model.getImageLink(), item.getImageLink())) {
-                        deletedRepo.save(new GalleryDeletedModel(model.getImageLink()));
+                        deletedRepo.save(new GalleryDeletedModel(model.getImageLink(), model.getType(), model.getKeyword()));
                     }
                     repo.Update(item);
                     return;
@@ -90,11 +90,15 @@ public class GalleryService {
 
     @Transactional
     public void delete(int id){
-        if (repo.findById(id) == null) {
+        GalleryItemModel item = repo.findById(id);
+        if (item == null) {
             throw new GenericNotFoundException("Gallery item not found with ID:" + id);
         }
+        if (item.getType() == GalleryItemType.store) {
 
-        GalleryDeletedModel model = new GalleryDeletedModel(repo.findById(id).getImageLink());
+        }
+
+        GalleryDeletedModel model = new GalleryDeletedModel(item.getImageLink(), item.getType(), item.getKeyword());
         deletedRepo.save(model);
 
         repo.delete(id);
