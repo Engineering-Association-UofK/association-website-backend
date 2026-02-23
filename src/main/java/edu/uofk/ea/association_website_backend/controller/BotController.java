@@ -1,16 +1,21 @@
 package edu.uofk.ea.association_website_backend.controller;
 
+import edu.uofk.ea.association_website_backend.model.activity.ActivityType;
 import edu.uofk.ea.association_website_backend.model.bot.BotCommandDTO;
 import edu.uofk.ea.association_website_backend.model.bot.BotResponse;
 import edu.uofk.ea.association_website_backend.model.bot.CommandRequest;
+import edu.uofk.ea.association_website_backend.service.ActivityService;
+import edu.uofk.ea.association_website_backend.service.AdminDetailsService;
 import edu.uofk.ea.association_website_backend.service.BotService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/bot")
@@ -21,10 +26,14 @@ import java.util.List;
 public class BotController {
 
     private final BotService botService;
+    private final ActivityService activityService;
+    private final AdminDetailsService adminDetailsService;
 
     @Autowired
-    public BotController(BotService botService) {
+    public BotController(BotService botService, ActivityService activityService, AdminDetailsService adminDetailsService) {
         this.botService = botService;
+        this.activityService = activityService;
+        this.adminDetailsService = adminDetailsService;
     }
 
     @PostMapping("/command")
@@ -62,8 +71,10 @@ public class BotController {
             summary = "Create a new bot command",
             description = "Adds a new command to the chatbot system, including its keywords, triggers, and localized responses."
     )
-    public void addCommand(@RequestBody BotCommandDTO request) {
+    public void addCommand(@RequestBody BotCommandDTO request, Authentication authentication) {
         botService.save(request);
+        int id = adminDetailsService.getId(authentication.getName());
+        activityService.log(ActivityType.CREATE_BOT_COMMAND, Map.of("keyword", request.getKeyword()), id);
     }
 
     @PutMapping("/manage")
@@ -72,8 +83,10 @@ public class BotController {
             summary = "Update an existing bot command",
             description = "Updates an existing command's details, including its keywords, triggers, and localized responses."
     )
-    public void updateCommand(@RequestBody BotCommandDTO request) {
+    public void updateCommand(@RequestBody BotCommandDTO request, Authentication authentication) {
         botService.update(request);
+        int id = adminDetailsService.getId(authentication.getName());
+        activityService.log(ActivityType.UPDATE_BOT_COMMAND, Map.of("id", request.getId(), "keyword", request.getKeyword()), id);
     }
 
     @DeleteMapping("/manage/{id}")
@@ -82,7 +95,9 @@ public class BotController {
             summary = "Delete a bot command",
             description = "Removes a specific command from the chatbot system using its unique identifier."
     )
-    public void deleteCommand(@PathVariable int id) {
+    public void deleteCommand(@PathVariable int id, Authentication authentication) {
         botService.delete(id);
+        int adminId = adminDetailsService.getId(authentication.getName());
+        activityService.log(ActivityType.DELETE_BOT_COMMAND, Map.of("id", id), adminId);
     }
 }
