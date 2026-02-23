@@ -7,6 +7,7 @@ import edu.uofk.ea.association_website_backend.model.generics.GenericRequest;
 import edu.uofk.ea.association_website_backend.service.GenericsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +35,7 @@ public class GenericsController {
             description = "Creates a new generic model with a unique keyword and its first translation."
     )
     @PreAuthorize("hasAnyRole('CONTENT_EDITOR', 'SUPER_ADMIN')")
-    public void SaveGeneric(@RequestBody GenericRequest request) {
+    public void SaveGeneric(@Valid @RequestBody GenericRequest request) {
         service.Save(request);
     }
 
@@ -44,7 +45,7 @@ public class GenericsController {
             description = "Creates multiple new generic models, each with a unique keyword and its first translation."
     )
     @PreAuthorize("hasAnyRole('CONTENT_EDITOR', 'SUPER_ADMIN')")
-    public void SaveAllGeneric(@RequestBody List<GenericRequest> request) {
+    public void SaveAllGeneric(@Valid @RequestBody List<GenericRequest> request) {
         service.SaveAll(request);
     }
 
@@ -53,7 +54,7 @@ public class GenericsController {
             summary = "Get generic content",
             description = "Retrieves the title and body for a specific keyword in the requested language. Falls back to English if the requested language is not found."
     )
-    public GenericResponse GetGeneric(@RequestBody GenericGetRequest request) {
+    public GenericResponse GetGeneric(@Valid @RequestBody GenericGetRequest request) {
         return service.getGeneric(request);
     }
 
@@ -62,7 +63,7 @@ public class GenericsController {
             summary = "Get multiple generic content entries",
             description = "Retrieves a list of titles and bodies for a list of keywords in the requested language. Falls back to English if the requested language is not found."
     )
-    public List<GenericResponse> GetBatchGeneric(@RequestBody GenericBatchRequest request) {
+    public List<GenericResponse> GetBatchGeneric(@Valid @RequestBody GenericBatchRequest request) {
         return service.GetBatchGeneric(request);
     }
 
@@ -72,7 +73,7 @@ public class GenericsController {
             description = "Updates an existing translation or adds a new translation for an existing keyword."
     )
     @PreAuthorize("hasAnyRole('CONTENT_EDITOR', 'SUPER_ADMIN')")
-    public void UpdateGeneric(@RequestBody GenericRequest request) {
+    public void UpdateGeneric(@Valid @RequestBody GenericRequest request) {
         service.update(request);
     }
 
@@ -81,7 +82,7 @@ public class GenericsController {
 
     )
     @PreAuthorize("hasAnyRole('CONTENT_EDITOR', 'SUPER_ADMIN')")
-    public void UpdateAllGeneric(@RequestBody List<GenericRequest> request) {
+    public void UpdateAllGeneric(@Valid @RequestBody List<GenericRequest> request) {
         service.updateAll(request);
     }
 

@@ -49,6 +49,13 @@ public class BlogPostModel {
         this.authorId = authorId;
     }
 
+    public BlogPostModel(String title, String content, String imageLink, Status status) {
+        this.title = title;
+        this.content = content;
+        this.imageLink = imageLink;
+        this.status = status;
+    }
+
     public int getId() {
         return id;
     }

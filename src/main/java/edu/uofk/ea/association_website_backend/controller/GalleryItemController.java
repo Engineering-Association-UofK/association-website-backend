@@ -1,9 +1,11 @@
 package edu.uofk.ea.association_website_backend.controller;
 
 import edu.uofk.ea.association_website_backend.model.gallery.GalleryItemModel;
+import edu.uofk.ea.association_website_backend.model.gallery.GalleryItemRequest;
 import edu.uofk.ea.association_website_backend.model.gallery.GalleryItemType;
 import edu.uofk.ea.association_website_backend.model.gallery.GalleryKeywordResponse;
 import edu.uofk.ea.association_website_backend.service.GalleryService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -29,14 +31,14 @@ public class GalleryItemController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('CONTENT_EDITOR', 'SUPER_ADMIN')")
-    public void AddItem(@RequestBody GalleryItemModel item){
-        repo.save(item);
+    public void AddItem(@Valid @RequestBody GalleryItemRequest itemRequest){
+        repo.save(itemRequest);
     }
 
     @PutMapping
     @PreAuthorize("hasAnyRole('CONTENT_EDITOR', 'SUPER_ADMIN')")
-    public void UpdateItem(@RequestBody GalleryItemModel item){
-        repo.update(item);
+    public void UpdateItem(@Valid @RequestBody GalleryItemRequest itemRequest){
+        repo.update(itemRequest);
     }
 
     @GetMapping("/open/{keyword}")

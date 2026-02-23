@@ -8,6 +8,7 @@ import edu.uofk.ea.association_website_backend.model.certificates.documents.Docu
 import edu.uofk.ea.association_website_backend.service.certificates.CertificateManagerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -44,7 +45,7 @@ public class CertificatesController {
             summary = "Apply for a new certificate",
             description = "This endpoint is used to apply for a new certificate. It requires the student ID and the event ID to generate the certificate."
     )
-    public void newDefaultCert(@RequestBody DefaultOneCertRequest request) {
+    public void newDefaultCert(@Valid @RequestBody DefaultOneCertRequest request) {
         manager.HandleDefaultOneCert(request.getStudentId(), request.getEventId());
     }
 
@@ -54,7 +55,7 @@ public class CertificatesController {
             summary = "Apply for multiple certificates",
             description = "This endpoint is used to apply for multiple certificates. It requires the student IDs as array and the event ID to generate the certificates."
     )
-    public void newDefaultCerts(@RequestBody DefaultManyCertsRequest request) {
+    public void newDefaultCerts(@Valid @RequestBody DefaultManyCertsRequest request) {
         manager.HandleDefaultManyCerts(request);
     }
 

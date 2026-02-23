@@ -2,14 +2,16 @@ package edu.uofk.ea.association_website_backend.model.generics;
 
 import edu.uofk.ea.association_website_backend.model.Language;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 public class GenericGetRequest {
 
-    @NotBlank
+    @NotBlank(message = "Keyword cannot be blank.")
+    @Size(min = 3,max = 50, message = "Keyword cannot be less than 3 characters or exceed 50 characters.")
     private String keyword;
 
-    @NotBlank
+    @NotNull(message = "Language cannot be null.")
     private Language lang;
 
     public String getKeyword() {
