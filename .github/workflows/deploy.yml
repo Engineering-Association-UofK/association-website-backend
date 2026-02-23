@@ -57,7 +57,7 @@ jobs:
         with:
           name: backend-jar
 
-      - name: Copy JAR to Cloud Machine
+      - name: Copy JAR to remote home directory
         if: github.event_name == 'push'
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -65,9 +65,9 @@ jobs:
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "backend.jar"
-          target: "~/app/deploy/target"
+          target: "~"
 
-      - name: Restart Application on Cloud Machine
+      - name: Deploy and Restart Systemd Service
         if: github.event_name == 'push'
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -75,9 +75,9 @@ jobs:
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd ~/app
-            pm2 restart ecosystem.config.js --update-env
-            pm2 save
+            sudo systemctl stop backend
+            sudo mv ~/backend.jar /opt/backend/backend.jar
+            sudo systemctl start backend
 
   publish:
     needs: build-and-test

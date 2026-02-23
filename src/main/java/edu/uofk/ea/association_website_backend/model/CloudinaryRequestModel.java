@@ -1,11 +1,25 @@
 package edu.uofk.ea.association_website_backend.model;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 public class CloudinaryRequestModel {
+    
+    @NotBlank(message = "API Key cannot be blank.")
     private String apiKey;
+
+    @NotBlank(message = "Cloud Name cannot be blank.")
     private String cloudName;
+
+    @NotBlank(message = "Upload Preset cannot be blank.")
     private String uploadPreset;
+
+    @NotBlank(message = "Resource Type cannot be blank.")
     private String resourceType;
+
+    @NotNull(message = "Timestamp cannot be null.")
     private Long timestamp;
+
     private String uploadSignature;
 
     public String getCloudName() {

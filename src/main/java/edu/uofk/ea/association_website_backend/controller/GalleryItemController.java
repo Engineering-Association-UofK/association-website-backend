@@ -2,11 +2,13 @@ package edu.uofk.ea.association_website_backend.controller;
 
 import edu.uofk.ea.association_website_backend.model.activity.ActivityType;
 import edu.uofk.ea.association_website_backend.model.gallery.GalleryItemModel;
+import edu.uofk.ea.association_website_backend.model.gallery.GalleryItemRequest;
 import edu.uofk.ea.association_website_backend.model.gallery.GalleryItemType;
 import edu.uofk.ea.association_website_backend.model.gallery.GalleryKeywordResponse;
 import edu.uofk.ea.association_website_backend.service.ActivityService;
 import edu.uofk.ea.association_website_backend.service.AdminDetailsService;
 import edu.uofk.ea.association_website_backend.service.GalleryService;
+import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,8 +60,8 @@ public class GalleryItemController {
             summary = "Add a new gallery item",
             description = "Creates a new gallery item entry. Store items must have a unique keyword."
     )
-    public void AddItem(@RequestBody GalleryItemModel item, Authentication authentication){
-        service.save(item);
+    public void AddItem(@Valid @RequestBody GalleryItemRequest itemRequest, Authentication authentication){
+        service.save(itemRequest);
         int id = adminDetailsService.getId(authentication.getName());
         activityService.log(ActivityType.CREATE_GALLERY, Map.of("title", item.getTitle(), "type", item.getType()), id);
     }
@@ -70,8 +72,8 @@ public class GalleryItemController {
             summary = "Update a gallery item",
             description = "Updates an existing gallery item entry. Store items must have a unique keyword."
     )
-    public void UpdateItem(@RequestBody GalleryItemModel item, Authentication authentication){
-        service.update(item);
+    public void UpdateItem(@Valid @RequestBody GalleryItemRequest itemRequest, Authentication authentication){
+        service.update(itemRequest);
         int id = adminDetailsService.getId(authentication.getName());
         activityService.log(ActivityType.UPDATE_GALLERY, Map.of("id", item.getId(), "title", item.getTitle()), id);
     }

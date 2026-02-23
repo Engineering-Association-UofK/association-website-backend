@@ -5,6 +5,7 @@ import edu.uofk.ea.association_website_backend.model.activity.ActivityType;
 import edu.uofk.ea.association_website_backend.service.ActivityService;
 import edu.uofk.ea.association_website_backend.service.AdminDetailsService;
 import edu.uofk.ea.association_website_backend.service.CloudinaryService;
+import jakarta.validation.Valid;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,7 +31,7 @@ public class CloudinaryController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('CONTENT_EDITOR', 'BLOG_MANAGER', 'SUPER_ADMIN')")
-    public CloudinaryRequestModel signRequest(@RequestBody CloudinaryRequestModel request, Authentication authentication, HttpServletRequest req) {
+    public CloudinaryRequestModel signRequest(@Valid @RequestBody CloudinaryRequestModel request, Authentication authentication, HttpServletRequest req) {
         CloudinaryRequestModel response = service.validateAndSign(request);
         int id = adminDetailsService.getId(authentication.getName());
         activityService.log(ActivityType.SIGN_CLOUDINARY_REQUEST, Map.of("publicId", req.getRemoteAddr()), id);

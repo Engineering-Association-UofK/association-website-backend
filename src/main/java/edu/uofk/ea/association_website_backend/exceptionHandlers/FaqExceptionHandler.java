@@ -17,25 +17,13 @@ public class FaqExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(FaqExceptionHandler.class);
 
     @ExceptionHandler
-    public ResponseEntity<BaseErrorResponse> handleException(GenericNotFoundException e) {
-
-        BaseErrorResponse error = new BaseErrorResponse(
-                HttpStatus.NOT_FOUND.value(),
-                e.getMessage(),
-                Instant.now().getEpochSecond()
-        );
-
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler
     public ResponseEntity<BaseErrorResponse> handleException(UnexpectedErrorException e) {
-
+        log.error("An unexpected error occurred: ", e);
         BaseErrorResponse error = new BaseErrorResponse(
-                HttpStatus.UNPROCESSABLE_CONTENT.value(),
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "Something went wrong. Please try again later.",
                 Instant.now().getEpochSecond()
         );
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

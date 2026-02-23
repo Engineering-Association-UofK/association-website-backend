@@ -1,10 +1,12 @@
 package edu.uofk.ea.association_website_backend.controller;
 
 import edu.uofk.ea.association_website_backend.model.BlogPostModel;
+import edu.uofk.ea.association_website_backend.model.BlogPostRequest;
 import edu.uofk.ea.association_website_backend.model.activity.ActivityType;
 import edu.uofk.ea.association_website_backend.service.ActivityService;
 import edu.uofk.ea.association_website_backend.service.AdminDetailsService;
 import edu.uofk.ea.association_website_backend.service.BlogPostService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -40,7 +42,7 @@ public class BlogPostController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('BLOG_MANAGER', 'SUPER_ADMIN')")
-    public void addBlog(@RequestBody BlogPostModel Blog, Authentication authentication){
+    public void addBlog(@Valid @RequestBody BlogPostRequest Blog, Authentication authentication){
         String username = authentication.getName();
         service.save(Blog, username);
         int id = adminDetailsService.getId(username);
@@ -49,8 +51,8 @@ public class BlogPostController {
 
     @PutMapping
     @PreAuthorize("hasAnyRole('BLOG_MANAGER', 'SUPER_ADMIN')")
-    public void UpdateBlog(@RequestBody BlogPostModel post, Authentication authentication){
-        service.update(post);
+    public void UpdateBlog(@Valid @RequestBody BlogPostRequest blogRequest, Authentication authentication){
+        service.update(blogRequest);
         int id = adminDetailsService.getId(authentication.getName());
         activityService.log(ActivityType.UPDATE_BLOG, Map.of("id", post.getId(), "title", post.getTitle()), id);
     }

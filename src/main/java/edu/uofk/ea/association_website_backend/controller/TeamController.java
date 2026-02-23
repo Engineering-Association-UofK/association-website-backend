@@ -1,10 +1,12 @@
 package edu.uofk.ea.association_website_backend.controller;
 
 import edu.uofk.ea.association_website_backend.model.TeamMemberModel;
+import edu.uofk.ea.association_website_backend.model.TeamMemberRequest;
 import edu.uofk.ea.association_website_backend.model.activity.ActivityType;
 import edu.uofk.ea.association_website_backend.service.ActivityService;
 import edu.uofk.ea.association_website_backend.service.AdminDetailsService;
 import edu.uofk.ea.association_website_backend.service.TeamService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -41,7 +43,7 @@ public class TeamController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('CONTENT_EDITOR', 'SUPER_ADMIN')")
-    public void save(@RequestBody TeamMemberModel request, Authentication authentication) {
+    public void save(@Valid @RequestBody TeamMemberRequest request, Authentication authentication) {
         service.save(request);
         int id = adminDetailsService.getId(authentication.getName());
         activityService.log(ActivityType.CREATE_TEAM_MEMBER, Map.of("name", request.getName(), "position", request.getPosition()), id);
@@ -49,7 +51,7 @@ public class TeamController {
 
     @PutMapping
     @PreAuthorize("hasAnyRole('CONTENT_EDITOR', 'SUPER_ADMIN')")
-    public void update(@RequestBody TeamMemberModel request, Authentication authentication) {
+    public void update(@Valid @RequestBody TeamMemberRequest request, Authentication authentication) {
         service.update(request);
         int id = adminDetailsService.getId(authentication.getName());
         activityService.log(ActivityType.UPDATE_TEAM_MEMBER, Map.of("id", request.getId(), "name", request.getName()), id);

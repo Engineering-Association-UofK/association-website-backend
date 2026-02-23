@@ -1,6 +1,7 @@
 package edu.uofk.ea.association_website_backend.service;
 
 import edu.uofk.ea.association_website_backend.model.VisitorMessageModel;
+import edu.uofk.ea.association_website_backend.model.VisitorMessageRequest;
 import edu.uofk.ea.association_website_backend.repository.VisitorMessageRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,7 +31,8 @@ public class MailService {
         this.repo = repo;
     }
 
-    public void visitorFormMessageSend(VisitorMessageModel form) {
+    public void visitorFormMessageSend(VisitorMessageRequest request) {
+        VisitorMessageModel form = new VisitorMessageModel(request.getName(), request.getEmail(), request.getMessage());
         form.setCreatedAt(Instant.now());
         repo.save(form);
 

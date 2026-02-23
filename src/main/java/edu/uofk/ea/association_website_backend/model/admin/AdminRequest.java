@@ -7,12 +7,14 @@ import java.util.Set;
 
 public class AdminRequest {
     @NotBlank(message = "Name is required")
+    @Size(max = 255, message = "Name cannot exceed 255 characters.")
     private String name;
 
-    @Size(min = 8, message = "Password must be at least 8 characters long")
+    @Size(min = 8, max = 40, message = "Password must be at least 8 characters long, and must not exceed 40 characters.")
     private String password;
 
     @Email(message = "Invalid email format")
+    @Size(max = 255, message = "Email cannot exceed 255 characters.")
     private String email;
 
     private Set<AdminRole> roles;

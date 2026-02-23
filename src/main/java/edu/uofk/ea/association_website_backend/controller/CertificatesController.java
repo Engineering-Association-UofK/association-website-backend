@@ -11,6 +11,7 @@ import edu.uofk.ea.association_website_backend.service.AdminDetailsService;
 import edu.uofk.ea.association_website_backend.service.certificates.CertificateManagerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -52,7 +53,7 @@ public class CertificatesController {
             summary = "Apply for a new certificate",
             description = "This endpoint is used to apply for a new certificate. It requires the student ID and the event ID to generate the certificate."
     )
-    public void newDefaultCert(@RequestBody DefaultOneCertRequest request, Authentication authentication) {
+    public void newDefaultCert(@Valid @RequestBody DefaultOneCertRequest request, Authentication authentication) {
         manager.HandleDefaultOneCert(request.getStudentId(), request.getEventId());
         int id = adminDetailsService.getId(authentication.getName());
         activityService.log(ActivityType.CREATE_CERTIFICATE, Map.of("studentId", request.getStudentId(), "eventId", request.getEventId()), id);
@@ -64,7 +65,7 @@ public class CertificatesController {
             summary = "Apply for multiple certificates",
             description = "This endpoint is used to apply for multiple certificates. It requires the student IDs as array and the event ID to generate the certificates."
     )
-    public void newDefaultCerts(@RequestBody DefaultManyCertsRequest request, Authentication authentication) {
+    public void newDefaultCerts(@Valid @RequestBody DefaultManyCertsRequest request, Authentication authentication) {
         manager.HandleDefaultManyCerts(request);
         int id = adminDetailsService.getId(authentication.getName());
         activityService.log(ActivityType.CREATE_CERTIFICATE, Map.of("count", request.getStudentIds().size(), "eventId", request.getEventId()), id);
