@@ -87,6 +87,8 @@ CREATE TABLE IF NOT EXISTS gallery (
 CREATE TABLE IF NOT EXISTS deleted_gallery (
     id INT PRIMARY KEY AUTO_INCREMENT,
     image_link TEXT NOT NULL,
+    type VARCHAR(20) NOT NULL,
+    keyword VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -160,4 +162,26 @@ CREATE TABLE IF NOT EXISTS contact_list (
     id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS activity_events (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    admin_id INT NOT NULL,
+    event_type VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    meta_data JSON,
+
+    INDEX (admin_id),
+    INDEX (created_at),
+    INDEX (admin_id, created_at),
+
+    FOREIGN KEY (admin_id) REFERENCES admins(id)
+);
+
+CREATE TABLE IF NOT EXISTS daily_activity (
+    admin_id INT NOT NULL,
+    date DATE NOT NULL,
+    activity_count INT DEFAULT 0,
+    PRIMARY KEY (admin_id, date),
+    FOREIGN KEY (admin_id) REFERENCES admins(id)
 );
