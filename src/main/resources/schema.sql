@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS verification_codes (
 
 CREATE TABLE IF NOT EXISTS generics (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    keyword VARCHAR(255) UNIQUE NOT NULL
+    keyword VARCHAR(50) UNIQUE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS generic_translations (
@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS gallery (
     title VARCHAR(255) NOT NULL,
     image_link TEXT NOT NULL,
     type VARCHAR(20) NOT NULL,
-    keyword VARCHAR(255) UNIQUE,
+    keyword VARCHAR(50) UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -155,13 +155,6 @@ CREATE TABLE IF NOT EXISTS bot_command_options (
     next_keyword VARCHAR(50) NOT NULL,
     FOREIGN KEY (command_id) REFERENCES bot_commands(id)
 );
-
-CREATE TABLE IF NOT EXISTS technical_feedback (
-     id INT PRIMARY KEY AUTO_INCREMENT,
-     message TEXT NOT NULL,
-     sender_contact VARCHAR(255),
-     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
- );
 
 CREATE TABLE IF NOT EXISTS contact_list (
     id INT PRIMARY KEY AUTO_INCREMENT,

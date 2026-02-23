@@ -1,7 +1,9 @@
 package edu.uofk.ea.association_website_backend.controller;
 
 import edu.uofk.ea.association_website_backend.model.TeamMemberModel;
+import edu.uofk.ea.association_website_backend.model.TeamMemberRequest;
 import edu.uofk.ea.association_website_backend.service.TeamService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -32,13 +34,13 @@ public class TeamController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('CONTENT_EDITOR', 'SUPER_ADMIN')")
-    public void save(@RequestBody TeamMemberModel request) {
+    public void save(@Valid @RequestBody TeamMemberRequest request) {
         service.save(request);
     }
 
     @PutMapping
     @PreAuthorize("hasAnyRole('CONTENT_EDITOR', 'SUPER_ADMIN')")
-    public void update(@RequestBody TeamMemberModel request) {
+    public void update(@Valid @RequestBody TeamMemberRequest request) {
         service.update(request);
     }
 

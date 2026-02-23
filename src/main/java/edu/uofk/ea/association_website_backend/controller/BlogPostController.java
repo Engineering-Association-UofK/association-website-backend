@@ -1,7 +1,9 @@
 package edu.uofk.ea.association_website_backend.controller;
 
 import edu.uofk.ea.association_website_backend.model.BlogPostModel;
+import edu.uofk.ea.association_website_backend.model.BlogPostRequest;
 import edu.uofk.ea.association_website_backend.service.BlogPostService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -32,15 +34,15 @@ public class BlogPostController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('BLOG_MANAGER', 'SUPER_ADMIN')")
-    public void addBlog(@RequestBody BlogPostModel Blog, Authentication authentication){
+    public void addBlog(@Valid @RequestBody BlogPostRequest blogRequest, Authentication authentication){
         String username = authentication.getName();
-        service.save(Blog, username);
+        service.save(blogRequest, username);
     }
 
     @PutMapping
     @PreAuthorize("hasAnyRole('BLOG_MANAGER', 'SUPER_ADMIN')")
-    public void UpdateBlog(@RequestBody BlogPostModel post){
-        service.update(post);
+    public void UpdateBlog(@Valid @RequestBody BlogPostRequest blogRequest){
+        service.update(blogRequest);
     }
 
     @DeleteMapping("/{id}")

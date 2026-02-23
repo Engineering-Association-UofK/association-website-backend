@@ -1,44 +1,25 @@
 package edu.uofk.ea.association_website_backend.model;
 
-import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
-@Entity
-@Table(name = "team")
-public class TeamMemberModel {
+public class TeamMemberRequest {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private int id;
 
-    @Column(name = "name")
+    @NotBlank(message = "Name cannot be blank.")
+    @Size(max = 255, message = "Name cannot exceed 255 characters.")
     private String name;
 
-    @Column(name = "position")
+    @NotBlank(message = "Position cannot be blank.")
+    @Size(max = 255, message = "Position cannot exceed 255 characters.")
     private String position;
 
-    @Column(name = "description")
+    @NotBlank(message = "Description cannot be blank.")
     private String description;
 
-    @Column(name = "image_link")
+    @NotBlank(message = "Image link cannot be blank.")
     private String imageLink;
-
-    public TeamMemberModel() {}
-
-    public TeamMemberModel(String name, String position, String description, String imageLink) {
-        this.name = name;
-        this.position = position;
-        this.description = description;
-        this.imageLink = imageLink;
-    }
-
-    public TeamMemberModel(int id, String name, String position, String description, String imageLink) {
-        this.id = id;
-        this.name = name;
-        this.position = position;
-        this.description = description;
-        this.imageLink = imageLink;
-    }
 
     public int getId() {
         return id;

@@ -6,6 +6,7 @@ import edu.uofk.ea.association_website_backend.model.bot.CommandRequest;
 import edu.uofk.ea.association_website_backend.service.BotService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +33,7 @@ public class BotController {
             summary = "Get chatbot response",
             description = "Processes a user command or keyword and returns the corresponding bot response and options."
     )
-    public BotResponse getBotResponse(@RequestBody CommandRequest request) {
+    public BotResponse getBotResponse(@Valid @RequestBody CommandRequest request) {
         return botService.getResponse(request);
     }
 
@@ -62,7 +63,7 @@ public class BotController {
             summary = "Create a new bot command",
             description = "Adds a new command to the chatbot system, including its keywords, triggers, and localized responses."
     )
-    public void addCommand(@RequestBody BotCommandDTO request) {
+    public void addCommand(@Valid @RequestBody BotCommandDTO request) {
         botService.save(request);
     }
 
@@ -72,7 +73,7 @@ public class BotController {
             summary = "Update an existing bot command",
             description = "Updates an existing command's details, including its keywords, triggers, and localized responses."
     )
-    public void updateCommand(@RequestBody BotCommandDTO request) {
+    public void updateCommand(@Valid @RequestBody BotCommandDTO request) {
         botService.update(request);
     }
 

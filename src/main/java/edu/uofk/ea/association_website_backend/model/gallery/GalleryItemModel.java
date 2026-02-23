@@ -42,6 +42,13 @@ public class GalleryItemModel {
         this.keyword = keyword;
     }
 
+    public GalleryItemModel(String title, GalleryItemType type, String keyword, String imageLink) {
+        this.title = title;
+        this.type = type;
+        this.keyword = keyword;
+        this.imageLink = imageLink;
+    }
+
     public int getId() {
         return id;
     }

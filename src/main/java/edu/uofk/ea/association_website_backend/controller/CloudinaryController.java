@@ -2,6 +2,7 @@ package edu.uofk.ea.association_website_backend.controller;
 
 import edu.uofk.ea.association_website_backend.model.CloudinaryRequestModel;
 import edu.uofk.ea.association_website_backend.service.CloudinaryService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,7 @@ public class CloudinaryController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('CONTENT_EDITOR', 'BLOG_MANAGER', 'SUPER_ADMIN')")
-    public CloudinaryRequestModel signRequest(@RequestBody CloudinaryRequestModel request) {
+    public CloudinaryRequestModel signRequest(@Valid @RequestBody CloudinaryRequestModel request) {
         return service.validateAndSign(request);
     }
 }

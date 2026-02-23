@@ -33,9 +33,9 @@ public class AuthenticationExceptionHandler {
     public ResponseEntity<@NonNull BaseErrorResponse> handleException(NoResourceFoundException ex) {
         return new ResponseEntity<>(
                 new BaseErrorResponse(
-                        HttpStatus.NOT_FOUND.value(), 
-                        "The requested endpoint was not found.", 
-                        System.currentTimeMillis()
+                        HttpStatus.NOT_FOUND.value(),
+                        "The requested endpoint was not found.",
+                        Instant.now().getEpochSecond()
                 ),
                 HttpStatus.NOT_FOUND
         );
@@ -47,7 +47,7 @@ public class AuthenticationExceptionHandler {
                 new BaseErrorResponse(
                         HttpStatus.UNAUTHORIZED.value(),
                         "Invalid credentials.",
-                        System.currentTimeMillis()
+                        Instant.now().getEpochSecond()
                 ),
                 HttpStatus.UNAUTHORIZED
         );
@@ -57,11 +57,11 @@ public class AuthenticationExceptionHandler {
     public ResponseEntity<@NonNull BaseErrorResponse> handleException(UserAlreadyExistsException ex) {
         return new ResponseEntity<>(
                 new BaseErrorResponse(
-                        HttpStatus.NOT_FOUND.value(),
+                        HttpStatus.CONFLICT.value(),
                         ex.getMessage(),
-                        System.currentTimeMillis()
+                        Instant.now().getEpochSecond()
                 ),
-                HttpStatus.NOT_FOUND
+                HttpStatus.CONFLICT
         );
     }
 
@@ -71,7 +71,7 @@ public class AuthenticationExceptionHandler {
                 new BaseErrorResponse(
                         HttpStatus.UNAUTHORIZED.value(),
                         ex.getMessage(),
-                        System.currentTimeMillis()
+                        Instant.now().getEpochSecond()
                 ),
                 HttpStatus.UNAUTHORIZED
         );
