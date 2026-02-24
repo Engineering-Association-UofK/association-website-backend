@@ -1,13 +1,17 @@
 package edu.uofk.ea.association_website_backend.controller;
 
+import edu.uofk.ea.association_website_backend.model.activity.ActivityType;
 import edu.uofk.ea.association_website_backend.model.certificates.certificates.CertVerifyResponse;
 import edu.uofk.ea.association_website_backend.model.certificates.certificates.DefaultManyCertsRequest;
 import edu.uofk.ea.association_website_backend.model.certificates.certificates.DefaultOneCertRequest;
 import edu.uofk.ea.association_website_backend.model.certificates.documents.DocVerifyResponse;
 import edu.uofk.ea.association_website_backend.model.certificates.documents.DocumentCertRequest;
+import edu.uofk.ea.association_website_backend.service.ActivityService;
+import edu.uofk.ea.association_website_backend.service.AdminDetailsService;
 import edu.uofk.ea.association_website_backend.service.certificates.CertificateManagerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -20,6 +24,7 @@ import tools.jackson.databind.ObjectMapper;
 
 
 import java.io.IOException;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/documents")
@@ -31,11 +36,15 @@ public class CertificatesController {
 
     private final CertificateManagerService manager;
     private final ObjectMapper objectMapper;
+    private final ActivityService activityService;
+    private final AdminDetailsService adminDetailsService;
 
     @Autowired
-    public CertificatesController(CertificateManagerService manager, ObjectMapper objectMapper) {
+    public CertificatesController(CertificateManagerService manager, ObjectMapper objectMapper, ActivityService activityService, AdminDetailsService adminDetailsService) {
         this.manager = manager;
         this.objectMapper = objectMapper;
+        this.activityService = activityService;
+        this.adminDetailsService = adminDetailsService;
     }
 
     @PostMapping("/cert")
@@ -44,8 +53,10 @@ public class CertificatesController {
             summary = "Apply for a new certificate",
             description = "This endpoint is used to apply for a new certificate. It requires the student ID and the event ID to generate the certificate."
     )
-    public void newDefaultCert(@RequestBody DefaultOneCertRequest request) {
+    public void newDefaultCert(@Valid @RequestBody DefaultOneCertRequest request, Authentication authentication) {
         manager.HandleDefaultOneCert(request.getStudentId(), request.getEventId());
+        int id = adminDetailsService.getId(authentication.getName());
+        activityService.log(ActivityType.CREATE_CERTIFICATE, Map.of("studentId", request.getStudentId(), "eventId", request.getEventId()), id);
     }
 
     @PostMapping("/cert/mass")
@@ -54,8 +65,10 @@ public class CertificatesController {
             summary = "Apply for multiple certificates",
             description = "This endpoint is used to apply for multiple certificates. It requires the student IDs as array and the event ID to generate the certificates."
     )
-    public void newDefaultCerts(@RequestBody DefaultManyCertsRequest request) {
+    public void newDefaultCerts(@Valid @RequestBody DefaultManyCertsRequest request, Authentication authentication) {
         manager.HandleDefaultManyCerts(request);
+        int id = adminDetailsService.getId(authentication.getName());
+        activityService.log(ActivityType.CREATE_CERTIFICATE, Map.of("count", request.getStudentIds().size(), "eventId", request.getEventId()), id);
     }
 
     ///
@@ -77,6 +90,9 @@ public class CertificatesController {
         DocumentCertRequest request = objectMapper.readValue(requestString, DocumentCertRequest.class);
         String name = authentication.getName();
         byte[] pdfBytes = manager.HandleDocumentCert(request, file.getBytes(), name);
+
+        int id = adminDetailsService.getId(name);
+        activityService.log(ActivityType.CREATE_DOCUMENT, Map.of("type", request.getDocumentType(), "reason", request.getDocumentReason()), id);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=document_certified.pdf")
@@ -108,8 +124,10 @@ public class CertificatesController {
             summary = "Download a document",
             description = "This endpoint is used to download a document."
     )
-    public ResponseEntity<byte[]> downloadDocument(@PathVariable int id) {
+    public ResponseEntity<byte[]> downloadDocument(@PathVariable int id, Authentication authentication) {
         byte[] pdf = manager.DownloadDocument(id);
+        int adminId = adminDetailsService.getId(authentication.getName());
+        activityService.log(ActivityType.DOWNLOAD_DOCUMENT, Map.of("id", id), adminId);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=certificate.pdf")
@@ -123,8 +141,10 @@ public class CertificatesController {
             summary = "Download a certificate",
             description = "This endpoint is used to download a certificate."
     )
-    public ResponseEntity<byte[]> downloadCertificate(@PathVariable int id) {
+    public ResponseEntity<byte[]> downloadCertificate(@PathVariable int id, Authentication authentication) {
         byte[] pdf = manager.DownloadCertificate(id);
+        int adminId = adminDetailsService.getId(authentication.getName());
+        activityService.log(ActivityType.DOWNLOAD_CERTIFICATE, Map.of("id", id), adminId);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=certificate.pdf")

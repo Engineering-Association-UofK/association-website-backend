@@ -2,6 +2,7 @@ package edu.uofk.ea.association_website_backend.service;
 
 import edu.uofk.ea.association_website_backend.exceptionHandlers.exceptions.GenericNotFoundException;
 import edu.uofk.ea.association_website_backend.model.TeamMemberModel;
+import edu.uofk.ea.association_website_backend.model.TeamMemberRequest;
 import edu.uofk.ea.association_website_backend.repository.TeamRepo;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,15 +32,19 @@ public class TeamService {
     }
 
     @Transactional
-    public void save(TeamMemberModel member){
+    public void save(TeamMemberRequest request){
+        TeamMemberModel member = new TeamMemberModel(request.getName(), request.getPosition(), request.getDescription(), request.getImageLink());
+
         repo.save(member);
     }
 
     @Transactional
-    public void update(TeamMemberModel model) {
-        if (repo.findById(model.getId()) == null) {
-            throw new GenericNotFoundException("Team member not found with ID:" + model.getId());
+    public void update(TeamMemberRequest request) {
+        if (repo.findById(request.getId()) == null) {
+            throw new GenericNotFoundException("Team member not found with ID:" + request.getId());
         }
+        TeamMemberModel model = new TeamMemberModel(request.getId(), request.getName(), request.getPosition(), request.getDescription(), request.getImageLink());
+
         repo.update(model);
     }
 

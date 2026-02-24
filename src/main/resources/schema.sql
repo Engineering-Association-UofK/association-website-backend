@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS verification_codes (
 
 CREATE TABLE IF NOT EXISTS generics (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    keyword VARCHAR(255) UNIQUE NOT NULL
+    keyword VARCHAR(50) UNIQUE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS generic_translations (
@@ -80,13 +80,15 @@ CREATE TABLE IF NOT EXISTS gallery (
     title VARCHAR(255) NOT NULL,
     image_link TEXT NOT NULL,
     type VARCHAR(20) NOT NULL,
-    keyword VARCHAR(255) UNIQUE,
+    keyword VARCHAR(50) UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS deleted_gallery (
     id INT PRIMARY KEY AUTO_INCREMENT,
     image_link TEXT NOT NULL,
+    type VARCHAR(20) NOT NULL,
+    keyword VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -156,15 +158,30 @@ CREATE TABLE IF NOT EXISTS bot_command_options (
     FOREIGN KEY (command_id) REFERENCES bot_commands(id)
 );
 
-CREATE TABLE IF NOT EXISTS technical_feedback (
-     id INT PRIMARY KEY AUTO_INCREMENT,
-     message TEXT NOT NULL,
-     sender_contact VARCHAR(255),
-     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
- );
-
 CREATE TABLE IF NOT EXISTS contact_list (
     id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS activity_events (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    admin_id INT NOT NULL,
+    event_type VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    meta_data JSON,
+
+    INDEX (admin_id),
+    INDEX (created_at),
+    INDEX (admin_id, created_at),
+
+    FOREIGN KEY (admin_id) REFERENCES admins(id)
+);
+
+CREATE TABLE IF NOT EXISTS daily_activity (
+    admin_id INT NOT NULL,
+    date DATE NOT NULL,
+    activity_count INT DEFAULT 0,
+    PRIMARY KEY (admin_id, date),
+    FOREIGN KEY (admin_id) REFERENCES admins(id)
 );

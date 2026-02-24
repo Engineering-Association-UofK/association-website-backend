@@ -83,7 +83,7 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.POST, "/api/bot/command").permitAll()
                         .requestMatchers(HttpMethod.POST, "/admin/login", "/admin/send-code", "/admin/verify").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/mail").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/mail/visitor-form").permitAll()
 
                         .anyRequest().authenticated())
 

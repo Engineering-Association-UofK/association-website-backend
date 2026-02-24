@@ -1,10 +1,7 @@
 package edu.uofk.ea.association_website_backend.service;
 
 import edu.uofk.ea.association_website_backend.exceptionHandlers.exceptions.GenericNotFoundException;
-import edu.uofk.ea.association_website_backend.model.gallery.GalleryDeletedModel;
-import edu.uofk.ea.association_website_backend.model.gallery.GalleryItemModel;
-import edu.uofk.ea.association_website_backend.model.gallery.GalleryItemType;
-import edu.uofk.ea.association_website_backend.model.gallery.GalleryKeywordResponse;
+import edu.uofk.ea.association_website_backend.model.gallery.*;
 import edu.uofk.ea.association_website_backend.repository.GalleryDeletedRepo;
 import edu.uofk.ea.association_website_backend.repository.GalleryItemRepo;
 import jakarta.transaction.Transactional;
@@ -28,8 +25,9 @@ public class GalleryService {
     }
 
     @Transactional
-    public void save(GalleryItemModel item){
-        item.setCreatedAt(Instant.now());
+    public void save(GalleryItemRequest item){
+        GalleryItemModel model = new GalleryItemModel(item.getTitle(), item.getType(), item.getKeyword(), item.getImageLink());
+        model.setCreatedAt(Instant.now());
 
         if (item.getKeyword() != null && repo.findByKeyword(item.getKeyword()) != null) {
             throw new GenericNotFoundException("Items must have a unique keyword.");
@@ -41,7 +39,7 @@ public class GalleryService {
             }
         }
 
-        repo.save(item);
+        repo.save(model);
     }
 
     public GalleryItemModel findById(int id){
@@ -67,14 +65,21 @@ public class GalleryService {
     }
 
     @Transactional
-    public void update(GalleryItemModel item){
-        if (repo.findById(item.getId()) == null) {
-            if (item.getKeyword() != null) {
-                GalleryItemModel model = repo.findByKeyword(item.getKeyword());
-                if (model != null){
-                    item.setId(model.getId());
-                    if (!Objects.equals(model.getImageLink(), item.getImageLink())) {
-                        deletedRepo.save(new GalleryDeletedModel(model.getImageLink(), model.getType(), model.getKeyword()));
+    public void update(GalleryItemRequest itemRequest){
+        GalleryItemModel item = repo.findById(itemRequest.getId());
+
+        if (item == null) {
+            if (itemRequest.getKeyword() != null) {
+                item = repo.findByKeyword(itemRequest.getKeyword());
+                if (item != null){
+                    item.setId(itemRequest.getId());
+                    item.setTitle(itemRequest.getTitle());
+                    item.setType(itemRequest.getType());
+                    item.setKeyword(itemRequest.getKeyword());
+                    item.setImageLink(itemRequest.getImageLink());
+
+                    if (!Objects.equals(item.getImageLink(), itemRequest.getImageLink())) {
+                        deletedRepo.save(new GalleryDeletedModel(item.getImageLink()));
                     }
                     repo.Update(item);
                     return;

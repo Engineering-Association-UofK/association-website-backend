@@ -2,6 +2,7 @@ package edu.uofk.ea.association_website_backend.service;
 
 import edu.uofk.ea.association_website_backend.exceptionHandlers.exceptions.GenericNotFoundException;
 import edu.uofk.ea.association_website_backend.model.BlogPostModel;
+import edu.uofk.ea.association_website_backend.model.BlogPostRequest;
 import edu.uofk.ea.association_website_backend.repository.AdminRepo;
 import edu.uofk.ea.association_website_backend.repository.BlogPostRepo;
 import jakarta.transaction.Transactional;
@@ -24,7 +25,9 @@ public class BlogPostService {
     }
 
     @Transactional
-    public void save(BlogPostModel post, String username){
+    public void save(BlogPostRequest blogRequest, String username){
+        BlogPostModel post = new BlogPostModel(blogRequest.getTitle(), blogRequest.getContent(), blogRequest.getImageLink(), blogRequest.getStatus());
+
         post.setCreatedAt(Instant.now());
         post.setUpdatedAt(Instant.now());
 
@@ -50,13 +53,19 @@ public class BlogPostService {
     }
 
     @Transactional
-    public void update(BlogPostModel post){
-        if (repo.findById(post.getId()) == null) {
-            throw new GenericNotFoundException("Blog post not found with ID:" + post.getId());
+    public void update(BlogPostRequest blogRequest){
+        BlogPostModel model = repo.findById(blogRequest.getId());
+        if (model == null) {
+            throw new GenericNotFoundException("Blog post not found with ID:" + blogRequest.getId());
         }
 
-        post.setUpdatedAt(Instant.now());
-        repo.update(post);
+        model.setTitle(blogRequest.getTitle());
+        model.setContent(blogRequest.getContent());
+        model.setImageLink(blogRequest.getImageLink());
+        model.setStatus(blogRequest.getStatus());
+
+        model.setUpdatedAt(Instant.now());
+        repo.update(model);
     }
 
     @Transactional
