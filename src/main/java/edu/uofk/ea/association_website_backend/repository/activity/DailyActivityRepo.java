@@ -4,6 +4,7 @@ import edu.uofk.ea.association_website_backend.model.activity.DailyActivityModel
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -18,6 +19,7 @@ public class DailyActivityRepo {
         this.em = em;
     }
 
+    @Transactional
     public void save(DailyActivityModel model) {
         em.createNativeQuery("""
             INSERT INTO daily_activity (admin_id, date, activity_count)
@@ -33,7 +35,7 @@ public class DailyActivityRepo {
         return em.createQuery("SELECT a FROM DailyActivityModel a WHERE a.adminId = :adminId AND a.date = :date", DailyActivityModel.class)
                 .setParameter("adminId", UserId)
                 .setParameter("date", date)
-                .getSingleResult();
+                .getResultList().stream().findFirst().orElse(null);
     }
 
     // Get last year activity, sorted from older first to newer last

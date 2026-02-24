@@ -63,7 +63,7 @@ public class GalleryItemController {
     public void AddItem(@Valid @RequestBody GalleryItemRequest itemRequest, Authentication authentication){
         service.save(itemRequest);
         int id = adminDetailsService.getId(authentication.getName());
-        activityService.log(ActivityType.CREATE_GALLERY, Map.of("title", item.getTitle(), "type", item.getType()), id);
+        activityService.log(ActivityType.CREATE_GALLERY, Map.of("title", itemRequest.getTitle(), "type", itemRequest.getType()), id);
     }
 
     @PutMapping
@@ -75,7 +75,7 @@ public class GalleryItemController {
     public void UpdateItem(@Valid @RequestBody GalleryItemRequest itemRequest, Authentication authentication){
         service.update(itemRequest);
         int id = adminDetailsService.getId(authentication.getName());
-        activityService.log(ActivityType.UPDATE_GALLERY, Map.of("id", item.getId(), "title", item.getTitle()), id);
+        activityService.log(ActivityType.UPDATE_GALLERY, Map.of("id", itemRequest.getId(), "title", itemRequest.getTitle()), id);
     }
 
     @GetMapping("/open/{keyword}")

@@ -5,8 +5,9 @@ import edu.uofk.ea.association_website_backend.model.activity.ActivityType;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 @Repository
@@ -33,7 +34,7 @@ public class ActivityEventRepo {
                 .getResultList();
     }
 
-    public List<ActivityEventModel> findByDate(LocalDateTime startTime, LocalDateTime endTime) {
+    public List<ActivityEventModel> findByDate(Instant startTime, Instant endTime) {
         return em.createQuery("SELECT e FROM ActivityEventModel e " +
                         "WHERE e.createdAt >= :start " +
                         "AND e.createdAt < :end", ActivityEventModel.class)
@@ -48,7 +49,7 @@ public class ActivityEventRepo {
                 .getResultList();
     }
 
-    public List<ActivityEventModel> findByUserAndDate(int UserId, LocalDateTime startTime, LocalDateTime endTime) {
+    public List<ActivityEventModel> findByUserAndDate(int UserId, Instant startTime, Instant endTime) {
         return em.createQuery("SELECT e FROM ActivityEventModel e " +
                         "WHERE e.adminId = :adminId " +
                         "AND e.createdAt >= :start " +
@@ -66,7 +67,7 @@ public class ActivityEventRepo {
                 .getResultList();
     }
 
-    public List<ActivityEventModel> findByTypeAndDate(ActivityType type, LocalDateTime startTime, LocalDateTime endTime) {
+    public List<ActivityEventModel> findByTypeAndDate(ActivityType type, Instant startTime, Instant endTime) {
         return em.createQuery("SELECT e FROM ActivityEventModel e WHERE e.eventType = :type AND e.createdAt >= :start AND e.createdAt < :end", ActivityEventModel.class)
                 .setParameter("type", type)
                 .setParameter("start", startTime)
@@ -74,7 +75,7 @@ public class ActivityEventRepo {
                 .getResultList();
     }
 
-    public List<ActivityEventModel> findByUserAndDateAndType(int UserId, ActivityType type, LocalDateTime startTime, LocalDateTime endTime) {
+    public List<ActivityEventModel> findByUserAndDateAndType(int UserId, ActivityType type, Instant startTime, Instant endTime) {
         return em.createQuery("SELECT e FROM ActivityEventModel e " +
                         "WHERE e.adminId = :adminId " +
                         "AND e.eventType = :type " +
@@ -87,6 +88,7 @@ public class ActivityEventRepo {
                 .getResultList();
     }
 
+    @Transactional
     public void save(ActivityEventModel event) {
         em.persist(event);
     }

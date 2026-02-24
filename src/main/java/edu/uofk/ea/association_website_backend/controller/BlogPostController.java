@@ -54,7 +54,7 @@ public class BlogPostController {
     public void UpdateBlog(@Valid @RequestBody BlogPostRequest blogRequest, Authentication authentication){
         service.update(blogRequest);
         int id = adminDetailsService.getId(authentication.getName());
-        activityService.log(ActivityType.UPDATE_BLOG, Map.of("id", post.getId(), "title", post.getTitle()), id);
+        activityService.log(ActivityType.UPDATE_BLOG, Map.of("id", blogRequest.getId(), "title", blogRequest.getTitle()), id);
     }
 
     @DeleteMapping("/{id}")

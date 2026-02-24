@@ -7,6 +7,11 @@ public class DailyActivityResponse {
     private LocalDate date;
     private int count;
 
+    public DailyActivityResponse(LocalDate date) {
+        this.date = date;
+        this.count = 0;
+    }
+
     public DailyActivityResponse(LocalDate date, int count) {
         this.date = date;
         this.count = count;

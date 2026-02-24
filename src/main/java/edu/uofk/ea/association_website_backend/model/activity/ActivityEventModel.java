@@ -78,4 +78,15 @@ public class ActivityEventModel {
     public void setMetaData(Map<String, Object> metaData) {
         this.metaData = metaData;
     }
+
+    @Override
+    public String toString() {
+        return "ActivityEventModel{" +
+                "Id=" + Id +
+                ", adminId=" + adminId +
+                ", eventType=" + eventType +
+                ", createdAt=" + createdAt +
+                ", metaData=" + metaData +
+                '}';
+    }
 }
