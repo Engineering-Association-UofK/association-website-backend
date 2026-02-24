@@ -108,6 +108,7 @@ public class AdminDetailsService implements UserDetailsService {
         verificationService.verify(admin, code);
     }
 
+    @Transactional
     public void updateProfile(AdminRequest request) {
         AdminModel existing = repo.findByUsername(request.getName());
         if (existing == null) throw new UsernameNotFoundException("User not found");
@@ -139,6 +140,7 @@ public class AdminDetailsService implements UserDetailsService {
         repo.update(existing);
     }
 
+    @Transactional
     public void add(AdminRequest admin) {
         if (repo.findByUsername(admin.getName()) != null)                   throw new UserAlreadyExistsException("Admin with this username already exists");
         
@@ -209,6 +211,7 @@ public class AdminDetailsService implements UserDetailsService {
         return admin.getName();
     }
 
+    @Transactional
     public void updatePassword(UpdatePasswordRequest request, String username) {
         AdminModel admin = repo.findByUsername(username);
         if (admin == null) throw new UsernameNotFoundException("Admin with this username not found");
@@ -221,6 +224,7 @@ public class AdminDetailsService implements UserDetailsService {
         repo.update(admin);
     }
 
+    @Transactional
     public void updateEmail(UpdateEmailRequest request, String username) {
         AdminModel admin = repo.findByUsername(username);
         if (admin == null) throw new UsernameNotFoundException("Admin with this username not found");
