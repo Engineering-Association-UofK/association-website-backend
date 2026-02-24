@@ -95,11 +95,15 @@ public class GalleryService {
 
     @Transactional
     public void delete(int id){
-        if (repo.findById(id) == null) {
+        GalleryItemModel item = repo.findById(id);
+        if (item == null) {
             throw new GenericNotFoundException("Gallery item not found with ID:" + id);
         }
+        if (item.getType() == GalleryItemType.store) {
 
-        GalleryDeletedModel model = new GalleryDeletedModel(repo.findById(id).getImageLink());
+        }
+
+        GalleryDeletedModel model = new GalleryDeletedModel(item.getImageLink(), item.getType(), item.getKeyword());
         deletedRepo.save(model);
 
         repo.delete(id);
