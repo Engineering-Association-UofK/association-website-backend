@@ -1,6 +1,7 @@
 package edu.uofk.ea.association_website_backend.service;
 
 import edu.uofk.ea.association_website_backend.exceptionHandlers.exceptions.UnexpectedErrorException;
+import edu.uofk.ea.association_website_backend.model.EntityType;
 import edu.uofk.ea.association_website_backend.model.storage.StorageModel;
 import edu.uofk.ea.association_website_backend.model.storage.StorageReferenceModel;
 import edu.uofk.ea.association_website_backend.model.storage.StoreType;
@@ -27,7 +28,7 @@ public class StorageManagementService {
     }
 
     @Transactional
-    public void linkImageToEntity(String publicId, String url, String entityType, int entityId) {
+    public void linkImageToEntity(String publicId, String url, EntityType entityType, int entityId) {
         // Find or create the Storage record
         StorageModel storage = storageRepo.findByPublicId(publicId);
         if (storage == null) {
@@ -66,7 +67,7 @@ public class StorageManagementService {
     }
 
     @Transactional
-    public void unlinkImageFromEntity(String entityType, int entityId) {
+    public void unlinkImageFromEntity(EntityType entityType, int entityId) {
         StorageReferenceModel reference = referenceRepo.findByEntity(entityType, entityId);
 
         if (reference != null) {

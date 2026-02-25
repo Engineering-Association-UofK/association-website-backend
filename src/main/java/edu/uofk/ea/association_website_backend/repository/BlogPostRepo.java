@@ -1,6 +1,6 @@
 package edu.uofk.ea.association_website_backend.repository;
 
-import edu.uofk.ea.association_website_backend.model.BlogPostModel;
+import edu.uofk.ea.association_website_backend.model.blog.BlogPostModel;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +19,11 @@ public class BlogPostRepo {
     }
 
     @Transactional
-    public void save(BlogPostModel post){
+    public int save(BlogPostModel post){
         em.persist(post);
+        em.flush();
+        em.refresh(post);
+        return post.getId();
     }
 
     public BlogPostModel findById(int id){

@@ -1,5 +1,6 @@
 package edu.uofk.ea.association_website_backend.service;
 
+import edu.uofk.ea.association_website_backend.model.EntityType;
 import edu.uofk.ea.association_website_backend.model.gallery.*;
 import edu.uofk.ea.association_website_backend.model.storage.StorageModel;
 import edu.uofk.ea.association_website_backend.model.storage.StoreType;
@@ -76,7 +77,7 @@ public class GalleryService {
         storageManagementService.linkImageToEntity(
                 storage.getPublicId(),
                 storage.getUrl(),
-                edu.uofk.ea.association_website_backend.model.EntityType.NEWS.name(),
+                EntityType.NEWS,
                 news.getId()
         );
     }
@@ -86,7 +87,7 @@ public class GalleryService {
         if (news == null) throw new IllegalStateException("News does not exist");
 
         storageManagementService.unlinkImageFromEntity(
-                edu.uofk.ea.association_website_backend.model.EntityType.NEWS.name(),
+                EntityType.NEWS,
                 news.getId()
         );
         newsRepo.delete(news.getId());

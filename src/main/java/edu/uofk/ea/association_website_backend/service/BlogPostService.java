@@ -1,10 +1,13 @@
 package edu.uofk.ea.association_website_backend.service;
 
 import edu.uofk.ea.association_website_backend.exceptionHandlers.exceptions.GenericNotFoundException;
-import edu.uofk.ea.association_website_backend.model.BlogPostModel;
-import edu.uofk.ea.association_website_backend.model.BlogPostRequest;
+import edu.uofk.ea.association_website_backend.model.EntityType;
+import edu.uofk.ea.association_website_backend.model.admin.AdminModel;
+import edu.uofk.ea.association_website_backend.model.blog.BlogPostModel;
+import edu.uofk.ea.association_website_backend.model.blog.BlogPostRequest;
 import edu.uofk.ea.association_website_backend.repository.AdminRepo;
 import edu.uofk.ea.association_website_backend.repository.BlogPostRepo;
+import edu.uofk.ea.association_website_backend.repository.StorageRepo;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,29 +18,39 @@ import java.util.List;
 @Service
 public class BlogPostService {
     
-    private BlogPostRepo repo;
-    private AdminRepo adminRepo;
-    
+    private final BlogPostRepo repo;
+    private final AdminRepo adminRepo;
+    private final StorageManagementService storageService;
+
     @Autowired
-    public BlogPostService(BlogPostRepo repo, AdminRepo adminRepo) {
+    public BlogPostService(BlogPostRepo repo, AdminRepo adminRepo, StorageManagementService storageService) {
         this.repo = repo;
         this.adminRepo = adminRepo;
+        this.storageService = storageService;
     }
 
     @Transactional
     public void save(BlogPostRequest blogRequest, String username){
-        BlogPostModel post = new BlogPostModel(blogRequest.getTitle(), blogRequest.getContent(), blogRequest.getImageLink(), blogRequest.getStatus());
-
-        post.setCreatedAt(Instant.now());
-        post.setUpdatedAt(Instant.now());
-
-        if (adminRepo.findByUsername(username) == null) {
+        AdminModel admin = adminRepo.findByUsername(username);
+        if (admin == null) {
             throw new GenericNotFoundException("Admin not found with username:" + username);
         }
-        post.setAuthorId(adminRepo.findByUsername(username).getId());
-        if (post.getStatus() == null) post.setStatus(BlogPostModel.Status.draft);
 
-        repo.save(post);
+        BlogPostModel post = new BlogPostModel(
+                blogRequest.getTitle(),
+                blogRequest.getContent(),
+                blogRequest.getStatus(),
+                admin.getId()
+        );
+
+        int id = repo.save(post);
+
+        if (blogRequest.getImage() != null) {
+            storageService.linkImageToEntity(blogRequest.getImage().getPublicId(), blogRequest.getImage().getUrl(), EntityType.BLOG_POST, id);
+            post.setImageLink(blogRequest.getImage().getUrl());
+            repo.update(post);
+        }
+
     }
 
     public BlogPostModel findById(int id){
@@ -58,10 +71,18 @@ public class BlogPostService {
         if (model == null) {
             throw new GenericNotFoundException("Blog post not found with ID:" + blogRequest.getId());
         }
+        if (blogRequest.getImage() != null) {
+            storageService.linkImageToEntity(
+                    blogRequest.getImage().getPublicId(),
+                    blogRequest.getImage().getUrl(),
+                    EntityType.BLOG_POST,
+                    blogRequest.getId()
+            );
+            model.setImageLink(blogRequest.getImage().getUrl());
+        }
 
         model.setTitle(blogRequest.getTitle());
         model.setContent(blogRequest.getContent());
-        model.setImageLink(blogRequest.getImageLink());
         model.setStatus(blogRequest.getStatus());
 
         model.setUpdatedAt(Instant.now());
@@ -73,6 +94,7 @@ public class BlogPostService {
         if (repo.findById(id) == null) {
             throw new GenericNotFoundException("Blog post not found with ID:" + id);
         }
+        storageService.unlinkImageFromEntity(EntityType.BLOG_POST, id);
         repo.delete(id);
     }
 }

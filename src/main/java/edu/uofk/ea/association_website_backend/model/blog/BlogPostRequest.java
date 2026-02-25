@@ -1,5 +1,6 @@
-package edu.uofk.ea.association_website_backend.model;
+package edu.uofk.ea.association_website_backend.model.blog;
 
+import edu.uofk.ea.association_website_backend.model.gallery.GalleryRequest;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -15,7 +16,7 @@ public class BlogPostRequest {
     @NotBlank(message = "Content cannot be blank.")
     private String content;
 
-    private String imageLink;
+    private GalleryRequest image;
 
     @NotNull(message = "Status cannot be null.")
     private BlogPostModel.Status status;
@@ -44,12 +45,12 @@ public class BlogPostRequest {
         this.content = content;
     }
 
-    public String getImageLink() {
-        return imageLink;
+    public GalleryRequest getImage() {
+        return image;
     }
 
-    public void setImageLink(String imageLink) {
-        this.imageLink = imageLink;
+    public void setImage(GalleryRequest image) {
+        this.image = image;
     }
 
     public BlogPostModel.Status getStatus() {

@@ -1,4 +1,4 @@
-package edu.uofk.ea.association_website_backend.model;
+package edu.uofk.ea.association_website_backend.model.blog;
 
 import jakarta.persistence.*;
 
@@ -43,13 +43,18 @@ public class BlogPostModel {
 
     public BlogPostModel(){}
 
-    public BlogPostModel(String title, String content, int authorId){
+    public BlogPostModel(String title, String content, Status status, int authorId){
         this.title = title;
         this.content = content;
         this.authorId = authorId;
+        this.createdAt = Instant.now();
+        this.updatedAt = Instant.now();
+
+        if (status == null) this.status = Status.draft;
+        else this.status = status;
     }
 
-    public BlogPostModel(String title, String content, String imageLink, Status status) {
+    public BlogPostModel(String title, String content, String imageLink, Status status, int authorId) {
         this.title = title;
         this.content = content;
         this.imageLink = imageLink;

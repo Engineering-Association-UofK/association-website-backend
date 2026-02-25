@@ -1,5 +1,6 @@
 package edu.uofk.ea.association_website_backend.repository;
 
+import edu.uofk.ea.association_website_backend.model.EntityType;
 import edu.uofk.ea.association_website_backend.model.storage.StorageReferenceModel;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
@@ -17,7 +18,7 @@ public class StorageReferenceRepo {
         this.em = em;
     }
 
-    public StorageReferenceModel findByEntity(String entityType, int entityId) {
+    public StorageReferenceModel findByEntity(EntityType entityType, int entityId) {
         try {
             return em.createQuery("SELECT r FROM StorageReferenceModel r WHERE r.entityType = :entityType AND r.entityId = :entityId", StorageReferenceModel.class)
                     .setParameter("entityType", entityType)

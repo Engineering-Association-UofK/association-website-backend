@@ -1,5 +1,6 @@
 package edu.uofk.ea.association_website_backend.model.storage;
 
+import edu.uofk.ea.association_website_backend.model.EntityType;
 import jakarta.persistence.*;
 import java.time.Instant;
 
@@ -16,7 +17,8 @@ public class StorageReferenceModel {
     private int storageId;
 
     @Column(name = "entity_type", nullable = false)
-    private String entityType;
+    @Enumerated(EnumType.STRING)
+    private EntityType entityType;
 
     @Column(name = "entity_id", nullable = false)
     private int entityId;
@@ -26,7 +28,7 @@ public class StorageReferenceModel {
 
     public StorageReferenceModel() {}
 
-    public StorageReferenceModel(int storageId, String entityType, int entityId) {
+    public StorageReferenceModel(int storageId, EntityType entityType, int entityId) {
         this.storageId = storageId;
         this.entityType = entityType;
         this.entityId = entityId;
@@ -49,11 +51,11 @@ public class StorageReferenceModel {
         this.storageId = storageId;
     }
 
-    public String getEntityType() {
+    public EntityType getEntityType() {
         return entityType;
     }
 
-    public void setEntityType(String entityType) {
+    public void setEntityType(EntityType entityType) {
         this.entityType = entityType;
     }
 

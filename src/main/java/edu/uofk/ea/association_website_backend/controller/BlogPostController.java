@@ -1,7 +1,7 @@
 package edu.uofk.ea.association_website_backend.controller;
 
-import edu.uofk.ea.association_website_backend.model.BlogPostModel;
-import edu.uofk.ea.association_website_backend.model.BlogPostRequest;
+import edu.uofk.ea.association_website_backend.model.blog.BlogPostModel;
+import edu.uofk.ea.association_website_backend.model.blog.BlogPostRequest;
 import edu.uofk.ea.association_website_backend.model.activity.ActivityType;
 import edu.uofk.ea.association_website_backend.service.ActivityService;
 import edu.uofk.ea.association_website_backend.service.AdminDetailsService;
