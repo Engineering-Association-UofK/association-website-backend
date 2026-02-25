@@ -75,23 +75,6 @@ CREATE TABLE IF NOT EXISTS visitors_messages (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS gallery (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    title VARCHAR(255) NOT NULL,
-    image_link TEXT NOT NULL,
-    type VARCHAR(20) NOT NULL,
-    keyword VARCHAR(50) UNIQUE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS deleted_gallery (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    image_link TEXT NOT NULL,
-    type VARCHAR(20) NOT NULL,
-    keyword VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
 -- Student & Events Placeholders
 CREATE TABLE IF NOT EXISTS students (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -184,4 +167,33 @@ CREATE TABLE IF NOT EXISTS daily_activity (
     activity_count INT DEFAULT 0,
     PRIMARY KEY (admin_id, date),
     FOREIGN KEY (admin_id) REFERENCES admins(id)
+);
+
+CREATE TABLE IF NOT EXISTS storage (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    type VARCHAR(20) NOT NULL,
+    public_id VARCHAR(255) NOT NULL UNIQUE,
+    url TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    reference_num INT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS news (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    storage_id INT NOT NULL UNIQUE,
+    alt TEXT,
+
+    FOREIGN KEY (storage_id) REFERENCES storage(id)
+);
+
+CREATE TABLE IF NOT EXISTS storage_references (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    storage_id INT NOT NULL,
+    entity_type VARCHAR(50) NOT NULL,
+    entity_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (storage_id) REFERENCES storage(id) ON DELETE CASCADE,
+    UNIQUE (entity_type, entity_id)
 );
