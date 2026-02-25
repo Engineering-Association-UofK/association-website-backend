@@ -1,6 +1,7 @@
 package edu.uofk.ea.association_website_backend.service;
 
 import com.cloudinary.Cloudinary;
+import com.cloudinary.api.ApiResponse;
 import com.cloudinary.utils.ObjectUtils;
 import edu.uofk.ea.association_website_backend.exceptionHandlers.exceptions.UnauthorizedException;
 import edu.uofk.ea.association_website_backend.model.CloudinaryRequestModel;
@@ -31,6 +32,30 @@ public class CloudinaryService {
     }
 
     /**
+     * Deletes a file from Cloudinary using its public ID.
+     * @param publicId The public ID of the asset.
+     * @return true if deleted successfully, false otherwise.
+     */
+    public boolean deleteFile(String publicId) {
+        try {
+            Map result = cloudinary.uploader().destroy(publicId, ObjectUtils.asMap("invalidate", true));
+            return "ok".equals(result.get("result"));
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to delete file from Cloudinary", e);
+        }
+    }
+
+    /**
+     * Fetches resource details from Cloudinary (Admin API).
+     * @param publicId The public ID of the asset.
+     * @return A Map containing asset details.
+     */
+    public ApiResponse fetch(String publicId) throws Exception {
+        return cloudinary.api().resource(publicId, ObjectUtils.emptyMap());
+    }
+
+
+    /**
      * Uploads a file to Cloudinary from the backend.
      *
      * @param fileBytes The raw bytes of the file to upload.
@@ -54,6 +79,13 @@ public class CloudinaryService {
         }
     }
 
+
+    /**
+     * Sign Requests, primarily used to sign uploads from the frontend.
+     *
+     * @param request The request to sign.
+     * @return The signed request.
+     */
     public CloudinaryRequestModel validateAndSign(CloudinaryRequestModel request) {
         if (request.getApiKey() == null || !isValidApiKey(request.getApiKey())) throw new UnauthorizedException("Invalid API key");
 
