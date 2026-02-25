@@ -1,111 +1,98 @@
 package edu.uofk.ea.association_website_backend.service;
 
-import edu.uofk.ea.association_website_backend.exceptionHandlers.exceptions.GenericNotFoundException;
 import edu.uofk.ea.association_website_backend.model.gallery.*;
-import edu.uofk.ea.association_website_backend.repository.GalleryDeletedRepo;
-import edu.uofk.ea.association_website_backend.repository.GalleryItemRepo;
-import jakarta.transaction.Transactional;
+import edu.uofk.ea.association_website_backend.model.storage.StorageModel;
+import edu.uofk.ea.association_website_backend.model.storage.StoreType;
+import edu.uofk.ea.association_website_backend.repository.StorageRepo;
+import edu.uofk.ea.association_website_backend.repository.NewsRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class GalleryService {
 
-    private final GalleryItemRepo repo;
-    private final GalleryDeletedRepo deletedRepo;
+    private final StorageManagementService storageManagementService;
+    private final StorageRepo storageRepo;
+    private final NewsRepo newsRepo;
 
     @Autowired
-    public GalleryService(GalleryItemRepo repo, GalleryDeletedRepo deletedRepo) {
-        this.repo = repo;
-        this.deletedRepo = deletedRepo;
+    public GalleryService(StorageManagementService storageManagementService, StorageRepo storageRepo, NewsRepo newsRepo) {
+        this.storageManagementService = storageManagementService;
+        this.storageRepo = storageRepo;
+        this.newsRepo = newsRepo;
     }
 
-    @Transactional
-    public void save(GalleryItemRequest item){
-        GalleryItemModel model = new GalleryItemModel(item.getTitle(), item.getType(), item.getKeyword(), item.getImageLink());
-        model.setCreatedAt(Instant.now());
-
-        if (item.getKeyword() != null && repo.findByKeyword(item.getKeyword()) != null) {
-            throw new GenericNotFoundException("Items must have a unique keyword.");
-        }
-
-        if (item.getType() == GalleryItemType.store) {
-            if (item.getKeyword() == null || item.getKeyword().isEmpty()) {
-                throw new IllegalArgumentException("Store items must have a unique keyword.");
-            }
-        }
-
-        repo.save(model);
+    public void AddImage(GalleryRequest request) {
+        if (storageRepo.findByPublicId(request.getPublicId()) != null) throw new IllegalArgumentException("Image already exists");
+        StorageModel model = new StorageModel(StoreType.IMAGE, request.getPublicId(), request.getUrl());
+        storageRepo.store(model);
     }
 
-    public GalleryItemModel findById(int id){
-        return repo.findById(id);
+    public List<GalleryResponse> getAll() {
+        var models = storageRepo.getByLatest();
+        var news = newsRepo.getAll();
+        List<GalleryResponse> responses = new ArrayList<>();
+        for (StorageModel m : models) {
+            GalleryResponse r = new GalleryResponse(
+                    m.getId(),
+                    m.getUrl(),
+                    m.getCreatedAt(),
+                    news.stream().anyMatch(n -> n.getStorageId() == m.getId())
+            );
+            responses.add(r);
+        }
+        return responses;
     }
 
-    public GalleryKeywordResponse findByKeyword(String keyword){
-        GalleryItemModel item = repo.findByKeyword(keyword);
+    public List<NewsResponse> getNews() {
+        List<NewsModel> models = newsRepo.getAll();
+        if (models.isEmpty()) return new ArrayList<>();
 
-        if (item == null) {
-            throw new GenericNotFoundException("Gallery item not found with keyword: " + keyword);
+        List<Integer> ids = models.stream().map(NewsModel::getStorageId).toList();
+        List<StorageModel> storageModels = storageRepo.getByList(ids);
+        List<NewsResponse> responses = new ArrayList<>();
+
+        for (NewsModel m : models) {
+            storageModels.stream()
+                    .filter(s -> s.getId() == m.getStorageId())
+                    .findFirst()
+                    .ifPresent(s -> responses.add(new NewsResponse(s.getUrl(), m.getAlt())));
         }
+        return responses;
+    }
 
-        return new GalleryKeywordResponse(
-                item.getKeyword(),
-                item.getTitle(),
-                item.getImageLink()
+    public void makeNews(int storageId, String alt) {
+        StorageModel storage = storageRepo.findById(storageId);
+        if (storage == null) throw new IllegalStateException("Storage item does not exist");
+        if (storage.getType() != StoreType.IMAGE) throw new IllegalStateException("Storage item is not an image");
+        if (newsRepo.findByStorageId(storageId) != null) throw new IllegalStateException("News already exists");
+
+        NewsModel news = new NewsModel(storageId, alt);
+        newsRepo.save(news);
+
+        storageManagementService.linkImageToEntity(
+                storage.getPublicId(),
+                storage.getUrl(),
+                edu.uofk.ea.association_website_backend.model.EntityType.NEWS.name(),
+                news.getId()
         );
     }
 
-    public List<GalleryItemModel> findByType(GalleryItemType type){
-        return repo.findByType(type);
+    public void deleteNews(int storageId) {
+        NewsModel news = newsRepo.findByStorageId(storageId);
+        if (news == null) throw new IllegalStateException("News does not exist");
+
+        storageManagementService.unlinkImageFromEntity(
+                edu.uofk.ea.association_website_backend.model.EntityType.NEWS.name(),
+                news.getId()
+        );
+        newsRepo.delete(news.getId());
     }
 
-    @Transactional
-    public void update(GalleryItemRequest itemRequest){
-        GalleryItemModel item = repo.findById(itemRequest.getId());
-
-        if (item == null) {
-            if (itemRequest.getKeyword() != null) {
-                item = repo.findByKeyword(itemRequest.getKeyword());
-                if (item != null){
-                    item.setId(itemRequest.getId());
-                    item.setTitle(itemRequest.getTitle());
-                    item.setType(itemRequest.getType());
-                    item.setKeyword(itemRequest.getKeyword());
-                    item.setImageLink(itemRequest.getImageLink());
-
-                    if (!Objects.equals(item.getImageLink(), itemRequest.getImageLink())) {
-                        deletedRepo.save(new GalleryDeletedModel(item.getImageLink()));
-                    }
-                    repo.Update(item);
-                    return;
-                }
-            }
-        }
-        throw new GenericNotFoundException("Gallery item not found");
-    }
-
-    public List<GalleryItemModel> getAll(){
-        return repo.getAll();
-    }
-
-    @Transactional
-    public void delete(int id){
-        GalleryItemModel item = repo.findById(id);
-        if (item == null) {
-            throw new GenericNotFoundException("Gallery item not found with ID:" + id);
-        }
-        if (item.getType() == GalleryItemType.store) {
-
-        }
-
-        GalleryDeletedModel model = new GalleryDeletedModel(item.getImageLink(), item.getType(), item.getKeyword());
-        deletedRepo.save(model);
-
-        repo.delete(id);
+    public void deleteUnusedImages(StoreType type) {
+        storageManagementService.cleanupOrphanedImages(type);
     }
 }
