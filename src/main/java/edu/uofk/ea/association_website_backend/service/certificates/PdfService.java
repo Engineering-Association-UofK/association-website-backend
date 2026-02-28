@@ -88,7 +88,7 @@ public class PdfService {
             if (orientation == Orientation.Landscape) {
                 designer.xAxis(632).yAxis(395).zoom(20);
             } else {
-                designer.xAxis(445).yAxis(542).zoom(0);
+                designer.xAxis(650).yAxis(440).zoom(0);
             }
 
             // Configure Appearance Properties
