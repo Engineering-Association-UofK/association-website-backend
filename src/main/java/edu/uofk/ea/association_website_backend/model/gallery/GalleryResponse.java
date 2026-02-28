@@ -4,16 +4,16 @@ import java.time.Instant;
 
 public class GalleryResponse {
     private int id;
-    private String url;
+    private GalleryRequest image;
     private Instant createdAt;
     private boolean isNews;
 
     public GalleryResponse() {
     }
 
-    public GalleryResponse(int id, String url, Instant createdAt, boolean isNews) {
+    public GalleryResponse(int id, GalleryRequest image, Instant createdAt, boolean isNews) {
         this.id = id;
-        this.url = url;
+        this.image = image;
         this.createdAt = createdAt;
         this.isNews = isNews;
     }
@@ -26,12 +26,12 @@ public class GalleryResponse {
         this.id = id;
     }
 
-    public String getUrl() {
-        return url;
+    public GalleryRequest getImage() {
+        return image;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setImage(GalleryRequest image) {
+        this.image = image;
     }
 
     public Instant getCreatedAt() {

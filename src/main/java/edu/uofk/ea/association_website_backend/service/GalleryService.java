@@ -39,7 +39,7 @@ public class GalleryService {
         for (StorageModel m : models) {
             GalleryResponse r = new GalleryResponse(
                     m.getId(),
-                    m.getUrl(),
+                    new GalleryRequest(m.getPublicId(), m.getUrl()),
                     m.getCreatedAt(),
                     news.stream().anyMatch(n -> n.getStorageId() == m.getId())
             );
