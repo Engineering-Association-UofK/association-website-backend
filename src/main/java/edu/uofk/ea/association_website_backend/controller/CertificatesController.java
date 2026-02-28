@@ -123,10 +123,8 @@ public class CertificatesController {
             summary = "Download a document",
             description = "This endpoint is used to download a document."
     )
-    public ResponseEntity<byte[]> downloadDocument(@PathVariable int id, Authentication authentication) {
+    public ResponseEntity<byte[]> downloadDocument(@PathVariable int id) {
         byte[] pdf = manager.DownloadDocument(id);
-        int adminId = adminDetailsService.getId(authentication.getName());
-        activityService.log(ActivityType.DOWNLOAD_DOCUMENT, Map.of("id", id), adminId);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=certificate.pdf")
@@ -139,10 +137,8 @@ public class CertificatesController {
             summary = "Download a certificate",
             description = "This endpoint is used to download a certificate."
     )
-    public ResponseEntity<byte[]> downloadCertificate(@PathVariable int id, Authentication authentication) {
+    public ResponseEntity<byte[]> downloadCertificate(@PathVariable int id) {
         byte[] pdf = manager.DownloadCertificate(id);
-        int adminId = adminDetailsService.getId(authentication.getName());
-        activityService.log(ActivityType.DOWNLOAD_CERTIFICATE, Map.of("id", id), adminId);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=certificate.pdf")
