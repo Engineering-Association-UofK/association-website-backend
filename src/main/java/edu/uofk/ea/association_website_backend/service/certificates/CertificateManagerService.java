@@ -107,13 +107,13 @@ public class CertificateManagerService {
     }
 
     public byte[] HandleDocumentCert(DocumentCertRequest r, byte[] originalPdf, String adminName) {
-        String stringToHash = r.getCertifyingAuthority() + "|" + r.getDocumentAuthor() + "|" + r.getDocumentReason() + "|" + r.getDocumentType() + "|" + secretSalt;
+        String stringToHash = r.getCertifyingAuthority() + "|" + r.getDocumentAuthor() + "|" + r.getDocumentReason() + "|" + r.getDocumentType() + "|" + r.getLang() + "|" + secretSalt;
 
         /// Step 1: Create the hash
         String hashedString = SHA256(stringToHash);
 
         /// Step 2: Create the QR code
-        String url = websiteLink + "/cert/verify/" + hashedString;
+        String url = websiteLink + "/cert/verify/doc/" + hashedString;
         byte[] qrCode = zXingService.generateQRCodeBase64(url, 512, 512);
 
         /// Step 3: Sign the certificate PDF with the QR Code
