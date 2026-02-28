@@ -119,7 +119,6 @@ public class CertificatesController {
     }
 
     @GetMapping("/document/download/{id}")
-    @PreAuthorize("hasAnyRole('PAPER_VIEWER', 'SUPER_ADMIN')")
     @Operation(
             summary = "Download a document",
             description = "This endpoint is used to download a document."
@@ -136,7 +135,6 @@ public class CertificatesController {
     }
 
     @GetMapping("/certificate/download/{id}")
-    @PreAuthorize("hasAnyRole('PAPER_VIEWER', 'SUPER_ADMIN')")
     @Operation(
             summary = "Download a certificate",
             description = "This endpoint is used to download a certificate."
