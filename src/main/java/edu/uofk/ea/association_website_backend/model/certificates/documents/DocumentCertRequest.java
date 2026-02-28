@@ -1,10 +1,13 @@
 package edu.uofk.ea.association_website_backend.model.certificates.documents;
 
+import edu.uofk.ea.association_website_backend.model.Language;
+
 public class DocumentCertRequest {
     private String certifyingAuthority;
     private String documentReason;
     private String documentAuthor;
     private DocumentTypes documentType;
+    private Language lang;
 
     public DocumentTypes getDocumentType() {
         return documentType;
@@ -36,5 +39,13 @@ public class DocumentCertRequest {
 
     public void setDocumentAuthor(String documentAuthor) {
         this.documentAuthor = documentAuthor;
+    }
+
+    public Language getLang() {
+        return lang;
+    }
+
+    public void setLang(Language lang) {
+        this.lang = lang;
     }
 }
