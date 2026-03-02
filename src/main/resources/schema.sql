@@ -75,18 +75,59 @@ CREATE TABLE IF NOT EXISTS visitors_messages (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Student & Events Placeholders
+-- Events and Participation Tables
+
 CREATE TABLE IF NOT EXISTS students (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL
+    name_ar VARCHAR(255) NOT NULL,
+    name_en VARCHAR(255) NOT NULL,
+    email VARCHAR(255)
 );
 
 CREATE TABLE IF NOT EXISTS events (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL
+    name VARCHAR(255) NOT NULL,
+    event_type VARCHAR(255) NOT NULL,
+    max_participants INT NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS event_components (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    event_id INT NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    max_score DECIMAL(10, 2) NOT NULL,
+
+    FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE
+);
+
+-- Relations
+
+CREATE TABLE IF NOT EXISTS event_participation (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    event_id INT NOT NULL,
+    student_id INT NOT NULL,
+
+    UNIQUE (event_id, student_id),
+
+    FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
+    FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS student_component_scores (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    participant_id INT NOT NULL,
+    component_id INT NOT NULL,
+    score DECIMAL(10, 2),
+
+    UNIQUE (participant_id, component_id),
+    FOREIGN KEY (participant_id) REFERENCES event_participation(id) ON DELETE CASCADE,
+    FOREIGN KEY (component_id) REFERENCES event_components(id) ON DELETE CASCADE
 );
 
 -- Certificate and decision tables
+
 CREATE TABLE IF NOT EXISTS certificates (
     id INT PRIMARY KEY AUTO_INCREMENT,
     cert_hash VARCHAR(255) NOT NULL,
