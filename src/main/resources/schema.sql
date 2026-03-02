@@ -194,6 +194,5 @@ CREATE TABLE IF NOT EXISTS storage_references (
     entity_id INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-    FOREIGN KEY (storage_id) REFERENCES storage(id) ON DELETE CASCADE,
-    UNIQUE (entity_type, entity_id)
+    FOREIGN KEY (storage_id) REFERENCES storage(id) ON DELETE CASCADE
 );
