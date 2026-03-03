@@ -4,7 +4,6 @@ import edu.uofk.ea.association_website_backend.model.event.EventParticipationMod
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -41,7 +40,7 @@ public class EventParticipationRepo {
                 .getResultList();
     }
 
-    public EventParticipationModel findByEventIdAndStudentId(int eventId, int studentId) {
+    public EventParticipationModel findByEventIdAndStudentIds(int eventId, int studentId) {
         return em.createQuery("SELECT ep FROM EventParticipationModel ep WHERE ep.eventId = :eventId AND ep.studentId = :studentId", EventParticipationModel.class)
                 .setParameter("eventId", eventId)
                 .setParameter("studentId", studentId)

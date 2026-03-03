@@ -31,12 +31,16 @@ public class CertificatesRepo {
         return list.getFirst();
     }
 
-    @Transactional
     public void Save(CertificateModel model){
         em.persist(model);
     }
 
-    @Transactional
+    public void saveAll(List<CertificateModel> models) {
+        for (CertificateModel model : models) {
+            em.persist(model);
+        }
+    }
+
     public void Update(CertificateModel model){
         em.merge(model);
     }
