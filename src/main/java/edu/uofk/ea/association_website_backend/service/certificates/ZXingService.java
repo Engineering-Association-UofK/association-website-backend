@@ -41,17 +41,38 @@ public class ZXingService { // QR Code generator
             BufferedImage qrImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
             Graphics2D g = qrImage.createGraphics();
 
+            // Draw a frame
+            int frameThickness = 5;
+            int usableWidth = width - 2 * frameThickness;
+            int usableHeight = height - 2 * frameThickness;
+
+            g.setColor(Color.BLACK);
+            g.fillRoundRect(
+                0,
+                0,
+                width,
+                height,
+                0,
+                0
+            );
+
+            // Inner white area
             g.setColor(Color.WHITE);
-            g.fillRect(0, 0, width, height);
+            g.fillRoundRect(
+                    frameThickness,
+                    frameThickness,
+                    usableWidth,
+                    usableHeight,
+                    0,
+                    0
+            );
 
             Color color = new Color(5, 175, 218);
             g.setColor(color);
 
-            int moduleSize = width / matrix.getWidth(); // Calculate how big one "dot" is
-            int matrixWidthPixels = matrix.getWidth() * moduleSize;
-            int matrixHeightPixels = matrix.getHeight() * moduleSize;
-            int offsetX = (width - matrixWidthPixels) / 2;
-            int offsetY = (height - matrixHeightPixels) / 2;
+            int moduleSize = usableWidth  / matrix.getWidth(); // Calculate how big one "dot" is
+            int offsetX = (width - matrix.getWidth() * moduleSize) / 2;
+            int offsetY = (height - matrix.getHeight() * moduleSize) / 2;
 
             // Loop through the modules (dots) addresses and draw Gears, skipping corners.
             for (int x = 0; x < matrix.getWidth(); x++) {

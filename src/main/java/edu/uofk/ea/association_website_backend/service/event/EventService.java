@@ -64,7 +64,8 @@ public class EventService {
                 request.getEventType(),
                 request.getMaxParticipants(),
                 request.getStartDate(),
-                request.getEndDate()
+                request.getEndDate(),
+                request.getOutcomes()
         );
         eventRepo.save(event);
     }
@@ -79,6 +80,7 @@ public class EventService {
 
         event.setName(request.getName());
         event.setEventType(request.getEventType());
+        event.setOutcomes(request.getOutcomes());
         event.setMaxParticipants(request.getMaxParticipants());
         event.setStartDate(request.getStartDate());
         event.setEndDate(request.getEndDate());
@@ -100,7 +102,7 @@ public class EventService {
     @Transactional
     public void apply(int eventId, int studentId) {
         // Check if student already applied for this event
-        if (eventParticipationRepo.findByEventIdAndStudentId(eventId, studentId) != null)
+        if (eventParticipationRepo.findByEventIdAndStudentIds(eventId, studentId) != null)
             throw new IllegalArgumentException("Student already applied for this event");
 
         EventModel event = eventRepo.findById(eventId);
@@ -109,7 +111,7 @@ public class EventService {
             throw new UnauthorizedException("Event application is closed");
 
         // Check if event is full
-        if (event.getMaxParticipants() != 0 && event.getMaxParticipants() <= eventParticipationRepo.getByEventId(eventId).size())
+        if (event.getMaxParticipants() != 0 && event.getMaxParticipants() < eventParticipationRepo.getByEventId(eventId).size())
             throw new IllegalArgumentException("Event is full");
 
         StudentModel student = studentRepo.findById(studentId);
@@ -140,7 +142,7 @@ public class EventService {
 
     @Transactional
     public void removeParticipant(int eventId, int studentId) {
-        EventParticipationModel participation = eventParticipationRepo.findByEventIdAndStudentId(eventId, studentId);
+        EventParticipationModel participation = eventParticipationRepo.findByEventIdAndStudentIds(eventId, studentId);
         if (participation == null) {
             throw new IllegalArgumentException("Student is not registered for this event");
         }
@@ -156,7 +158,7 @@ public class EventService {
         if (event.getEndDate().isBefore(LocalDate.now()))
             throw new UnauthorizedException("Event Updating not allowed after end date");
 
-        var participant = eventParticipationRepo.findByEventIdAndStudentId(request.getEventId(), request.getStudentId());
+        var participant = eventParticipationRepo.findByEventIdAndStudentIds(request.getEventId(), request.getStudentId());
         if (participant == null) throw new UnauthorizedException("Student not a participant");
 
         var eventComponent = eventComponentRepo.findById(request.getComponentId());
@@ -222,81 +224,166 @@ public class EventService {
     }
 
     public List<ParticipantsResponse> getParticipantsByEventId(int eventId) {
-        // Get the event
         EventModel event = eventRepo.findById(eventId);
         if (event == null) throw new IllegalArgumentException("Event not found");
 
-        // Get its participants
-        List<EventParticipationModel> participants = eventParticipationRepo.getByEventId(eventId);
-        List<Integer> participantsIds = participants.stream().map(EventParticipationModel::getId).toList();
+        Mapping data = new Mapping(eventId);
 
-        // Get students for each participant and convert to map for faster lookup
-        List<Integer> studentIds = participants.stream().map(EventParticipationModel::getStudentId).toList();
-        List<StudentModel> students = studentRepo.findAllById(studentIds);
-        Map<Integer, StudentModel> studentMap = students.stream().collect(Collectors.toMap(StudentModel::getId, s -> s));
+        return data.participants.stream().map(p -> {
+            StudentModel student = data.studentMap.get(p.getStudentId());
+            return new ParticipantsResponse(
+                    p.getId(),
+                    p.getEventId(),
+                    p.getStudentId(),
+                    student.getNameAr(),
+                    student.getNameEn(),
+                    student.getEmail(),
+                    data.participantComponentScoreMap.getOrDefault(p.getId(), null),
+                    data.getPercentage(p.getId())
+            );
+        }).toList();
+    }
 
-        // Get its components
+    public EventCertificateDetails getCertDetails(int eventId, int studentId) {
+        EventModel event = eventRepo.findById(eventId);
+        if (event == null) throw new IllegalArgumentException("Event not found");
+        StudentModel student = studentRepo.findById(studentId);
+        if (student == null) throw new IllegalArgumentException("Student not found");
+        double percentageGrade = -1.0;
+
         List<EventComponentModel> components = eventComponentRepo.getByEventId(eventId);
+        // If event has components, get their scores
         if (!components.isEmpty()) {
             // Get ids for each component
             List<Integer> componentIds = components.stream().map(EventComponentModel::getId).toList();
-            // Get scores for each participant and component
-            Map<Integer, List<StudentComponentScoreModel>> componentScoreMap = studentComponentScoreRepo.findByParticipantAndComponentIds(participantsIds, componentIds);
 
-            return participants.stream().map(p -> {
-                // Get scores for each component
-                List<StudentComponentScoreModel> componentScoreModels = componentScoreMap.getOrDefault(p.getId(), List.of());
-                // Convert to map
-                var studentScoreMap = componentScoreModels.stream().collect(
-                        Collectors.toMap(sc -> sc.getComponent().getName(),
-                                StudentComponentScoreModel::getScore
-                        )
-                );
-                // Fill missing components with 0
-                if (studentScoreMap.size() != components.size()) {
-                    for (EventComponentModel component : components) {
-                        if (!studentScoreMap.containsKey(component.getName())) {
-                            studentScoreMap.put(component.getName(), 0.0);
-                        }
+            // Get participantId
+            int participant = eventParticipationRepo.findByEventIdAndStudentIds(eventId, studentId).getId();
+
+            List<StudentComponentScoreModel> componentScoreModels = studentComponentScoreRepo.findByParticipantAndComponentIds(participant, componentIds);
+
+            double scoreSum = componentScoreModels.stream().mapToDouble(StudentComponentScoreModel::getScore).sum();
+            double maxScore = components.stream().mapToDouble(EventComponentModel::getMaxScore).sum();
+            percentageGrade = maxScore > 0 ? (scoreSum / maxScore) * 100 : 0.0;
+        }
+
+        return new EventCertificateDetails(
+                event.getName(),
+                event.getEventType(),
+                event.getOutcomes(),
+                event.getStartDate(),
+                event.getEndDate(),
+                student.getNameAr(),
+                student.getNameEn(),
+                percentageGrade
+        );
+    }
+
+    public EventMassCertificateDetails getAllDetails(List<Integer> studentIds, int eventId) {
+        EventModel event = eventRepo.findById(eventId);
+        if (event == null) throw new IllegalArgumentException("Event not found");
+
+        Mapping data = new Mapping(eventId, studentIds);
+
+        return new EventMassCertificateDetails(
+                event.getName(),
+                event.getEventType(),
+                event.getOutcomes(),
+                event.getStartDate(),
+                event.getEndDate(),
+                data.studentNameAr,
+                data.studentNameEn,
+                data.percentageGrade
+        );
+    }
+
+    private class Mapping {
+        int eventId;
+
+        List<StudentModel> eventStudents;
+        List<EventParticipationModel> participants;
+        List<EventComponentModel> eventComponents;
+
+        List<Integer> eventStudentIds;
+        List<Integer> participantsIds;
+        List<Integer> eventComponentIds;
+
+        Map<Integer, String> studentNameAr;
+        Map<Integer, String> studentNameEn;
+        Map<Integer, Double> percentageGrade;
+
+        Map<Integer, StudentModel> studentMap;
+        Map<Integer, Map<String, Double>> participantComponentScoreMap;
+
+        double scoreMaxSum;
+
+        public Mapping(int eventId) {
+            this.eventId = eventId;
+            participants = eventParticipationRepo.getByEventId(eventId);
+
+            // Get participants for the event
+            eventStudentIds = participants.stream().map(EventParticipationModel::getStudentId).toList();
+            participantsIds = participants.stream().map(EventParticipationModel::getId).toList();
+            eventStudents = studentRepo.findAllById(eventStudentIds);
+
+            setUp();
+        }
+
+        public Mapping(int eventId, List<Integer> eventStudentIds) {
+            this.eventId = eventId;
+
+            eventStudents = studentRepo.findAllById(eventStudentIds);
+            if (eventStudents.size() != eventStudentIds.size()) throw new IllegalArgumentException("Some students not found");
+            this.eventStudentIds = eventStudentIds;
+
+            participants = eventParticipationRepo.findByEventIdAndStudentIds(eventId, eventStudentIds);
+            if (participants.size() != eventStudentIds.size()) throw new IllegalArgumentException("Some students are not participants on this event");
+            participantsIds = participants.stream().map(EventParticipationModel::getId).toList();
+
+            setUp();
+            mapStudentsData();
+        }
+
+        private void setUp() {
+            studentMap = eventStudents.stream().collect(Collectors.toMap(StudentModel::getId, s -> s));
+            eventComponents = eventComponentRepo.getByEventId(eventId);
+            if (!eventComponents.isEmpty()) {
+                // Get ids for each component
+                eventComponentIds = eventComponents.stream().map(EventComponentModel::getId).toList();
+                // Get scores for each participant and component
+                participantComponentScoreMap = studentComponentScoreRepo.findByParticipantAndComponentIds(participantsIds, eventComponentIds);
+            }
+            scoreMaxSum = eventComponents.stream().mapToDouble(EventComponentModel::getMaxScore).sum();
+        }
+
+        private void mapStudentsData() {
+            studentNameAr = eventStudents.stream().collect(Collectors.toMap(StudentModel::getId, StudentModel::getNameAr));
+            studentNameEn = eventStudents.stream().collect(Collectors.toMap(StudentModel::getId, StudentModel::getNameEn));
+            percentageGrade = participants.stream().collect(Collectors.toMap(EventParticipationModel::getStudentId, p -> getPercentage(p.getId())));
+        }
+
+        public double getPercentage(int participantId) {
+            if (eventComponents == null) return -1.0;
+
+            // Get scores for each component
+            var studentScoreMap = participantComponentScoreMap.getOrDefault(participantId, Map.of());
+            if (studentScoreMap.isEmpty())
+                return 0.0;
+
+            // Fill missing components with 0
+            if (studentScoreMap.size() != eventComponents.size()) {
+                for (EventComponentModel component : eventComponents) {
+                    if (!studentScoreMap.containsKey(component.getName())) {
+                        studentScoreMap.put(component.getName(), 0.0);
                     }
                 }
-                // Add scores and calculate average
-                Double score = studentScoreMap.values().stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
+            }
 
-                StudentModel student = studentMap.get(p.getStudentId());
-                if (student == null) {
-                    log.error("Student not found for participant {} in event {}. Found while collecting participants with scores.", p.getId(), eventId);
-                    return null;
-                }
-                return new ParticipantsResponse(
-                        p.getId(),
-                        p.getEventId(),
-                        p.getStudentId(),
-                        student.getNameAr(),
-                        student.getNameEn(),
-                        student.getEmail(),
-                        studentScoreMap,
-                        score
-                );
-            }).toList();
-        } else {
-            return participants.stream().map(p -> {
-                StudentModel student = studentMap.get(p.getStudentId());
-                if (student == null) {
-                    log.error("Student not found for participant {} in event {}. Found while collecting participants without scores.", p.getId(), eventId);
-                    return null;
-                }
-                return new ParticipantsResponse(
-                        p.getId(),
-                        p.getEventId(),
-                        p.getStudentId(),
-                        student.getNameAr(),
-                        student.getNameEn(),
-                        student.getEmail(),
-                        null,
-                        0.0
-                );
-            }).toList();
+            // Add scores and calculate percentage of their sum
+            double scores = studentScoreMap.values().stream().mapToDouble(Double::doubleValue).sum();
+            double maxScore = eventComponents.stream().mapToDouble(EventComponentModel::getMaxScore).sum();
+            return maxScore > 0 ? (scores / maxScore) * 100 : 0.0;
         }
+
     }
 }

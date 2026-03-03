@@ -32,6 +32,10 @@ build/
 ### VS Code ###
 .vscode/
 
+### Files ###
+*.html
+*.css
+*.ttf
 *.pdf
 *.log
 *.gz

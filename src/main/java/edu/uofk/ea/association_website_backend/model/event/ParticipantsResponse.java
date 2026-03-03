@@ -10,9 +10,9 @@ public class ParticipantsResponse {
     private String studentNameEn;
     private String studentEmail;
     private Map<String, Double> components;
-    private Double average;
+    private Double percentageGrade;
 
-    public ParticipantsResponse(int id, int eventId, int studentId, String studentNameAr, String studentNameEn, String studentEmail, Map<String, Double> components, Double average) {
+    public ParticipantsResponse(int id, int eventId, int studentId, String studentNameAr, String studentNameEn, String studentEmail, Map<String, Double> components, Double percentageGrade) {
         this.id = id;
         this.eventId = eventId;
         this.studentId = studentId;
@@ -20,7 +20,7 @@ public class ParticipantsResponse {
         this.studentNameEn = studentNameEn;
         this.studentEmail = studentEmail;
         this.components = components;
-        this.average = average;
+        this.percentageGrade = percentageGrade;
     }
 
     public int getId() {
@@ -79,11 +79,11 @@ public class ParticipantsResponse {
         this.components = components;
     }
 
-    public Double getAverage() {
-        return average;
+    public Double getPercentageGrade() {
+        return percentageGrade;
     }
 
-    public void setAverage(Double average) {
-        this.average = average;
+    public void setPercentageGrade(Double percentageGrade) {
+        this.percentageGrade = percentageGrade;
     }
 }

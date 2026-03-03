@@ -3,32 +3,34 @@ package edu.uofk.ea.association_website_backend.model.certificates.certificates;
 import edu.uofk.ea.association_website_backend.model.certificates.DocStatus;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.util.List;
 
 public class CertVerifyResponse {
     private boolean valid;
     private Integer id;
-    private String link;
     private String name;
     private String event;
+    private LocalDate endDate;
+    private List<String> outComes;
+    private double percentageDegree;
     private DocStatus status;
     private Instant issueDate;
 
-    public CertVerifyResponse(boolean valid, Integer id, String link, String name, String event, DocStatus status, Instant issueDate) {
-        this.valid = valid;
+    public CertVerifyResponse() {
+        this.valid = false;
+    }
+
+    public CertVerifyResponse(Integer id, String name, String event, LocalDate endDate, List<String> outComes, double percentageDegree, DocStatus status, Instant issueDate) {
+        this.valid = true;
         this.id = id;
-        this.link = link;
         this.name = name;
         this.event = event;
+        this.endDate = endDate;
+        this.outComes = outComes;
+        this.percentageDegree = percentageDegree;
         this.status = status;
         this.issueDate = issueDate;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public boolean isValid() {
@@ -39,12 +41,12 @@ public class CertVerifyResponse {
         this.valid = valid;
     }
 
-    public String getLink() {
-        return link;
+    public Integer getId() {
+        return id;
     }
 
-    public void setLink(String link) {
-        this.link = link;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -61,6 +63,30 @@ public class CertVerifyResponse {
 
     public void setEvent(String event) {
         this.event = event;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
+
+    public List<String> getOutComes() {
+        return outComes;
+    }
+
+    public void setOutComes(List<String> outComes) {
+        this.outComes = outComes;
+    }
+
+    public double getPercentageDegree() {
+        return percentageDegree;
+    }
+
+    public void setPercentageDegree(double percentageDegree) {
+        this.percentageDegree = percentageDegree;
     }
 
     public DocStatus getStatus() {

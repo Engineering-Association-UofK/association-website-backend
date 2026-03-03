@@ -2,8 +2,8 @@ package edu.uofk.ea.association_website_backend.controller;
 
 import edu.uofk.ea.association_website_backend.model.activity.ActivityType;
 import edu.uofk.ea.association_website_backend.model.certificates.certificates.CertVerifyResponse;
-import edu.uofk.ea.association_website_backend.model.certificates.certificates.DefaultManyCertsRequest;
-import edu.uofk.ea.association_website_backend.model.certificates.certificates.DefaultOneCertRequest;
+import edu.uofk.ea.association_website_backend.model.certificates.certificates.MassGenerateCertsRequest;
+import edu.uofk.ea.association_website_backend.model.certificates.certificates.GenerateCertRequest;
 import edu.uofk.ea.association_website_backend.model.certificates.documents.DocVerifyResponse;
 import edu.uofk.ea.association_website_backend.model.certificates.documents.DocumentCertRequest;
 import edu.uofk.ea.association_website_backend.service.ActivityService;
@@ -53,20 +53,22 @@ public class CertificatesController {
             summary = "Apply for a new certificate",
             description = "This endpoint is used to apply for a new certificate. It requires the student ID and the event ID to generate the certificate."
     )
-    public void newDefaultCert(@Valid @RequestBody DefaultOneCertRequest request, Authentication authentication) {
-        manager.HandleDefaultOneCert(request.getStudentId(), request.getEventId());
+    public void generateDefaultCert(@Valid @RequestBody GenerateCertRequest request, Authentication authentication, @RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.replace("Bearer ", "");
+        manager.HandleDefaultOneCert(request, token);
         int id = adminDetailsService.getId(authentication.getName());
         activityService.log(ActivityType.CREATE_CERTIFICATE, Map.of("studentId", request.getStudentId(), "eventId", request.getEventId()), id);
     }
 
-    @PostMapping("/cert/mass")
+    @PostMapping("/cert-mass")
     @PreAuthorize("hasAnyRole('CERTIFICATE_ISSUER', 'SUPER_ADMIN')")
     @Operation(
             summary = "Apply for multiple certificates",
             description = "This endpoint is used to apply for multiple certificates. It requires the student IDs as array and the event ID to generate the certificates."
     )
-    public void newDefaultCerts(@Valid @RequestBody DefaultManyCertsRequest request, Authentication authentication) {
-        manager.HandleDefaultManyCerts(request);
+    public void massGenerateDefaultCert(@Valid @RequestBody MassGenerateCertsRequest request, Authentication authentication, @RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.replace("Bearer ", "");
+        manager.HandleDefaultManyCerts(request, token);
         int id = adminDetailsService.getId(authentication.getName());
         activityService.log(ActivityType.CREATE_CERTIFICATE, Map.of("count", request.getStudentIds().size(), "eventId", request.getEventId()), id);
     }

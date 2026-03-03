@@ -2,6 +2,7 @@ package edu.uofk.ea.association_website_backend.exceptionHandlers;
 
 import edu.uofk.ea.association_website_backend.exceptionHandlers.exceptions.GenericAlreadyExistsException;
 import edu.uofk.ea.association_website_backend.exceptionHandlers.exceptions.GenericNotFoundException;
+import edu.uofk.ea.association_website_backend.exceptionHandlers.exceptions.HtmlGenerationException;
 import edu.uofk.ea.association_website_backend.exceptionHandlers.exceptions.UnauthorizedException;
 import edu.uofk.ea.association_website_backend.exceptionHandlers.exceptions.WrongRequestBodyException;
 import edu.uofk.ea.association_website_backend.util.BaseErrorResponse;
@@ -57,6 +58,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<BaseErrorResponse> handleWrongRequestBodyException(WrongRequestBodyException e) {
         BaseErrorResponse error = new BaseErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage(), Instant.now().getEpochSecond());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(HtmlGenerationException.class)
+    public ResponseEntity<BaseErrorResponse> handleHtmlGenerationException(HtmlGenerationException e) {
+        BaseErrorResponse error = new BaseErrorResponse(HttpStatus.BAD_GATEWAY.value(), e.getMessage(), Instant.now().getEpochSecond());
+        return new ResponseEntity<>(error, HttpStatus.BAD_GATEWAY);
     }
 
     @Override

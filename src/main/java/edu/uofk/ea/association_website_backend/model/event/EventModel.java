@@ -3,6 +3,7 @@ package edu.uofk.ea.association_website_backend.model.event;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "events")
@@ -29,14 +30,19 @@ public class EventModel {
     @Column(name = "end_date")
     private LocalDate endDate;
 
+    @ElementCollection
+    @CollectionTable(name = "event_outcomes", joinColumns = @JoinColumn(name = "event_id"))
+    private List<String> outcomes;
+
     public EventModel() {}
 
-    public EventModel(String name, EventType eventType, int maxParticipants, LocalDate startDate, LocalDate endDate) {
+    public EventModel(String name, EventType eventType, int maxParticipants, LocalDate startDate, LocalDate endDate, List<String> outcomes) {
         this.name = name;
         this.eventType = eventType;
         this.maxParticipants = maxParticipants;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.outcomes = outcomes;
     }
 
     public EventModel(String name, EventType eventType, LocalDate startDate, LocalDate endDate) {
@@ -93,5 +99,13 @@ public class EventModel {
 
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
+    }
+
+    public List<String> getOutcomes() {
+        return outcomes;
+    }
+
+    public void setOutcomes(List<String> outcomes) {
+        this.outcomes = outcomes;
     }
 }
