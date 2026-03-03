@@ -6,6 +6,8 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class CertificatesService {
 
@@ -16,17 +18,26 @@ public class CertificatesService {
         this.repo = repo;
     }
 
-    public CertificateModel GetById(int id){
+    public CertificateModel findById(int id){
         return repo.FindById(id);
     }
 
-    public CertificateModel GetByHash(String hash){
+    public CertificateModel findByHash(String hash){
         return repo.FindByHash(hash);
     }
 
     @Transactional
-    public void Save(CertificateModel model){
-        if (repo.FindByHash(model.getCertHash()) != null) repo.Update(model);
-        else repo.Save(model);
+    public void save(CertificateModel model){
+        repo.Save(model);
+    }
+
+    @Transactional
+    public void update(CertificateModel model) {
+        repo.Update(model);
+    }
+
+    @Transactional
+    public void saveAll(List<CertificateModel> models) {
+        repo.saveAll(models);
     }
 }

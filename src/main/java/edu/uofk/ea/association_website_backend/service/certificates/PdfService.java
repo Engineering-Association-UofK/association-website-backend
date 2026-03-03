@@ -36,20 +36,6 @@ public class PdfService {
     @Value("${app.keystore.path}")
     private String keystorePath;
 
-    public byte[] convertHtmlToPdf(String html) {
-        try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
-            PdfRendererBuilder builder = new PdfRendererBuilder();
-
-            builder.withHtmlContent(html, null);
-            builder.toStream(os);
-            builder.run();
-
-            return os.toByteArray();
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to render PDF", e);
-        }
-    }
-
     public enum Orientation {
         Landscape,
         Portrait
@@ -86,7 +72,7 @@ public class PdfService {
             PDVisibleSignDesigner designer = new PDVisibleSignDesigner(document, imageStream, 1);
             designer.width(100).height(100);
             if (orientation == Orientation.Landscape) {
-                designer.xAxis(632).yAxis(395).zoom(20);
+                designer.xAxis(360).yAxis(450).zoom(20);
             } else {
                 designer.xAxis(650).yAxis(440).zoom(0);
             }

@@ -3,6 +3,7 @@ package edu.uofk.ea.association_website_backend.service.certificates;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 public class HashingService {
 

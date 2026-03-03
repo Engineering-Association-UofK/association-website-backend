@@ -93,6 +93,13 @@ CREATE TABLE IF NOT EXISTS events (
     end_date DATE NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS event_outcomes (
+    event_id INT NOT NULL,
+    outcomes VARCHAR(255),
+
+    FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS event_components (
     id INT PRIMARY KEY AUTO_INCREMENT,
     event_id INT NOT NULL,

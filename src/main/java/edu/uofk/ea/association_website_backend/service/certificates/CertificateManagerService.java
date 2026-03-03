@@ -4,22 +4,31 @@ import edu.uofk.ea.association_website_backend.exceptionHandlers.exceptions.Gene
 import edu.uofk.ea.association_website_backend.model.certificates.DocStatus;
 import edu.uofk.ea.association_website_backend.model.certificates.certificates.CertVerifyResponse;
 import edu.uofk.ea.association_website_backend.model.certificates.certificates.CertificateModel;
-import edu.uofk.ea.association_website_backend.model.certificates.certificates.DefaultManyCertsRequest;
+import edu.uofk.ea.association_website_backend.model.certificates.certificates.MassGenerateCertsRequest;
+import edu.uofk.ea.association_website_backend.model.certificates.certificates.GenerateCertRequest;
 import edu.uofk.ea.association_website_backend.model.certificates.documents.DocVerifyResponse;
 import edu.uofk.ea.association_website_backend.model.certificates.documents.DocumentCertRequest;
 import edu.uofk.ea.association_website_backend.model.certificates.documents.DocumentModel;
+import edu.uofk.ea.association_website_backend.model.event.EventCertificateDetails;
+import edu.uofk.ea.association_website_backend.model.event.EventMassCertificateDetails;
+import edu.uofk.ea.association_website_backend.model.event.EventModel;
+import edu.uofk.ea.association_website_backend.repository.StudentRepo;
 import edu.uofk.ea.association_website_backend.service.AdminDetailsService;
 import edu.uofk.ea.association_website_backend.service.CloudinaryService;
 import edu.uofk.ea.association_website_backend.service.MailService;
+import edu.uofk.ea.association_website_backend.service.TobClient;
+import edu.uofk.ea.association_website_backend.service.event.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.*;
 import java.net.URISyntaxException;
 
 import static edu.uofk.ea.association_website_backend.service.certificates.HashingService.SHA256;
 
+//@Async
 @Service
 public class CertificateManagerService {
 
@@ -27,6 +36,8 @@ public class CertificateManagerService {
     private String secretSalt;
     @Value("${app.website.link}")
     private String websiteLink;
+
+    private final EventService eventService;
 
     private final PdfService pdfService;
     private final ThymeleafService thymeleafService;
@@ -36,9 +47,11 @@ public class CertificateManagerService {
     private final CloudinaryService cloudinaryService;
     private final MailService mailService;
     private final AdminDetailsService adminService;
+    private final TobClient tobClient;
 
     @Autowired
     public CertificateManagerService(
+            EventService eventService,
             PdfService pdfService,
             ThymeleafService thymeleafService,
             ZXingService zXingService,
@@ -46,8 +59,10 @@ public class CertificateManagerService {
             DocumentsService documentsService,
             CloudinaryService cloudinaryService,
             MailService mailService,
-            AdminDetailsService adminService
+            AdminDetailsService adminService,
+            TobClient tobClient
     ) {
+        this.eventService = eventService;
         this.pdfService = pdfService;
         this.thymeleafService = thymeleafService;
         this.zXingService = zXingService;
@@ -56,13 +71,15 @@ public class CertificateManagerService {
         this.cloudinaryService = cloudinaryService;
         this.mailService = mailService;
         this.adminService = adminService;
+        this.tobClient = tobClient;
     }
 
-    public void HandleDefaultOneCert(int StudentId, int EventId) {
-        // TODO: Replace with actual student and Event names when they are ready
-        String StudentName = "john doe"; // StudentRepo.get(request.getStudentId());
-        String EventName = "HTML Basics"; // EventRepo.get(request.getEventId());
-        String stringToHash = StudentName + "|" + EventName + "|" + secretSalt;
+    @Transactional
+    public void HandleDefaultOneCert(GenerateCertRequest request, String token) {
+        EventCertificateDetails details = eventService.getCertDetails(request.getEventId(), request.getStudentId());
+        details.setLang(request.getLang());
+
+        String stringToHash = details.getStudentName() + "|" + details.getEventName() + "|" + details.getStartDate() + "|" + details.getEndDate() + "|" + request.getLang() + "|" + secretSalt;
 
         /// Step 1: Create the hash
         String hashedString = SHA256(stringToHash);
@@ -72,11 +89,19 @@ public class CertificateManagerService {
         byte[] qrCode = zXingService.generateQRCodeBase64(url, 512, 512);
 
         /// Step 3: Generate the certificate
-        String certHTML = thymeleafService.generateDefaultHtml(StudentName, EventName);
-        byte[] pdf = pdfService.convertHtmlToPdf(certHTML);
+        String certHTML = thymeleafService.generateDefaultCertHtml(details);
+        byte[] pdf = tobClient.generatePdf(certHTML, token);
 
         /// Step 4: Sign the certificate PDF
         byte[] signedPdf = pdfService.signPdf(pdf, new ByteArrayInputStream(qrCode), PdfService.Orientation.Landscape);
+
+        // Save certificate to a file for testing
+        try (FileOutputStream fos = new FileOutputStream(details.getEventName() + "-" + details.getStudentName() + ".pdf")) {
+            fos.write(signedPdf);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save test certificate: " + e.getMessage());
+        }
+
 
         /// Step 5: Upload to storage
         String link = cloudinaryService.uploadDoc(signedPdf, hashedString);
@@ -84,25 +109,64 @@ public class CertificateManagerService {
         /// Step 6: Save the record with the returned 'link' to the database.
         CertificateModel model = new CertificateModel(
                 hashedString,
-                StudentId,
-                EventId,
-                link,
+                request.getStudentId(),
+                request.getEventId(),
+                "asdasdasd",//link,
                 DocStatus.ACTIVE
         );
-        certificateService.Save(model);
+        certificateService.save(model);
 
         /// Step 7: Send an email with the link to the student.
+        String emailHtml = thymeleafService.generateEmailCertHtml(details.getStudentName(), details.getEventType(), details.getEventName(), url);
         mailService.CertificateEmail(
                 "unvacc80@gmail.com", // StudentRepo.get(request.getStudentId()).getEmail(),
-                url,
-                StudentName,
-                EventName
+                "Certificate for " + details.getEventName(),
+                emailHtml
         );
     }
 
-    public void HandleDefaultManyCerts(DefaultManyCertsRequest request) {
-        for (int studentId : request.getStudentIds()){
-            HandleDefaultOneCert(studentId, request.getEventId());
+    public void HandleDefaultManyCerts(MassGenerateCertsRequest request, String token) {
+        EventMassCertificateDetails details = eventService.getAllDetails(request.getStudentIds(), request.getEventId());
+        details.setLang(request.getLang());
+
+        for (int studentId : request.getStudentIds()) {
+
+            String stringToHash = details.getStudentName().get(studentId) + "|" + details.getEventName() + "|" + details.getStartDate() + "|" + details.getEndDate() + "|" + request.getLang() + "|" + secretSalt;
+
+            /// Step 1: Create the hash
+            String hashedString = SHA256(stringToHash);
+
+            /// Step 2: Create the QR code
+            String url = websiteLink + "/cert/verify/" + hashedString;
+            byte[] qrCode = zXingService.generateQRCodeBase64(url, 512, 512);
+
+            /// Step 3: Generate the certificate
+            String certHTML = thymeleafService.generateDefaultCertHtml(details.getOne(studentId));
+            byte[] pdf = tobClient.generatePdf(certHTML, token);
+
+            /// Step 4: Sign the certificate PDF
+            byte[] signedPdf = pdfService.signPdf(pdf, new ByteArrayInputStream(qrCode), PdfService.Orientation.Landscape);
+
+            /// Step 5: Upload to storage
+            String link = cloudinaryService.uploadDoc(signedPdf, hashedString);
+
+            /// Step 6: Save the record with the returned 'link' to the database.
+            CertificateModel model = new CertificateModel(
+                    hashedString,
+                    studentId,
+                    request.getEventId(),
+                    link,
+                    DocStatus.ACTIVE
+            );
+            certificateService.save(model);
+
+            /// Step 7: Send an email with the link to the student.
+            String emailHtml = thymeleafService.generateEmailCertHtml(details.getStudentName().get(studentId), details.getEventType(), details.getEventName(), url);
+            mailService.CertificateEmail(
+                    "unvacc80@gmail.com", // StudentRepo.get(request.getStudentId()).getEmail(),
+                    "Certificate for " + details.getEventName(),
+                    emailHtml
+            );
         }
     }
 
@@ -139,16 +203,17 @@ public class CertificateManagerService {
     }
 
     public CertVerifyResponse VerifyCertificate(String hash) {
-        CertificateModel cert = certificateService.GetByHash(hash);
-
-        if (cert == null) return new CertVerifyResponse(false, null,null, null, null, null, null);
+        CertificateModel cert = certificateService.findByHash(hash);
+        if (cert == null) return new CertVerifyResponse();
+        EventCertificateDetails details = eventService.getCertDetails(cert.getEventId(), cert.getStudentId());
 
         return new CertVerifyResponse(
-                true,
                 cert.getId(),
-                cert.getFilePath(), // TODO: Replace with actual student and Event names when they are ready
-                "John Doe", // StudentRepo.get(cert.getStudentId()).getName(),
-                "HTML Basics", // EventRepo.get(cert.getEventId()).getName()",
+                details.getStudentName(),
+                details.getEventName(),
+                details.getEndDate(),
+                details.getOutcomes(),
+                details.getPercentageGrade(),
                 cert.getStatus(),
                 cert.getIssueDate()
         );
@@ -180,7 +245,7 @@ public class CertificateManagerService {
     }
 
     public byte[] DownloadCertificate(int id) {
-        CertificateModel document = certificateService.GetById(id);
+        CertificateModel document = certificateService.findById(id);
 
         if (document == null) throw new GenericNotFoundException("Document not found");
         if (document.getFilePath() == null) throw new GenericNotFoundException("Document not found");
