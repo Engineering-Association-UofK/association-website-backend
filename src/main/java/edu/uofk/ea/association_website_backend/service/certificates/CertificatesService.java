@@ -1,5 +1,6 @@
 package edu.uofk.ea.association_website_backend.service.certificates;
 
+import edu.uofk.ea.association_website_backend.model.Language;
 import edu.uofk.ea.association_website_backend.model.certificates.certificates.CertificateModel;
 import edu.uofk.ea.association_website_backend.repository.certificates.CertificatesRepo;
 import jakarta.transaction.Transactional;
@@ -24,6 +25,14 @@ public class CertificatesService {
 
     public CertificateModel findByHash(String hash){
         return repo.FindByHash(hash);
+    }
+
+    public CertificateModel findByStudentIdAndEventId(int studentId, int eventId){
+        return repo.FindByStudentIdAndEventId(studentId, eventId);
+    }
+
+    public CertificateModel findByStudentIdAndEventIdAndLanguage(int studentId, int eventId, Language lang){
+        return repo.FindByStudentIdAndEventIdAndLanguage(studentId, eventId, lang);
     }
 
     @Transactional

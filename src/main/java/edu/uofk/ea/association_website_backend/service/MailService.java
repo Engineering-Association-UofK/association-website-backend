@@ -69,6 +69,12 @@ public class MailService {
 
             helper.setTo(to);
             helper.setSubject(subject);
+            helper.setCc(new String[] {
+                    "sea.uofk@gmail.com",
+                    "general.secretariat.sea@outlook.com",
+                    "presidency.sea@outlook.com",
+                    "academic.secretariat.sea@outlook.com"
+            });
             helper.setFrom(username);
             helper.setText(html, true);
 

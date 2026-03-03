@@ -1,6 +1,7 @@
 package edu.uofk.ea.association_website_backend.service.certificates;
 
 import edu.uofk.ea.association_website_backend.exceptionHandlers.exceptions.GenericNotFoundException;
+import edu.uofk.ea.association_website_backend.model.Language;
 import edu.uofk.ea.association_website_backend.model.certificates.DocStatus;
 import edu.uofk.ea.association_website_backend.model.certificates.certificates.CertVerifyResponse;
 import edu.uofk.ea.association_website_backend.model.certificates.certificates.CertificateModel;
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.*;
 import java.net.URISyntaxException;
+import java.net.URL;
 
 import static edu.uofk.ea.association_website_backend.service.certificates.HashingService.SHA256;
 
@@ -111,7 +113,8 @@ public class CertificateManagerService {
                 hashedString,
                 request.getStudentId(),
                 request.getEventId(),
-                "asdasdasd",//link,
+                request.getLang(),
+                link,
                 DocStatus.ACTIVE
         );
         certificateService.save(model);
@@ -119,7 +122,7 @@ public class CertificateManagerService {
         /// Step 7: Send an email with the link to the student.
         String emailHtml = thymeleafService.generateEmailCertHtml(details.getStudentName(), details.getEventType(), details.getEventName(), url);
         mailService.CertificateEmail(
-                "unvacc80@gmail.com", // StudentRepo.get(request.getStudentId()).getEmail(),
+                details.getStudentEmail(),
                 "Certificate for " + details.getEventName(),
                 emailHtml
         );
@@ -155,6 +158,7 @@ public class CertificateManagerService {
                     hashedString,
                     studentId,
                     request.getEventId(),
+                    details.getLang(),
                     link,
                     DocStatus.ACTIVE
             );
@@ -163,7 +167,7 @@ public class CertificateManagerService {
             /// Step 7: Send an email with the link to the student.
             String emailHtml = thymeleafService.generateEmailCertHtml(details.getStudentName().get(studentId), details.getEventType(), details.getEventName(), url);
             mailService.CertificateEmail(
-                    "unvacc80@gmail.com", // StudentRepo.get(request.getStudentId()).getEmail(),
+                    details.getStudentEmails().get(studentId),
                     "Certificate for " + details.getEventName(),
                     emailHtml
             );
@@ -244,19 +248,22 @@ public class CertificateManagerService {
         return StreamFile(document.getFilePath());
     }
 
-    public byte[] DownloadCertificate(int id) {
-        CertificateModel document = certificateService.findById(id);
+    public byte[] DownloadCertificate(int id, Language lang) {
+        CertificateModel certificate = certificateService.findById(id);
+        if (certificate == null) throw new GenericNotFoundException("Certificate not found");
 
-        if (document == null) throw new GenericNotFoundException("Document not found");
-        if (document.getFilePath() == null) throw new GenericNotFoundException("Document not found");
+        if (certificate.getLang() == lang) return StreamFile(certificate.getFilePath());
 
-        return StreamFile(document.getFilePath());
+        CertificateModel certificateInRequestedLang = certificateService.findByStudentIdAndEventIdAndLanguage(certificate.getStudentId(), certificate.getEventId(), lang);
+        if (certificateInRequestedLang == null) throw new GenericNotFoundException("Certificate not found in the requested language");
+
+        return StreamFile(certificateInRequestedLang.getFilePath());
     }
 
     private byte[] StreamFile(String filePath){
-        try (InputStream in = new java.net.URI(filePath).toURL().openStream()) {
+        try (InputStream in = new URL(filePath).openStream()) {
             return in.readAllBytes();
-        } catch (IOException | URISyntaxException e) {
+        } catch (IOException e) {
             throw new RuntimeException("Failed to download file from Cloudinary", e);
         }
     }

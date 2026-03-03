@@ -14,11 +14,12 @@ public class EventCertificateDetails {
 
     private String studentNameAr;
     private String studentNameEn;
+    private String studentEmail;
     private Double percentageGrade;
 
     private Language lang;
 
-    public EventCertificateDetails(String eventName, EventType eventType, List<String> outcomes, LocalDate startDate, LocalDate endDate, String studentNameAr, String studentNameEn, Double percentageGrade) {
+    public EventCertificateDetails(String eventName, EventType eventType, List<String> outcomes, LocalDate startDate, LocalDate endDate, String studentNameAr, String studentNameEn, String studentEmail, Double percentageGrade) {
         this.eventName = eventName;
         this.eventType = eventType;
         this.outcomes = outcomes;
@@ -27,6 +28,7 @@ public class EventCertificateDetails {
         this.studentNameAr = studentNameAr;
         this.studentNameEn = studentNameEn;
         this.percentageGrade = percentageGrade;
+        this.studentEmail = studentEmail;
         this.lang = Language.en;
     }
 
@@ -57,6 +59,10 @@ public class EventCertificateDetails {
 
     public Double getPercentageGrade() {
         return percentageGrade;
+    }
+
+    public String getStudentEmail() {
+        return studentEmail;
     }
 
     public void setLang(Language lang) {

@@ -1,6 +1,7 @@
 package edu.uofk.ea.association_website_backend.model.certificates.certificates;
 
 
+import edu.uofk.ea.association_website_backend.model.Language;
 import edu.uofk.ea.association_website_backend.model.certificates.DocStatus;
 import jakarta.persistence.*;
 
@@ -24,6 +25,10 @@ public class CertificateModel {
     @Column(name = "event_id")
     private Integer eventId;
 
+    @Column(name = "lang")
+    @Enumerated(EnumType.STRING)
+    private Language lang;
+
     @Column(name = "issue_date")
     private Instant issueDate;
 
@@ -37,7 +42,7 @@ public class CertificateModel {
 
     public CertificateModel() {}
 
-    public CertificateModel(String certHash, Integer studentId, Integer eventId, String filePath, DocStatus status) {
+    public CertificateModel(String certHash, Integer studentId, Integer eventId, Language lang, String filePath, DocStatus status) {
         this.certHash = certHash;
         this.studentId = studentId;
         this.eventId = eventId;
@@ -60,6 +65,14 @@ public class CertificateModel {
 
     public void setCertHash(String certHash) {
         this.certHash = certHash;
+    }
+
+    public Language getLang() {
+        return lang;
+    }
+
+    public void setLang(Language lang) {
+        this.lang = lang;
     }
 
     public Integer getStudentId() {

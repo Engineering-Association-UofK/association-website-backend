@@ -1,5 +1,6 @@
 package edu.uofk.ea.association_website_backend.repository.certificates;
 
+import edu.uofk.ea.association_website_backend.model.Language;
 import edu.uofk.ea.association_website_backend.model.certificates.certificates.CertificateModel;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
@@ -45,4 +46,22 @@ public class CertificatesRepo {
         em.merge(model);
     }
 
+    public CertificateModel FindByStudentIdAndEventId(int studentId, int eventId) {
+        TypedQuery<CertificateModel> query = em.createQuery("SELECT c FROM CertificateModel c WHERE c.studentId = :studentId AND c.eventId = :eventId", CertificateModel.class);
+        query.setParameter("studentId", studentId);
+        query.setParameter("eventId", eventId);
+        List<CertificateModel> list = query.getResultList();
+        if (list.isEmpty()) return null;
+        return list.getFirst();
+    }
+
+    public CertificateModel FindByStudentIdAndEventIdAndLanguage(int studentId, int eventId, Language lang) {
+        TypedQuery<CertificateModel> query = em.createQuery("SELECT c FROM CertificateModel c WHERE c.studentId = :studentId AND c.eventId = :eventId AND c.lang = :lang", CertificateModel.class);
+        query.setParameter("studentId", studentId);
+        query.setParameter("eventId", eventId);
+        query.setParameter("lang", lang);
+        List<CertificateModel> list = query.getResultList();
+        if (list.isEmpty()) return null;
+        return list.getFirst();
+    }
 }

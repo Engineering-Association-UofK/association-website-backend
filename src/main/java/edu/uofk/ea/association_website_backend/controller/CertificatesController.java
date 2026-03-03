@@ -1,5 +1,6 @@
 package edu.uofk.ea.association_website_backend.controller;
 
+import edu.uofk.ea.association_website_backend.model.Language;
 import edu.uofk.ea.association_website_backend.model.activity.ActivityType;
 import edu.uofk.ea.association_website_backend.model.certificates.certificates.CertVerifyResponse;
 import edu.uofk.ea.association_website_backend.model.certificates.certificates.MassGenerateCertsRequest;
@@ -139,8 +140,8 @@ public class CertificatesController {
             summary = "Download a certificate",
             description = "This endpoint is used to download a certificate."
     )
-    public ResponseEntity<byte[]> downloadCertificate(@PathVariable int id) {
-        byte[] pdf = manager.DownloadCertificate(id);
+    public ResponseEntity<byte[]> downloadCertificate(@PathVariable int id, @RequestParam Language lang) {
+        byte[] pdf = manager.DownloadCertificate(id, lang);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=certificate.pdf")

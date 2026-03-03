@@ -140,6 +140,7 @@ CREATE TABLE IF NOT EXISTS certificates (
     cert_hash VARCHAR(255) NOT NULL,
     student_id INT NOT NULL,
     event_id INT NOT NULL,
+    lang VARCHAR(10) NOT NULL,
     issue_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     file_path VARCHAR(255) NOT NULL,
     status VARCHAR(20) NOT NULL,

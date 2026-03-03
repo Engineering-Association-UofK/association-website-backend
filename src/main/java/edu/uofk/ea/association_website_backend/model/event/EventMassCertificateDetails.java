@@ -15,11 +15,12 @@ public class EventMassCertificateDetails {
 
     private final Map<Integer, String> studentNameAr;
     private final Map<Integer, String> studentNameEn;
+    private final Map<Integer, String> studentEmails;
     private final Map<Integer, Double> percentageGrade;
 
     private Language lang;
 
-    public EventMassCertificateDetails(String eventName, EventType eventType, List<String> outcomes, LocalDate startDate, LocalDate endDate, Map<Integer, String> studentNameAr, Map<Integer, String> studentNameEn, Map<Integer, Double> percentageGrade) {
+    public EventMassCertificateDetails(String eventName, EventType eventType, List<String> outcomes, LocalDate startDate, LocalDate endDate, Map<Integer, String> studentNameAr, Map<Integer, String> studentNameEn, Map<Integer, String> studentEmails, Map<Integer, Double> percentageGrade) {
         this.eventName = eventName;
         this.eventType = eventType;
         this.outcomes = outcomes;
@@ -28,6 +29,7 @@ public class EventMassCertificateDetails {
         this.studentNameAr = studentNameAr;
         this.studentNameEn = studentNameEn;
         this.percentageGrade = percentageGrade;
+        this.studentEmails = studentEmails;
         this.lang = Language.en;
     }
 
@@ -40,6 +42,7 @@ public class EventMassCertificateDetails {
                 endDate,
                 studentNameAr.get(studentId),
                 studentNameEn.get(studentId),
+                studentEmails.get(studentId),
                 percentageGrade.get(studentId)
         );
         details.setLang(lang);
@@ -73,6 +76,10 @@ public class EventMassCertificateDetails {
 
     public Map<Integer, Double> getPercentageGrade() {
         return percentageGrade;
+    }
+
+    public Map<Integer, String> getStudentEmails() {
+        return studentEmails;
     }
 
     public void setLang(Language lang) {

@@ -275,6 +275,7 @@ public class EventService {
                 event.getEndDate(),
                 student.getNameAr(),
                 student.getNameEn(),
+                student.getEmail(),
                 percentageGrade
         );
     }
@@ -293,6 +294,7 @@ public class EventService {
                 event.getEndDate(),
                 data.studentNameAr,
                 data.studentNameEn,
+                data.studentEmails,
                 data.percentageGrade
         );
     }
@@ -310,6 +312,7 @@ public class EventService {
 
         Map<Integer, String> studentNameAr;
         Map<Integer, String> studentNameEn;
+        Map<Integer, String> studentEmails;
         Map<Integer, Double> percentageGrade;
 
         Map<Integer, StudentModel> studentMap;
@@ -359,6 +362,7 @@ public class EventService {
         private void mapStudentsData() {
             studentNameAr = eventStudents.stream().collect(Collectors.toMap(StudentModel::getId, StudentModel::getNameAr));
             studentNameEn = eventStudents.stream().collect(Collectors.toMap(StudentModel::getId, StudentModel::getNameEn));
+            studentEmails = eventStudents.stream().collect(Collectors.toMap(StudentModel::getId, StudentModel::getEmail));
             percentageGrade = participants.stream().collect(Collectors.toMap(EventParticipationModel::getStudentId, p -> getPercentage(p.getId())));
         }
 
