@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class EventRequest {
     @NotBlank(message = "Name is required")
@@ -23,6 +24,9 @@ public class EventRequest {
     @NotNull(message = "End date is required")
     @FutureOrPresent(message = "End date must be in the present or future")
     private LocalDate endDate;
+
+    @NotNull(message = "Outcomes is required")
+    private List<String> outcomes;
 
     public String getName() {
         return name;
@@ -62,5 +66,13 @@ public class EventRequest {
 
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
+    }
+
+    public List<String> getOutcomes() {
+        return outcomes;
+    }
+
+    public void setOutcomes(List<String> outcomes) {
+        this.outcomes = outcomes;
     }
 }

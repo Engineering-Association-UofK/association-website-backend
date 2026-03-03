@@ -2,6 +2,8 @@ package edu.uofk.ea.association_website_backend.model.event;
 
 import java.util.List;
 
+// TODO: Add Outcomes field to this class
+
 public class EventResponse {
     private int id;
     private String name;
