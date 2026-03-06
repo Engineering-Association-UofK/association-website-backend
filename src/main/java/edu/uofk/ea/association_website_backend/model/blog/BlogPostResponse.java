@@ -15,6 +15,7 @@ public class BlogPostResponse {
     private BlogPostModel.Status status;
 
     public BlogPostResponse(int id, String title, String content, GalleryRequest image, String authorName, Instant createdIt, Instant updatedAt, BlogPostModel.Status status) {
+
         this.id = id;
         this.title = title;
         this.content = content;
