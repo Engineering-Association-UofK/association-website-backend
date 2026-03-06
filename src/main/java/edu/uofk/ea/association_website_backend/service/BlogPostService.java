@@ -61,19 +61,22 @@ public class BlogPostService {
         }
         return mapToResponse(blog);
     }
-    
+
     public List<BlogPostResponse> getAll(){
         List<BlogPostModel> blogs = repo.getAll();
         return blogs.stream().map(this::mapToResponse).toList();
     }
 
     private BlogPostResponse mapToResponse(BlogPostModel blog) {
+        var admin = adminRepo.findById(blog.getAuthorId());
         BlogPostResponse response = new BlogPostResponse(
                 blog.getId(),
                 blog.getTitle(),
                 blog.getContent(),
                 null,
-                blog.getAuthorId(),
+                admin != null ? admin.getName() : "Unknown Author",
+                blog.getCreatedAt(),
+                blog.getUpdatedAt(),
                 blog.getStatus()
         );
         if (blog.getImageLink() != null) {
