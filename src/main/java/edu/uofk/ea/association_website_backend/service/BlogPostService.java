@@ -5,6 +5,7 @@ import edu.uofk.ea.association_website_backend.model.EntityType;
 import edu.uofk.ea.association_website_backend.model.admin.AdminModel;
 import edu.uofk.ea.association_website_backend.model.blog.BlogPostModel;
 import edu.uofk.ea.association_website_backend.model.blog.BlogPostRequest;
+import edu.uofk.ea.association_website_backend.model.blog.BlogPostResponse;
 import edu.uofk.ea.association_website_backend.repository.AdminRepo;
 import edu.uofk.ea.association_website_backend.repository.BlogPostRepo;
 import edu.uofk.ea.association_website_backend.repository.StorageRepo;
@@ -53,16 +54,32 @@ public class BlogPostService {
 
     }
 
-    public BlogPostModel findById(int id){
-        if (repo.findById(id) == null) {
+    public BlogPostResponse findById(int id){
+        BlogPostModel blog = repo.findById(id);
+        if (blog == null) {
             throw new GenericNotFoundException("Blog post not found with ID:" + id);
         }
-        return repo.findById(id);
+        return mapToResponse(blog);
+    }
+    
+    public List<BlogPostResponse> getAll(){
+        List<BlogPostModel> blogs = repo.getAll();
+        return blogs.stream().map(this::mapToResponse).toList();
     }
 
-
-    public List<BlogPostModel> getAll(){
-        return repo.getAll();
+    private BlogPostResponse mapToResponse(BlogPostModel blog) {
+        BlogPostResponse response = new BlogPostResponse(
+                blog.getId(),
+                blog.getTitle(),
+                blog.getContent(),
+                null,
+                blog.getAuthorId(),
+                blog.getStatus()
+        );
+        if (blog.getImageLink() != null) {
+            response.setImage(storageService.getImageByEntity(EntityType.BLOG_POST, blog.getId()));
+        }
+        return response;
     }
 
     @Transactional

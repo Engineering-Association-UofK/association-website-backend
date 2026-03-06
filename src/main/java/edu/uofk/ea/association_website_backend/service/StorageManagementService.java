@@ -2,6 +2,7 @@ package edu.uofk.ea.association_website_backend.service;
 
 import edu.uofk.ea.association_website_backend.exceptionHandlers.exceptions.UnexpectedErrorException;
 import edu.uofk.ea.association_website_backend.model.EntityType;
+import edu.uofk.ea.association_website_backend.model.gallery.GalleryRequest;
 import edu.uofk.ea.association_website_backend.model.storage.StorageModel;
 import edu.uofk.ea.association_website_backend.model.storage.StorageReferenceModel;
 import edu.uofk.ea.association_website_backend.model.storage.StoreType;
@@ -87,5 +88,16 @@ public class StorageManagementService {
                 storageRepo.delete(orphan);
             }
         }
+    }
+
+    public GalleryRequest getImageByEntity(EntityType entityType, int id) {
+        StorageReferenceModel reference = referenceRepo.findByEntity(entityType, id);
+        if (reference != null) {
+            StorageModel storage = storageRepo.findById(reference.getStorageId());
+            if (storage != null) {
+                return new GalleryRequest(storage.getPublicId(), storage.getUrl());
+            }
+        }
+        return null;
     }
 }
