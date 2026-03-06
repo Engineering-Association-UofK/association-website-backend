@@ -3,6 +3,7 @@ package edu.uofk.ea.association_website_backend.controller;
 import edu.uofk.ea.association_website_backend.model.blog.BlogPostModel;
 import edu.uofk.ea.association_website_backend.model.blog.BlogPostRequest;
 import edu.uofk.ea.association_website_backend.model.activity.ActivityType;
+import edu.uofk.ea.association_website_backend.model.blog.BlogPostResponse;
 import edu.uofk.ea.association_website_backend.service.ActivityService;
 import edu.uofk.ea.association_website_backend.service.AdminDetailsService;
 import edu.uofk.ea.association_website_backend.service.BlogPostService;
@@ -31,12 +32,12 @@ public class BlogPostController {
     }
 
     @GetMapping
-    public List<BlogPostModel> getBlogs(){
+    public List<BlogPostResponse> getBlogs(){
         return service.getAll();
     }
 
     @GetMapping("/{id}")
-    public BlogPostModel getBlog(@PathVariable int id) {
+    public BlogPostResponse getBlog(@PathVariable int id) {
         return service.findById(id);
     }
 
